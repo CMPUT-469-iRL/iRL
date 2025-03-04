@@ -1,0 +1,17 @@
+torch version: 2.6.0+cu118
+Work dir: save_models\20250303-172841
+Input vocab size: 3
+Output vocab size: 3
+Model: Quasi-LSTM
+Number of trainable params: 4208643
+RTRLQuasiLSTMModel(
+  (rnn_func): RTRLQuasiLSTMlayer()
+  (output_gate): Linear(in_features=2051, out_features=2048, bias=True)
+  (out_layer): Linear(in_features=2048, out_features=3, bias=True)
+)
+Batch size: 128
+Gradient accumulation for 1 steps.
+Seed: 1
+Learning rate: 3e-05
+clip at: 1.0
+[2025/03/03 17:28:51] Start training
