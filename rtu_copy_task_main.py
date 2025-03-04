@@ -239,8 +239,11 @@ learning_rate = args.learning_rate
 
 loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)
 
-optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,
+# TODO: change to have the correct model parameters
+#************************************************************************************************
+optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,  
                              betas=(0.9, 0.995), eps=1e-9)
+#************************************************************************************************
 clip = args.clip
 
 loginf(f"Learning rate: {learning_rate}")
@@ -277,3 +280,23 @@ model.rtrl_reset_grad() # change this function name to be the reset gradient of 
 #********************************************************************************************
 
 # TODO: Create new training loop for streaming RTRL
+for ep in range(num_epoch):
+    # loop through dataset
+    for idx, batch in enumerate(train_data_loader):
+        # print(batch)
+
+        # get dataset information and transform it to be compatible with model
+        src, tgt = batch
+        bsz, _ = src.shape
+
+        # reset states at the beginning of the sequence
+        # TODO: get correct state initialization for RTU model
+        # state = model.get_init_states(batch_size=bsz, device=src.device)
+
+        src = src.permute(1, 0)
+        tgt = tgt.permute(1, 0)
+
+        # loop in online setting
+        for src_token, tgt_token in zip(src, tgt):
+            # TODO: calculate the gradients here:
+            pass
