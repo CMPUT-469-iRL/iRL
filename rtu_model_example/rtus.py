@@ -6,9 +6,9 @@ import jax
 import jax.numpy as jnp 
 import flax 
 from typing import Callable, Any, Tuple, Iterable,Optional
-from diagnostic.rtus.rtus_utils import *
-from diagnostic.rtus.linear_rtus import *
-from diagnostic.rtus.non_linear_rtus import *
+from rtu_model_example.rtus_utils import *
+from rtu_model_example.linear_rtus import *
+from rtu_model_example.non_linear_rtus import *
 
 
 PRNGKey = Any

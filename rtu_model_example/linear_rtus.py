@@ -14,7 +14,7 @@ import jax
 import jax.numpy as jnp 
 import flax 
 from typing import Callable, Any, Tuple, Iterable,Optional
-from src.nets.rtus.rtus_utils import *
+from rtu_model_example.rtus_utils import *
 
 PRNGKey = Any
 Shape = Tuple[int, ...]
