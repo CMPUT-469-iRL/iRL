@@ -1,0 +1,1 @@
+# This file holds the RNN function for the RTU, initializing and updating the weights of the model
