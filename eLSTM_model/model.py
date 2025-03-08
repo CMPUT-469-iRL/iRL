@@ -171,9 +171,6 @@ class RTRLQuasiLSTMModel(BaseModel):
 
         logits = self.out_layer(gate_out)
         
-        print("LOGITS", logits)
-        print("cell_out", cell_out)
-        print("STATE", state)
         return logits, cell_out, state
 
     def compute_gradient_rtrl(self, top_grad_, rtrl_state):
