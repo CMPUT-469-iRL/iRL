@@ -14,6 +14,10 @@ from copy_task_data import CopyTaskDataset
 # from eLSTM_model.model import QuasiLSTMModel, RTRLQuasiLSTMModel
 from eval_utils import compute_accuracy
 
+from rtu_model.rtus_utils import *
+from rtu_model.model import *
+from rtu_model.layers import *
+
 DEVICE = 'cuda'
 
 
@@ -212,21 +216,22 @@ loginf(f"Output vocab size: {out_vocab_size}")
 loginf("Model: RTU")
 #************************************************************************************************
 # TODO: Replace this model with RTRL RTU definition
-model = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,  
-                    num_layers=num_layers, in_vocab_size=in_vocab_size,
-                    out_vocab_size=out_vocab_size, dropout=dropout,
-                    no_embedding=args.no_embedding)
+# model = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,  
+#                     num_layers=num_layers, in_vocab_size=in_vocab_size,
+#                     out_vocab_size=out_vocab_size, dropout=dropout,
+#                     no_embedding=args.no_embedding)
+model = RTULayer()
 
 loginf(f"Number of trainable params: {model.num_params()}")
 loginf(f"{model}")
 
 model = model.to(DEVICE)
 # TODO: Replace this with batch RTU implementation
-eval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
-                    num_layers=num_layers, in_vocab_size=in_vocab_size,
-                    out_vocab_size=out_vocab_size, dropout=dropout,
-                    no_embedding=args.no_embedding)
-eval_model = eval_model.to(DEVICE)
+# eval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
+#                     num_layers=num_layers, in_vocab_size=in_vocab_size,
+#                     out_vocab_size=out_vocab_size, dropout=dropout,
+#                     no_embedding=args.no_embedding)
+# eval_model = eval_model.to(DEVICE)
 #************************************************************************************************
 
 # Optimization settings:
