@@ -123,6 +123,7 @@ class QuasiLSTMModel(BaseModel):
             gate_out = self.dropout(gate_out)
         logits = self.out_layer(gate_out).permute(1, 0, 2)
 
+        print("LOGITS", logits)
         return logits
 
 
@@ -169,7 +170,10 @@ class RTRLQuasiLSTMModel(BaseModel):
         gate_out = cell_out * gate_out
 
         logits = self.out_layer(gate_out)
-
+        
+        print("LOGITS", logits)
+        print("cell_out", cell_out)
+        print("STATE", state)
         return logits, cell_out, state
 
     def compute_gradient_rtrl(self, top_grad_, rtrl_state):
