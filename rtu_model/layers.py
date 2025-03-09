@@ -19,7 +19,7 @@ class RTULayer(nn.Module):
     n_hidden: int   # number of hidden features
     activation: str = 'relu'
     @nn.compact
-    def __init__(self,carry,x_t):
+    def __call__(self,carry,x_t):
         update_gate = RTUModel(self.n_hidden)
         carry,(h_t_c1,h_t_c2)  = update_gate(carry,x_t)
         h_t = act_options[self.activation](jnp.concatenate((h_t_c1, h_t_c2), axis=-1))

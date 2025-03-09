@@ -7,7 +7,7 @@ import logging
 import random
 
 import torch
-import torch.nn as nn
+import torch.nn as torch_nn # changed from "nn" so that nn doesnt conflict with flax nn in RTU model
 from torch.utils.data import DataLoader
 
 from copy_task_data import CopyTaskDataset
@@ -17,6 +17,9 @@ from eval_utils import compute_accuracy
 from rtu_model.rtus_utils import *
 from rtu_model.model import *
 from rtu_model.layers import *
+
+#from jax.experimental import optimizers as jax_opt # import jax optimizers
+import jaxopt
 
 DEVICE = 'cuda'
 
@@ -220,12 +223,18 @@ loginf("Model: RTU")
 #                     num_layers=num_layers, in_vocab_size=in_vocab_size,
 #                     out_vocab_size=out_vocab_size, dropout=dropout,
 #                     no_embedding=args.no_embedding)
-model = RTULayer()
 
-loginf(f"Number of trainable params: {model.num_params()}")
+# define the layer the RNN is defined and weights are initialized
+layer = RTULayer(hidden_size)
+# define the model where gradients are calulated
+model = RTUModel()
+print(model)
+# initial_states = model.initialize_state(train_batch_size,hidden_size,in_vocab_size)  # model.initialize_state(batch_size,d_rec,d_input) # what is d_rec??
+# loginf(f"Number of trainable params: {model.num_params()}")
 loginf(f"{model}")
 
-model = model.to(DEVICE)
+# model = model.to(DEVICE)
+
 # TODO: Replace this with batch RTU implementation
 # eval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
 #                     num_layers=num_layers, in_vocab_size=in_vocab_size,
@@ -242,12 +251,18 @@ loginf(f"Gradient accumulation for {grad_cummulate} steps.")
 loginf(f"Seed: {args.seed}")
 learning_rate = args.learning_rate
 
-loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)
+loss_fn = torch_nn.CrossEntropyLoss(ignore_index=tgt_pad_idx) 
 
 # TODO: change to have the correct model parameters
 #************************************************************************************************
-optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,  
-                             betas=(0.9, 0.995), eps=1e-9)
+# optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,  
+#                              betas=(0.9, 0.995), eps=1e-9)
+# initial_states = layer.initialize_state(train_batch_size,hidden_size,in_vocab_size)
+# optimizer = torch.optim.Adam(params=initial_states[1] ,lr=learning_rate,   # TODO: find ay to turn jax array into torch tensor
+#                              betas=(0.9, 0.995), eps=1e-9)
+
+# opt_init, opt_update, get_params = jaxopt.adam(1e-3)
+optimizer = jaxopt
 #************************************************************************************************
 clip = args.clip
 
@@ -280,8 +295,11 @@ if torch.cuda.is_available():
 
 # TODO: reset gradient in RTU implementation
 #********************************************************************************************
-model.reset_grad() # change this function name to be the reset gradient of RTU
-model.rtrl_reset_grad() # change this function name to be the reset gradient of RTU
+# model.reset_grad() # change this function name to be the reset gradient of RTU
+# model.rtrl_reset_grad() # change this function name to be the reset gradient of RTU
+
+# initialize the states, AKA restart gradients
+initial_states = layer.initialize_state(train_batch_size,hidden_size,in_vocab_size)
 #********************************************************************************************
 
 # TODO: Create new training loop for streaming RTRL
