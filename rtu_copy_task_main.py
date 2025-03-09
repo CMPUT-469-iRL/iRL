@@ -315,6 +315,7 @@ for ep in range(num_epoch):
         # reset states at the beginning of the sequence
         # TODO: get correct state initialization for RTU model
         # state = model.get_init_states(batch_size=bsz, device=src.device)
+        initial_states = layer.initialize_state(bsz, hidden_size, in_vocab_size) # check if inputs are good
 
         src = src.permute(1, 0)
         tgt = tgt.permute(1, 0)
