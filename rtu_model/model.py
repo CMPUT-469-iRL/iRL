@@ -13,7 +13,11 @@ class ForwardRTUModel(nn.Module):
     def __init__(self, carry, x_t):
         # x_t.shape = (batch_size, n_features), 
         # h_tminus1.shape = ((batch_size, n_hiddens),(batch_size, n_hiddens))
+
+        print("carry[1].shape", carry[1].shape) # shape of gradient memory
+        print("x_t.shape", x_t.shape)
         h_tminus1,grad_memory = carry
+        print("h_tminus1.shape", h_tminus1.shape) # h_tminus1.shape (128, 2048)
         h_tminus1_c1,h_tminus1_c2 = h_tminus1
         h_tminus1_c1,h_tminus1_c2 = jax.lax.stop_gradient(h_tminus1_c1),jax.lax.stop_gradient(h_tminus1_c2) 
         
@@ -52,7 +56,7 @@ class ForwardRTUModel(nn.Module):
         return ((h_t_c1,h_t_c2),jax.lax.stop_gradient(new_grad_memory)), ((h_t_c1,h_t_c2),jax.lax.stop_gradient(new_grad_memory))
     
 class RTUModel(nn.Module):
-    def __call__(self,carry,x_t):
+    def __call__(self,carry,x_t): # def __call__(self,carry,x_t):
         def f(mdl,carry,x_t):
             return mdl(carry,x_t)
         
@@ -79,6 +83,6 @@ class RTUModel(nn.Module):
             params_t1['params']['wx2']['kernel'] = jnp.sum(correct_w2x,0)
             return (params_t1, *inputs_t)
         rt_cell_grad = nn.custom_vjp(f, forward_fn=fwd, backward_fn=bwd)
-        model_fn = ForwardRTUModel(n_hidden=self.n_hidden)
+        model_fn = ForwardRTUModel(carry, x_t) # model_fn = ForwardRTUModel(n_hidden=self.n_hidden)
         ((h_t_c1,h_t_c2),new_grad_memory),((h_t_c1,h_t_c2),new_grad_memory) = rt_cell_grad(model_fn, carry,x_t)
         return ((h_t_c1,h_t_c2),new_grad_memory),(h_t_c1,h_t_c2) # carry, output

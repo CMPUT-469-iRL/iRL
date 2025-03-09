@@ -20,6 +20,8 @@ from rtu_model.layers import *
 
 #from jax.experimental import optimizers as jax_opt # import jax optimizers
 import jaxopt
+from jaxopt import OptaxSolver
+import optax
 
 DEVICE = 'cuda'
 
@@ -262,7 +264,10 @@ loss_fn = torch_nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)
 #                              betas=(0.9, 0.995), eps=1e-9)
 
 # opt_init, opt_update, get_params = jaxopt.adam(1e-3)
-optimizer = jaxopt
+# optimizer = jaxopt
+
+optimizer = optax.adam(learning_rate) # https://jaxopt.github.io/stable/stochastic.html
+# solver = OptaxSolver(opt=opt, fun=ridge_reg_objective, maxiter=1000)
 #************************************************************************************************
 clip = args.clip
 
@@ -298,7 +303,7 @@ if torch.cuda.is_available():
 # model.reset_grad() # change this function name to be the reset gradient of RTU
 # model.rtrl_reset_grad() # change this function name to be the reset gradient of RTU
 
-# initialize the states, AKA restart gradients
+# Reset gradients
 initial_states = layer.initialize_state(train_batch_size,hidden_size,in_vocab_size)
 #********************************************************************************************
 
@@ -310,12 +315,13 @@ for ep in range(num_epoch):
 
         # get dataset information and transform it to be compatible with model
         src, tgt = batch
-        bsz, _ = src.shape
+        bsz, _ = src.shape # batch size
 
         # reset states at the beginning of the sequence
         # TODO: get correct state initialization for RTU model
         # state = model.get_init_states(batch_size=bsz, device=src.device)
-        initial_states = layer.initialize_state(bsz, hidden_size, in_vocab_size) # check if inputs are good
+        #state = layer.initialize_state(bsz, hidden_size, in_vocab_size) # check if inputs are good
+        hidden_init,memory_grad_init = layer.initialize_state(bsz, hidden_size, in_vocab_size) # check if inputs are good
 
         src = src.permute(1, 0)
         tgt = tgt.permute(1, 0)
@@ -323,4 +329,8 @@ for ep in range(num_epoch):
         # loop in online setting
         for src_token, tgt_token in zip(src, tgt):
             # TODO: calculate the gradients here:
-            pass
+            print("src_token.shape", src_token.shape) # src_token.shape torch.Size([128])
+            print("tgt_token.shape", tgt_token.shape) # tgt_token.shape torch.Size([128])
+            ((h_t_c1,h_t_c2),new_grad_memory),(h_t_c1,h_t_c2) = RTUModel().__call__(hidden_init, src_token) # carry = gradient, x_t = src_token
+
+            
