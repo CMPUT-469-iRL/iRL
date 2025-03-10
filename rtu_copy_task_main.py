@@ -331,6 +331,6 @@ for ep in range(num_epoch):
             # TODO: calculate the gradients here:
             print("src_token.shape", src_token.shape) # src_token.shape torch.Size([128])
             print("tgt_token.shape", tgt_token.shape) # tgt_token.shape torch.Size([128])
-            ((h_t_c1,h_t_c2),new_grad_memory),(h_t_c1,h_t_c2) = RTUModel().__call__(hidden_init, src_token) # carry = gradient, x_t = src_token
+            ((h_t_c1,h_t_c2),new_grad_memory),(h_t_c1,h_t_c2) = RTUModel().__call__((hidden_init,hidden_init), src_token, hidden_size) # carry = gradient, x_t = src_token
 
             

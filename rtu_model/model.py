@@ -10,20 +10,20 @@ from typing import Callable, Any, Tuple, Iterable,Optional
 from rtu_model.rtus_utils import *
 
 class ForwardRTUModel(nn.Module):
-    def __init__(self, carry, x_t):
+    def __init__(self, carry, x_t, n_hidden):
         # x_t.shape = (batch_size, n_features), 
         # h_tminus1.shape = ((batch_size, n_hiddens),(batch_size, n_hiddens))
 
-        print("carry[1].shape", carry[1].shape) # shape of gradient memory
-        print("x_t.shape", x_t.shape)
+        #print("carry[1].shape", carry[1].shape) # shape of gradient memory
+        #print("x_t.shape", x_t.shape)
         h_tminus1,grad_memory = carry
-        print("h_tminus1.shape", h_tminus1.shape) # h_tminus1.shape (128, 2048)
+        #print("h_tminus1.shape", h_tminus1.shape) # h_tminus1.shape (128, 2048)
         h_tminus1_c1,h_tminus1_c2 = h_tminus1
         h_tminus1_c1,h_tminus1_c2 = jax.lax.stop_gradient(h_tminus1_c1),jax.lax.stop_gradient(h_tminus1_c2) 
         
         # these params might not be the actual r and theta, but a transformed version of them based on the param_type
-        r_param = self.param('r_param', initialize_exp_exp_r, (1,self.n_hidden))
-        theta_param = self.param('theta_param', initialize_theta_log, (1,self.n_hidden))
+        r_param = self.param('r_param', initialize_exp_exp_r, (1,n_hidden)) # r_param = self.param('r_param', initialize_exp_exp_r, (1,self.n_hidden))
+        theta_param = self.param('theta_param', initialize_theta_log, (1,n_hidden)) #theta_param = self.param('theta_param', initialize_theta_log, (1,self.n_hidden))
         
         mlp_xc1 = nn.Dense(self.n_hidden,name='wx1',use_bias=False) 
         mlp_xc2 = nn.Dense(self.n_hidden,name='wx2',use_bias=False) 
@@ -44,7 +44,7 @@ class ForwardRTUModel(nn.Module):
         new_grad_memory_hc1_w_theta = d_g_w_theta * h_tminus1_c1 + g * grad_memory[2] - d_phi_w_theta * h_tminus1_c2 - phi * grad_memory[3]
         new_grad_memory_hc2_w_theta = d_g_w_theta * h_tminus1_c2 + g * grad_memory[3] + d_phi_w_theta * h_tminus1_c1 + phi * grad_memory[2]
        
-         
+           
         new_grad_c1_wx1 = jnp.multiply(g,grad_memory[4]) - jnp.multiply(phi,grad_memory[5]) + jnp.multiply(norm,jnp.repeat(jnp.expand_dims(x_t,2),h_t_c1.shape[-1],axis=2))
         new_grad_c1_wx2 = jnp.multiply(g,grad_memory[6]) - jnp.multiply(phi,grad_memory[7]) 
         
@@ -56,7 +56,7 @@ class ForwardRTUModel(nn.Module):
         return ((h_t_c1,h_t_c2),jax.lax.stop_gradient(new_grad_memory)), ((h_t_c1,h_t_c2),jax.lax.stop_gradient(new_grad_memory))
     
 class RTUModel(nn.Module):
-    def __call__(self,carry,x_t): # def __call__(self,carry,x_t):
+    def __call__(self,carry,x_t, n_hidden): # def __call__(self,carry,x_t):
         def f(mdl,carry,x_t):
             return mdl(carry,x_t)
         
@@ -83,6 +83,6 @@ class RTUModel(nn.Module):
             params_t1['params']['wx2']['kernel'] = jnp.sum(correct_w2x,0)
             return (params_t1, *inputs_t)
         rt_cell_grad = nn.custom_vjp(f, forward_fn=fwd, backward_fn=bwd)
-        model_fn = ForwardRTUModel(carry, x_t) # model_fn = ForwardRTUModel(n_hidden=self.n_hidden)
+        model_fn = ForwardRTUModel(carry, x_t, n_hidden) # model_fn = ForwardRTUModel(n_hidden=self.n_hidden) (ADDED n_hidden)
         ((h_t_c1,h_t_c2),new_grad_memory),((h_t_c1,h_t_c2),new_grad_memory) = rt_cell_grad(model_fn, carry,x_t)
         return ((h_t_c1,h_t_c2),new_grad_memory),(h_t_c1,h_t_c2) # carry, output
