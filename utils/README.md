@@ -1,0 +1,1 @@
+This folder contains the copytask dataset used in eLSTM_copy_task_main.py

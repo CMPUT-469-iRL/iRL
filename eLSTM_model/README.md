@@ -1,0 +1,1 @@
+This folder contains the model definitions for the eLSTM model.
