@@ -1,3 +1,7 @@
+# run using tmaze: python elstm_rl_eval.py --model_path save_models/model.pt --env_type tmaze --episodes 100
+# run using pendulum: python elstm_rl_eval.py --model_path save_models/model.pt --env_type pendulum --episodes 100
+# change directory 
+
 import os
 import time
 import argparse
