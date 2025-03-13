@@ -196,3 +196,51 @@ class RTRLQuasiLSTMModel(BaseModel):
 
         self.rnn_func.bias_z.grad = torch.zeros_like(self.rnn_func.bias_z)
         self.rnn_func.bias_f.grad = torch.zeros_like(self.rnn_func.bias_f)
+
+
+
+
+
+class DQNModel(BaseModel):
+    """ setup nn"""
+    def __init__(self, emb_dim, hidden_size, in_vocab_size, out_vocab_size,
+                 dropout=0.0, num_layers=1, no_embedding=False):
+        super().__init__()
+        
+        self.in_vocab_size = in_vocab_size
+        self.out_vocab_size = out_vocab_size
+        self.hidden_size = hidden_size
+        
+        # Input handling
+        self.no_embedding = no_embedding
+        input_size = in_vocab_size
+        
+        if not no_embedding:
+            self.embedding = nn.Embedding(
+                num_embeddings=in_vocab_size, embedding_dim=emb_dim)
+            input_size = emb_dim
+        else:
+            self.num_classes = in_vocab_size
+        
+        # Network layers
+        self.layers = nn.ModuleList()
+        self.layers.append(nn.Linear(input_size, hidden_size))
+        
+        for _ in range(num_layers - 1):
+            self.layers.append(nn.Linear(hidden_size, hidden_size))
+        
+        # Output layer (Q-values for each action)
+        self.out_layer = nn.Linear(hidden_size, out_vocab_size)
+        
+        # Dropout
+        self.dropout = None
+        if dropout > 0.0:
+            self.dropout = nn.Dropout(dropout)
+            
+    def forward(self, x): 
+        """ processes the input through the network."""
+        return
+    
+    def act(self, state, epsilon=0.0):
+        """ choose acton"""
+        return
