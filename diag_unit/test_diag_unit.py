@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch
 
+device = 'cuda'
 class DiagonalRNNFunction(torch.autograd.Function):
     """
     Implements the Diagonal RNN cell as a custom autograd function using RTRL.
@@ -11,6 +12,15 @@ class DiagonalRNNFunction(torch.autograd.Function):
     """
     @staticmethod
     def forward(ctx, input_t, h_prev, lamda, B, s_lamda_prev, s_B_prev):
+        # ctx = ctx.to(device)
+        input_t = input_t.to(device, dtype=torch.float)
+        h_prev = h_prev.to(device, dtype=torch.float)
+        lamda = lamda.to(device, dtype=torch.float)
+        B = B.to(device, dtype=torch.float)
+        s_lamda_prev = s_lamda_prev.to(device, dtype=torch.float)
+        s_B_prev = s_B_prev.to(device, dtype=torch.float)
+
+
         h_next = lamda * h_prev + B.mv(input_t)
         s_lamda_next = lamda * s_lamda_prev + h_prev
         s_B_next = torch.diag(lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)

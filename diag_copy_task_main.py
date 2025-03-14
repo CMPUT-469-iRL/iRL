@@ -217,7 +217,7 @@ model = RTRLDiagonalRNN(hidden_size)
 #                     out_vocab_size=out_vocab_size, dropout=dropout,
 #                     no_embedding=args.no_embedding)
 
-loginf(f"Number of trainable params: {model.num_params()}")
+#loginf(f"Number of trainable params: {model.num_params()}")
 loginf(f"{model}")
 
 model = model.to(DEVICE)
@@ -272,8 +272,8 @@ random.seed(args.seed)
 if torch.cuda.is_available():
     torch.cuda.manual_seed_all(args.seed)
 
-model.reset_grad()
-model.rtrl_reset_grad()
+#model.reset_grad()
+#model.rtrl_reset_grad()
 
 for ep in range(num_epoch):
     for idx, batch in enumerate(train_data_loader):
@@ -282,30 +282,36 @@ for ep in range(num_epoch):
         src, tgt = batch
         bsz, _ = src.shape
         # reset states at the beginning of the sequence
-        state = model.get_init_states(batch_size=bsz, device=src.device)
+        state = model.reset_rtrl_state()
 
-        src = src.permute(1, 0)
-        tgt = tgt.permute(1, 0)
+
+        #src = src.permute(1, 0)
+        #tgt = tgt.permute(1, 0)
 
         # We assume fully online setting
-        for src_token, tgt_token in zip(src, tgt):
-            logits, cell_out, state = model(src_token, state)
-            logits = logits.contiguous()  # (B, num_classes)
+        for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
+#            logits, cell_out, state = model(src_token, state)
+#            logits = logits.contiguous()  # (B, num_classes)
             labels = tgt_token.view(-1)
+            model.h = model.h.to(DEVICE, dtype=torch.float)
+            labels = labels.to(DEVICE, dtype=torch.float)
+            loss = loss_fn(model.h, labels)
 
-            loss = loss_fn(logits, labels)
+
 
             loss.backward()
-            _, rtrl_states = state
-            model.compute_gradient_rtrl(cell_out.grad, rtrl_states)
+#            _, rtrl_states = state
+#            model.compute_gradient_rtrl(cell_out.grad, rtrl_states)
+
+            model.forward_step(src_token)
 
             if not args.full_sequence:
                 if clip > 0.0:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
 
                 optimizer.step()
-                model.reset_grad()
-                model.rtrl_reset_grad()
+#                model.reset_grad()
+#                model.rtrl_reset_grad()
 
             with torch.no_grad():
                 acc_loss += loss
