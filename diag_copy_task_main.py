@@ -11,8 +11,8 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from copy_task_data import CopyTaskDataset
-from eLSTM_model.model import QuasiLSTMModel, RTRLQuasiLSTMModel
-from eval_utils import compute_accuracy
+from diag_unit.test_diag_unit import DiagonalRNNFunction, RTRLDiagonalRNN, BPTTDiagonalRNN
+
 
 
 DEVICE = 'cuda'
@@ -211,20 +211,22 @@ loginf(f"Output vocab size: {out_vocab_size}")
 # model
 
 loginf("Model: Quasi-LSTM")
-model = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
-                    num_layers=num_layers, in_vocab_size=in_vocab_size,
-                    out_vocab_size=out_vocab_size, dropout=dropout,
-                    no_embedding=args.no_embedding)
+model = RTRLDiagonalRNN(nn.Module)
+# RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
+#                     num_layers=num_layers, in_vocab_size=in_vocab_size,
+#                     out_vocab_size=out_vocab_size, dropout=dropout,
+#                     no_embedding=args.no_embedding)
 
 loginf(f"Number of trainable params: {model.num_params()}")
 loginf(f"{model}")
 
 model = model.to(DEVICE)
 
-eval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
-                    num_layers=num_layers, in_vocab_size=in_vocab_size,
-                    out_vocab_size=out_vocab_size, dropout=dropout,
-                    no_embedding=args.no_embedding)
+eval_model = BPTTDiagonalRNN(nn.Module)
+# QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
+#                     num_layers=num_layers, in_vocab_size=in_vocab_size,
+#                     out_vocab_size=out_vocab_size, dropout=dropout,
+#                     no_embedding=args.no_embedding)
 eval_model = eval_model.to(DEVICE)
 
 # Optimization settings:
