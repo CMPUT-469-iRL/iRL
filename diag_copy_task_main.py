@@ -211,7 +211,7 @@ loginf(f"Output vocab size: {out_vocab_size}")
 # model
 
 loginf("Model: Quasi-LSTM")
-model = RTRLDiagonalRNN(nn.Module)
+model = RTRLDiagonalRNN(hidden_size)
 # RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
 #                     num_layers=num_layers, in_vocab_size=in_vocab_size,
 #                     out_vocab_size=out_vocab_size, dropout=dropout,
@@ -222,12 +222,14 @@ loginf(f"{model}")
 
 model = model.to(DEVICE)
 
-eval_model = BPTTDiagonalRNN(nn.Module)
+# eval_model = BPTTDiagonalRNN(hidden_size)
+
 # QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
 #                     num_layers=num_layers, in_vocab_size=in_vocab_size,
 #                     out_vocab_size=out_vocab_size, dropout=dropout,
 #                     no_embedding=args.no_embedding)
-eval_model = eval_model.to(DEVICE)
+
+# eval_model = eval_model.to(DEVICE)
 
 # Optimization settings:
 num_epoch = args.num_epoch
