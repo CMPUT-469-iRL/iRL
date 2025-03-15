@@ -20,7 +20,11 @@ class DiagonalRNNFunction(torch.autograd.Function):
         s_lamda_prev = s_lamda_prev.to(device, dtype=torch.float)
         s_B_prev = s_B_prev.to(device, dtype=torch.float)
 
-
+        # print("lamda", lamda.shape)
+        # print("h_prev.shape", h_prev.shape)
+        # print("input_t.shape", input_t.shape)
+        # print("B.shape", B.shape)
+        # print("B.mv(input_t).shape", B.mv(input_t))
         h_next = lamda * h_prev + B.mv(input_t)
         s_lamda_next = lamda * s_lamda_prev + h_prev
         s_B_next = torch.diag(lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)

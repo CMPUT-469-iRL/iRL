@@ -123,7 +123,7 @@ class QuasiLSTMModel(BaseModel):
             gate_out = self.dropout(gate_out)
         logits = self.out_layer(gate_out).permute(1, 0, 2)
 
-        print("LOGITS", logits)
+
         return logits
 
 

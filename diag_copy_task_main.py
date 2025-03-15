@@ -282,8 +282,7 @@ for ep in range(num_epoch):
         src, tgt = batch
         bsz, _ = src.shape
         # reset states at the beginning of the sequence
-        state = model.reset_rtrl_state()
-
+        model.reset_rtrl_state()
 
         #src = src.permute(1, 0)
         #tgt = tgt.permute(1, 0)
@@ -295,15 +294,20 @@ for ep in range(num_epoch):
             labels = tgt_token.view(-1)
             model.h = model.h.to(DEVICE, dtype=torch.float)
             labels = labels.to(DEVICE, dtype=torch.float)
-            loss = loss_fn(model.h, labels)
 
+            # make a prediction by doing a forward pass using the src_token input
+            prediction = model.forward_step(src_token) # model.forward_step(src_token)
+            
+            prediction = prediction.to(torch.float)
+            labels = labels.to(torch.float)
 
-
+            loss = loss_fn(prediction, labels)
             loss.backward()
+
 #            _, rtrl_states = state
 #            model.compute_gradient_rtrl(cell_out.grad, rtrl_states)
 
-            model.forward_step(src_token)
+            
 
             if not args.full_sequence:
                 if clip > 0.0:
