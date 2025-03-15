@@ -211,7 +211,7 @@ loginf(f"Output vocab size: {out_vocab_size}")
 # model
 
 loginf("Model: Quasi-LSTM")
-model = RTRLDiagonalRNN(hidden_size)
+model = RTRLDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size, out_vocab_size = out_vocab_size)
 # RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
 #                     num_layers=num_layers, in_vocab_size=in_vocab_size,
 #                     out_vocab_size=out_vocab_size, dropout=dropout,
@@ -238,8 +238,8 @@ loginf(f"Batch size: {train_batch_size}")
 loginf(f"Gradient accumulation for {grad_cummulate} steps.")
 loginf(f"Seed: {args.seed}")
 learning_rate = args.learning_rate
-
-loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)
+#print("tgt_pat_idx", tgt_pad_idx)
+loss_fn = nn.CrossEntropyLoss(ignore_index=-1)  # loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pat_idx = 2)
 
 optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,
                              betas=(0.9, 0.995), eps=1e-9)
@@ -295,14 +295,15 @@ for ep in range(num_epoch):
             model.h = model.h.to(DEVICE, dtype=torch.float)
             labels = labels.to(DEVICE, dtype=torch.float)
 
+            src_token = src_token.to(torch.float)
             # make a prediction by doing a forward pass using the src_token input
-            prediction = model.forward_step(src_token) # model.forward_step(src_token)
-            
-            prediction = prediction.to(torch.float)
-            labels = labels.to(torch.float)
 
-            loss = loss_fn(prediction, labels)
+            #prediction = model.forward_step(src_token) 
+
+            loss = loss_fn(model.h, labels)  # loss_fn(prediction, labels) 
             loss.backward()
+
+            model.forward_step(src_token) # model.forward_step(src_token)
 
 #            _, rtrl_states = state
 #            model.compute_gradient_rtrl(cell_out.grad, rtrl_states)

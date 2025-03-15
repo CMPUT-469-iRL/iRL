@@ -44,8 +44,12 @@ class DiagonalRNNFunction(torch.autograd.Function):
 
 class RTRLDiagonalRNN(nn.Module):
     """Linear Diagonal RNN Module with RTRL"""
-    def __init__(self, hidden_size: int):
-        super().__init__()
+    def __init__(self, hidden_size: int, in_vocab_size = None, out_vocab_size = None): # MODIFIED, added vocab sizes so that 
+        super().__init__() 
+        #****************************************************
+        self.in_vocab_size = in_vocab_size
+        self.out_vocab_size = out_vocab_size
+        #****************************************************
         self.hidden_size = hidden_size
         self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
         self.B = nn.Parameter(torch.randn(hidden_size, hidden_size) / torch.sqrt(torch.tensor(hidden_size).float()))
@@ -60,6 +64,7 @@ class RTRLDiagonalRNN(nn.Module):
     def forward_step(self, input_t) -> torch.Tensor:
         # Process input from one-hot to hidden dimension
         self.h, self.s_lamda, self.s_B = DiagonalRNNFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach())
+        #print(type(self.h))
         return self.h
 
     def forward(self, x_sequence):

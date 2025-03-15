@@ -72,7 +72,7 @@ class LSTMModel(BaseModel):
 
         if self.dropout:
             out = self.dropout(out)
-        logits = self.out_layer(out).permute(1, 0, 2)
+        logits = self.out_layer(out).permute(1, 0, 2) #self.out_layer = nn.Linear(hidden_size, out_vocab_size)
 
         return logits
 
