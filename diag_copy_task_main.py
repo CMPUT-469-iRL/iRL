@@ -274,6 +274,7 @@ if torch.cuda.is_available():
 
 #model.reset_grad()
 #model.rtrl_reset_grad()
+model.reset_rtrl_state()
 
 for ep in range(num_epoch):
     for idx, batch in enumerate(train_data_loader):
@@ -282,7 +283,7 @@ for ep in range(num_epoch):
         src, tgt = batch
         bsz, _ = src.shape
         # reset states at the beginning of the sequence
-        model.reset_rtrl_state()
+        #model.reset_rtrl_state()
 
         #src = src.permute(1, 0)
         #tgt = tgt.permute(1, 0)
@@ -302,7 +303,7 @@ for ep in range(num_epoch):
             #prediction = model.forward_step(src_token) 
             torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
             loss = loss_fn(model.h, labels)  # loss_fn(prediction, labels) 
-            loss.backward()
+            loss.backward() # loss.backward(retain_graph=True)
 
             model.forward_step(src_token) # model.forward_step(src_token)
 
@@ -318,6 +319,7 @@ for ep in range(num_epoch):
                 optimizer.step()
 #                model.reset_grad()
 #                model.rtrl_reset_grad()
+                model.reset_rtrl_state()
 
             with torch.no_grad():
                 acc_loss += loss
@@ -328,8 +330,9 @@ for ep in range(num_epoch):
                 torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
 
             optimizer.step()
-            model.reset_grad()
-            model.rtrl_reset_grad()
+            # model.reset_grad()
+            # model.rtrl_reset_grad()
+            model.reset_rtrl_state()
 
     with torch.no_grad():
         loginf(f"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] "
