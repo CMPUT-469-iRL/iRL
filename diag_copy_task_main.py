@@ -292,7 +292,7 @@ for ep in range(num_epoch):
 #            logits, cell_out, state = model(src_token, state)
 #            logits = logits.contiguous()  # (B, num_classes)
             labels = tgt_token.view(-1)
-            model.h = model.h.to(DEVICE, dtype=torch.float)
+            #model.h = model.h.to(DEVICE, dtype=torch.float)
             # model.h.requires_grad = True
             labels = labels.to(DEVICE, dtype=torch.float)
 
@@ -300,7 +300,7 @@ for ep in range(num_epoch):
             # make a prediction by doing a forward pass using the src_token input
 
             #prediction = model.forward_step(src_token) 
-
+            torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
             loss = loss_fn(model.h, labels)  # loss_fn(prediction, labels) 
             loss.backward()
 
