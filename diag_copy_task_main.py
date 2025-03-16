@@ -293,6 +293,7 @@ for ep in range(num_epoch):
 #            logits = logits.contiguous()  # (B, num_classes)
             labels = tgt_token.view(-1)
             model.h = model.h.to(DEVICE, dtype=torch.float)
+            # model.h.requires_grad = True
             labels = labels.to(DEVICE, dtype=torch.float)
 
             src_token = src_token.to(torch.float)

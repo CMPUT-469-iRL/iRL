@@ -59,7 +59,7 @@ class RTRLDiagonalRNN(nn.Module):
         """Resets RTRL sensitivities to zero."""
         self.s_lamda = torch.zeros(self.hidden_size)
         self.s_B = torch.zeros((self.hidden_size, self.hidden_size))
-        self.h = torch.zeros(self.hidden_size, dtype=torch.float32)
+        self.h = torch.zeros(self.hidden_size, dtype=torch.float32, requires_grad = True) # CHANGES TO REQUIRE GRAD FOR loss.backward
 
     def forward_step(self, input_t) -> torch.Tensor:
         # Process input from one-hot to hidden dimension
