@@ -237,10 +237,79 @@ class DQNModel(BaseModel):
         if dropout > 0.0:
             self.dropout = nn.Dropout(dropout)
             
+
+            
     def forward(self, x): 
         """ processes the input through the network."""
-        return
+        # Determine if input is a sequence
+        is_sequence = len(x.shape) > 1
+        
+        # Handle input based on embedding option
+        if self.no_embedding:
+            if is_sequence:
+                # For sequence inputs, use one-hot encoding
+                out = torch.nn.functional.one_hot(x, self.num_classes).permute(1, 0, 2).float()
+            else:
+                # For single inputs, use one-hot encoding
+                out = torch.nn.functional.one_hot(x, self.num_classes).float().unsqueeze(0)
+        else:
+            if is_sequence:
+                # For sequence inputs, use embedding
+                out = self.embedding(x).permute(1, 0, 2)  # seq dim first
+            else:
+                # For single inputs, use embedding
+                out = self.embedding(x).unsqueeze(0)  # add seq dim
+        
+        # Process each sequence element
+        processed_seq = []
+        for seq_element in out:
+            # Pass through hidden layers
+            seq_out = seq_element
+            for layer in self.layers:
+                seq_out = torch.relu(layer(seq_out))
+                if self.dropout:
+                    seq_out = self.dropout(seq_out)
+            processed_seq.append(seq_out)
+        
+        # Stack the processed sequence elements
+        processed_out = torch.stack(processed_seq)
+        
+        # Output Q-values
+        if is_sequence:
+            logits = self.out_layer(processed_out).permute(1, 0, 2)  # batch dim first
+        else:
+            logits = self.out_layer(processed_out).squeeze(0)  # remove seq dim
+        
+        return logits
+    
+
     
     def act(self, state, epsilon=0.0):
         """ choose acton"""
-        return
+
+        """
+        Select an action using an epsilon-greedy policy.
+        
+        Args:
+            state: Current state tensor
+            epsilon: Probability of selecting a random action
+            
+        Returns:
+            Selected action index
+        """
+        if torch.rand(1).item() < epsilon:
+            # Random action
+            return torch.randint(0, self.out_vocab_size, (1,)).item()
+        else:
+            # Greedy action
+            with torch.no_grad():
+                q_values = self.forward(state)
+                if len(q_values.shape) > 2:
+                    # For sequence outputs, use the last element
+                    return q_values[:, -1, :].argmax(dim=-1).item()
+                elif len(q_values.shape) > 1:
+                    # For batch outputs
+                    return q_values.argmax(dim=-1).item()
+                else:
+                    # For single outputs
+                    return q_values.argmax().item()
