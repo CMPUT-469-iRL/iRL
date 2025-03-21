@@ -1,49 +1,27 @@
 import torch.nn as nn
 import torch
-import math
-import numpy as np
 
-device = 'cuda'
-class DiagonalRNNFunction(torch.autograd.Function):
-    """
-    Implements the Diagonal RNN cell as a custom autograd function using RTRL.
-    Equation:
-    h_t = λ ⊙ h_{t-1} + B * x_t
-    sensitivity_lamda_t = lamda * sensitivity_lamda_{t-1} + h_{t-1}
-    sensitivity_B_t = diag(lamda) * sensitivity_B_{t-1} + 1 ⊗ x_{t-1}
-    """
+class SigmoidDiagonalRNNFunction(torch.autograd.Function):
     @staticmethod
     def forward(ctx, input_t, h_prev, lamda, B, s_lamda_prev, s_B_prev):
-        # ctx = ctx.to(device)
-        # input_t = input_t.to(device, dtype=torch.float)
-        # h_prev = h_prev.to(device, dtype=torch.float)
-        # lamda = lamda.to(device, dtype=torch.float)
-        # B = B.to(device, dtype=torch.float)
-        # s_lamda_prev = s_lamda_prev.to(device, dtype=torch.float)
-        # s_B_prev = s_B_prev.to(device, dtype=torch.float)
 
-        input_t = input_t.to(dtype=torch.float)
-        h_prev = h_prev.to(dtype=torch.float)
-        lamda = lamda.to(dtype=torch.float)
-        B = B.to(dtype=torch.float)
-        s_lamda_prev = s_lamda_prev.to(dtype=torch.float)
-        s_B_prev = s_B_prev.to(dtype=torch.float)
+        # sigmoid_lambda = torch.sigmoid(lamda) #(1 / (1 + np.exp(-lamda.cpu()))) # ADDED, calculates sigmoid of lambda
+        # delta_sigmoid_lambda = sigmoid_lambda * (1 - sigmoid_lambda)
 
-        # print("lamda", lamda.shape)
-        # print("h_prev.shape", h_prev.shape)
-        # print("input_t.shape", input_t.shape)
-        # print("B.shape", B.shape)
-        # print("B.mv(input_t).shape", B.mv(input_t))
-        # print(lamda)
-        sigmoid_lambda = torch.sigmoid(lamda) #s(1 / (1 + np.exp(-lamda.cpu()))) # ADDED, calculates sigmoid of lambda
+        # h_next = sigmoid_lambda  * h_prev + B.mv(input_t) # h_next = lamda * h_prev + B.mv(input_t)
+        # s_lamda_next = (delta_sigmoid_lambda * h_prev + sigmoid_lambda * s_lamda_prev) # s_lamda_next = lamda * s_lamda_prev + h_prev
+ 
+        # s_B_next = torch.diag(sigmoid_lambda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t) # s_B_next = torch.diag(lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        # ctx.save_for_backward(s_lamda_next, s_B_next, B)
 
-        delta_sigmoid_lambda = sigmoid_lambda * (1 - sigmoid_lambda)
-
-        h_next = sigmoid_lambda  * h_prev + B.mv(input_t) # h_next = lamda * h_prev + B.mv(input_t)
-        s_lamda_next = (delta_sigmoid_lambda * h_prev + sigmoid_lambda * s_lamda_prev) # s_lamda_next = lamda * s_lamda_prev + h_prev
-
-        s_B_next = torch.diag(lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        sigmoid_lamda = torch.sigmoid(lamda)
+        h_next = sigmoid_lamda * h_prev + B.mv(input_t)
+        sigmoid_derivative = sigmoid_lamda * (1 - sigmoid_lamda)
+        s_lamda_next = sigmoid_lamda * s_lamda_prev + sigmoid_derivative * h_prev
+        s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
         ctx.save_for_backward(s_lamda_next, s_B_next, B)
+
+
         return h_next, s_lamda_next, s_B_next
 
     @staticmethod
@@ -57,17 +35,12 @@ class DiagonalRNNFunction(torch.autograd.Function):
         grad_s_B_prev = None
         return grad_input_t, grad_h_prev, grad_lamda, grad_B, grad_s_lamda_prev, grad_s_B_prev
 
-class RTRLDiagonalRNN(nn.Module):
+class RTRLSigmoidDiagonalRNN(nn.Module):
     """Linear Diagonal RNN Module with RTRL"""
-    def __init__(self, hidden_size: int, in_vocab_size = None, out_vocab_size = None): # MODIFIED, added vocab sizes so that 
-        super().__init__() 
-        #****************************************************
-        self.in_vocab_size = in_vocab_size
-        self.out_vocab_size = out_vocab_size
-        #****************************************************
+    def __init__(self, hidden_size: int):
+        super().__init__()
         self.hidden_size = hidden_size
-        #self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
-        self.lamda = nn.Parameter(torch.randn(hidden_size) / torch.sqrt(torch.tensor(hidden_size).float()))
+        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
         self.B = nn.Parameter(torch.randn(hidden_size, hidden_size) / torch.sqrt(torch.tensor(hidden_size).float()))
         self.reset_rtrl_state()
 
@@ -75,13 +48,11 @@ class RTRLDiagonalRNN(nn.Module):
         """Resets RTRL sensitivities to zero."""
         self.s_lamda = torch.zeros(self.hidden_size)
         self.s_B = torch.zeros((self.hidden_size, self.hidden_size))
-        self.h = torch.zeros(self.hidden_size, dtype=torch.float32, requires_grad = True) # CHANGED TO ADD REQUIRES_GRAD FOR loss.backward to work better
-        #elf.h = self.h.to(device) # set the self.h to the device to work with cuda
+        self.h = torch.zeros(self.hidden_size, dtype=torch.float32)
 
     def forward_step(self, input_t) -> torch.Tensor:
         # Process input from one-hot to hidden dimension
-        self.h, self.s_lamda, self.s_B = DiagonalRNNFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach())
-        #print(type(self.h))
+        self.h, self.s_lamda, self.s_B = SigmoidDiagonalRNNFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach())
         return self.h
 
     def forward(self, x_sequence):
@@ -90,7 +61,7 @@ class RTRLDiagonalRNN(nn.Module):
             outputs.append(self.forward_step(x_t))
         return torch.stack(outputs)
 
-class BPTTDiagonalRNN(nn.Module):
+class BPTTSigmoidDiagonalRNN(nn.Module):
     """Linear Diagonal RNN Module with BPTT"""
     def __init__(self, hidden_size: int):
         super().__init__()
@@ -103,7 +74,7 @@ class BPTTDiagonalRNN(nn.Module):
         h = torch.zeros(self.hidden_size)
         outputs = []
         for x_t in x_sequence:
-            h = self.lamda * h + self.B.mv(x_t)
+            h = torch.sigmoid(self.lamda) * h + self.B.mv(x_t)
             outputs.append(h)
         return torch.stack(outputs)
 
@@ -122,8 +93,8 @@ def test_gradient_correctness():
     post_linear2 = nn.Linear(hidden_size, hidden_size, bias=False)
 
     # Create identical networks
-    rtrl_rnn = RTRLDiagonalRNN(hidden_size)
-    bptt_rnn = BPTTDiagonalRNN(hidden_size)
+    rtrl_rnn = RTRLSigmoidDiagonalRNN(hidden_size)
+    bptt_rnn = BPTTSigmoidDiagonalRNN(hidden_size)
 
     # Copy parameters for identical initialization.
     bptt_rnn.lamda.data = rtrl_rnn.lamda.data.clone()
