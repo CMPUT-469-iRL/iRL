@@ -14,20 +14,20 @@ class DiagonalRNNFunction(torch.autograd.Function):
     """
     @staticmethod
     def forward(ctx, input_t, h_prev, lamda, B, s_lamda_prev, s_B_prev):
-        # ctx = ctx.to(device)
-        # input_t = input_t.to(device, dtype=torch.float)
-        # h_prev = h_prev.to(device, dtype=torch.float)
-        # lamda = lamda.to(device, dtype=torch.float)
-        # B = B.to(device, dtype=torch.float)
-        # s_lamda_prev = s_lamda_prev.to(device, dtype=torch.float)
-        # s_B_prev = s_B_prev.to(device, dtype=torch.float)
+        #ctx = ctx.to(device)
+        input_t = input_t.to(device, dtype=torch.float)
+        h_prev = h_prev.to(device, dtype=torch.float)
+        lamda = lamda.to(device, dtype=torch.float)
+        B = B.to(device, dtype=torch.float)
+        s_lamda_prev = s_lamda_prev.to(device, dtype=torch.float)
+        s_B_prev = s_B_prev.to(device, dtype=torch.float)
 
-        input_t = input_t.to(dtype=torch.float)
-        h_prev = h_prev.to(dtype=torch.float)
-        lamda = lamda.to(dtype=torch.float)
-        B = B.to(dtype=torch.float)
-        s_lamda_prev = s_lamda_prev.to(dtype=torch.float)
-        s_B_prev = s_B_prev.to(dtype=torch.float)
+        # input_t = input_t.to(dtype=torch.float)
+        # h_prev = h_prev.to(dtype=torch.float)
+        # lamda = lamda.to(dtype=torch.float)
+        # B = B.to(dtype=torch.float)
+        # s_lamda_prev = s_lamda_prev.to(dtype=torch.float)
+        # s_B_prev = s_B_prev.to(dtype=torch.float)
 
         # print("lamda", lamda.shape)
         # print("h_prev.shape", h_prev.shape)
@@ -35,12 +35,13 @@ class DiagonalRNNFunction(torch.autograd.Function):
         # print("B.shape", B.shape)
         # print("B.mv(input_t).shape", B.mv(input_t))
         # print(lamda)
-        sigmoid_lambda = torch.sigmoid(lamda) #s(1 / (1 + np.exp(-lamda.cpu()))) # ADDED, calculates sigmoid of lambda
 
-        delta_sigmoid_lambda = sigmoid_lambda * (1 - sigmoid_lambda)
+        # sigmoid_lambda = torch.sigmoid(lamda) #s(1 / (1 + np.exp(-lamda.cpu()))) # ADDED, calculates sigmoid of lambda
 
-        h_next = sigmoid_lambda  * h_prev + B.mv(input_t) # h_next = lamda * h_prev + B.mv(input_t)
-        s_lamda_next = (delta_sigmoid_lambda * h_prev + sigmoid_lambda * s_lamda_prev) # s_lamda_next = lamda * s_lamda_prev + h_prev
+        # delta_sigmoid_lambda = sigmoid_lambda * (1 - sigmoid_lambda)
+
+        h_next = h_next = lamda * h_prev + B.mv(input_t) #sigmoid_lambda  * h_prev + B.mv(input_t) # 
+        s_lamda_next =  s_lamda_next = lamda * s_lamda_prev + h_prev
 
         s_B_next = torch.diag(lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
         ctx.save_for_backward(s_lamda_next, s_B_next, B)
@@ -76,7 +77,7 @@ class RTRLDiagonalRNN(nn.Module):
         self.s_lamda = torch.zeros(self.hidden_size)
         self.s_B = torch.zeros((self.hidden_size, self.hidden_size))
         self.h = torch.zeros(self.hidden_size, dtype=torch.float32, requires_grad = True) # CHANGED TO ADD REQUIRES_GRAD FOR loss.backward to work better
-        #elf.h = self.h.to(device) # set the self.h to the device to work with cuda
+        self.h = self.h.to(device) # set the self.h to the device to work with cuda
 
     def forward_step(self, input_t) -> torch.Tensor:
         # Process input from one-hot to hidden dimension

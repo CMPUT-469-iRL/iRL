@@ -1,6 +1,8 @@
 import torch.nn as nn
 import torch
 
+device = 'cuda'
+
 class SigmoidDiagonalRNNFunction(torch.autograd.Function):
     @staticmethod
     def forward(ctx, input_t, h_prev, lamda, B, s_lamda_prev, s_B_prev):
@@ -14,6 +16,13 @@ class SigmoidDiagonalRNNFunction(torch.autograd.Function):
         # s_B_next = torch.diag(sigmoid_lambda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t) # s_B_next = torch.diag(lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
         # ctx.save_for_backward(s_lamda_next, s_B_next, B)
 
+        input_t = input_t.to(device, dtype=torch.float)
+        h_prev = h_prev.to(device, dtype=torch.float)
+        lamda = lamda.to(device, dtype=torch.float)
+        B = B.to(device, dtype=torch.float)
+        s_lamda_prev = s_lamda_prev.to(device, dtype=torch.float)
+        s_B_prev = s_B_prev.to(device, dtype=torch.float)
+        
         sigmoid_lamda = torch.sigmoid(lamda)
         h_next = sigmoid_lamda * h_prev + B.mv(input_t)
         sigmoid_derivative = sigmoid_lamda * (1 - sigmoid_lamda)
@@ -37,7 +46,7 @@ class SigmoidDiagonalRNNFunction(torch.autograd.Function):
 
 class RTRLSigmoidDiagonalRNN(nn.Module):
     """Linear Diagonal RNN Module with RTRL"""
-    def __init__(self, hidden_size: int):
+    def __init__(self, hidden_size: int, in_vocab_size = None, out_vocab_size = None):
         super().__init__()
         self.hidden_size = hidden_size
         self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
@@ -48,7 +57,8 @@ class RTRLSigmoidDiagonalRNN(nn.Module):
         """Resets RTRL sensitivities to zero."""
         self.s_lamda = torch.zeros(self.hidden_size)
         self.s_B = torch.zeros((self.hidden_size, self.hidden_size))
-        self.h = torch.zeros(self.hidden_size, dtype=torch.float32)
+        self.h = torch.zeros(self.hidden_size, dtype=torch.float32, requires_grad = True)
+        self.h = self.h.to(device) # set the self.h to the device to work with cuda
 
     def forward_step(self, input_t) -> torch.Tensor:
         # Process input from one-hot to hidden dimension

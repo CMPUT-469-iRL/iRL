@@ -286,34 +286,32 @@ for ep in range(num_epoch):
         # reset states at the beginning of the sequence
         model.reset_rtrl_state()
 
-        #src = src.permute(1, 0)
-        #tgt = tgt.permute(1, 0)
+        labels = tgt.view(-1)
+        #model.h = model.h.to(DEVICE, dtype=torch.float)
+        # model.h.requires_grad = True
+        labels = labels.to(DEVICE, dtype=torch.float)
 
-        # We assume fully online setting
-        for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
-#            logits, cell_out, state = model(src_token, state)
-#            logits = logits.contiguous()  # (B, num_classes)
-            labels = tgt_token.view(-1)
-            #model.h = model.h.to(DEVICE, dtype=torch.float)
-            # model.h.requires_grad = True
-            labels = labels.to(DEVICE, dtype=torch.float)
+        src = src.to(torch.float)
+        # make a prediction by doing a forward pass using the src_token input
 
-            src_token = src_token.to(torch.float)
-            # make a prediction by doing a forward pass using the src_token input
+        #prediction = model.forward_step(src_token) 
+        torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
 
-            #prediction = model.forward_step(src_token) 
-            torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
-            loss = loss_fn(model.h, labels)  # loss_fn(prediction, labels) 
-            loss.backward() # loss.backward(retain_graph=True)
+        output = model.forward(src)
+        output = output.to(dtype = torch.float)
+        tgt = tgt.to(dtype = torch.float)
+        
+        loss = loss_fn(output, tgt)  # loss_fn(prediction, labels) 
+        loss.backward() # loss.backward(retain_graph=True)
 
-            model.forward_step(src_token) # model.forward_step(src_token)
+        #model.forward(src) # model.forward_step(src_token)
 
 #            _, rtrl_states = state
 #            model.compute_gradient_rtrl(cell_out.grad, rtrl_states)
 
             
 
-            if not args.full_sequence:
+        if not args.full_sequence:
                 if clip > 0.0:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
 
@@ -322,7 +320,7 @@ for ep in range(num_epoch):
 #                model.rtrl_reset_grad()
                 model.reset_rtrl_state()
 
-            with torch.no_grad():
+        with torch.no_grad():
                 acc_loss += loss
                 steps += 1
 
