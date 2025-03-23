@@ -240,7 +240,7 @@ loginf(f"Gradient accumulation for {grad_cummulate} steps.")
 loginf(f"Seed: {args.seed}")
 learning_rate = args.learning_rate
 #print("tgt_pat_idx", tgt_pad_idx)
-loss_fn = nn.CrossEntropyLoss(ignore_index=-1)  # loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pat_idx = 2)
+loss_fn = nn.CrossEntropyLoss(ignore_index=-100)  # loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pat_idx = 2)
 
 optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,
                              betas=(0.9, 0.995), eps=1e-9)
@@ -291,19 +291,32 @@ for ep in range(num_epoch):
 
         # We assume fully online setting
         for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
+            # print("src_token", src_token)
+            # print("tgt_token", tgt_token)
 #            logits, cell_out, state = model(src_token, state)
 #            logits = logits.contiguous()  # (B, num_classes)
             labels = tgt_token.view(-1)
             #model.h = model.h.to(DEVICE, dtype=torch.float)
             # model.h.requires_grad = True
-            labels = labels.to(DEVICE, dtype=torch.float)
+            labels = labels.to(DEVICE, dtype=torch.float32)
 
             src_token = src_token.to(torch.float)
             # make a prediction by doing a forward pass using the src_token input
 
             #prediction = model.forward_step(src_token) 
             torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
-            loss = loss_fn(model.h, labels)  # loss_fn(prediction, labels) 
+
+            #output = model.forward(src)
+            # output = output.to(dtype = torch.float)
+            
+            # tgt = tgt.to(dtype = torch.float)
+
+            #loss = loss_fn(output, tgt)   # loss_fn(model.h, labels) # loss_fn(prediction, labels) 
+            # print("model.h", model.h)
+            # print("labels", labels)
+
+
+            loss = loss_fn(model.h, labels) 
             loss.backward() # loss.backward(retain_graph=True)
 
             model.forward_step(src_token) # model.forward_step(src_token)

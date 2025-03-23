@@ -284,33 +284,36 @@ for ep in range(num_epoch):
         src, tgt = batch
         bsz, _ = src.shape
         # reset states at the beginning of the sequence
-        model.reset_rtrl_state()
+        #model.reset_rtrl_state()
 
         labels = tgt.view(-1)
         #model.h = model.h.to(DEVICE, dtype=torch.float)
         # model.h.requires_grad = True
         labels = labels.to(DEVICE, dtype=torch.float)
 
-        src = src.to(torch.float)
+        #src = src.to(torch.float)
         # make a prediction by doing a forward pass using the src_token input
 
         #prediction = model.forward_step(src_token) 
         torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
 
-        output = model.forward(src)
-        output = output.to(dtype = torch.float)
+        # output = model.forward(src)
+        output = model(src)
+
+        # output = output.to(dtype = torch.float)
         tgt = tgt.to(dtype = torch.float)
         
+
         loss = loss_fn(output, tgt)  # loss_fn(prediction, labels) 
+        print("loss", loss)
         loss.backward() # loss.backward(retain_graph=True)
 
-        #model.forward(src) # model.forward_step(src_token)
+        model.forward(src) # model.forward_step(src_token)
 
 #            _, rtrl_states = state
 #            model.compute_gradient_rtrl(cell_out.grad, rtrl_states)
 
             
-
         if not args.full_sequence:
                 if clip > 0.0:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
