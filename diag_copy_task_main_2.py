@@ -240,7 +240,7 @@ loginf(f"Gradient accumulation for {grad_cummulate} steps.")
 loginf(f"Seed: {args.seed}")
 learning_rate = args.learning_rate
 #print("tgt_pat_idx", tgt_pad_idx)
-loss_fn = nn.CrossEntropyLoss(ignore_index=-1)  # loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pat_idx = 2)
+loss_fn = nn.CrossEntropyLoss(ignore_index=-100)  # loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pat_idx = 2)
 
 optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,
                              betas=(0.9, 0.995), eps=1e-9)
@@ -284,7 +284,7 @@ for ep in range(num_epoch):
         src, tgt = batch
         bsz, _ = src.shape
         # reset states at the beginning of the sequence
-        #model.reset_rtrl_state()
+        model.reset_rtrl_state()
 
         labels = tgt.view(-1)
         #model.h = model.h.to(DEVICE, dtype=torch.float)
@@ -295,7 +295,7 @@ for ep in range(num_epoch):
         # make a prediction by doing a forward pass using the src_token input
 
         #prediction = model.forward_step(src_token) 
-        torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
+        #torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
 
         # output = model.forward(src)
         output = model(src)
@@ -303,7 +303,6 @@ for ep in range(num_epoch):
         # output = output.to(dtype = torch.float)
         tgt = tgt.to(dtype = torch.float)
         
-
         loss = loss_fn(output, tgt)  # loss_fn(prediction, labels) 
         print("loss", loss)
         loss.backward() # loss.backward(retain_graph=True)
