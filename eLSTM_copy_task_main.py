@@ -288,8 +288,9 @@ for ep in range(num_epoch):
             logits, cell_out, state = model(src_token, state)
             logits = logits.contiguous()  # (B, num_classes)
             labels = tgt_token.view(-1)
-            print("logits", logits)
-            print("labels", labels)
+
+            print("logits.shape", logits.shape)
+            print("labels.shape", labels.shape)
             loss = loss_fn(logits, labels)
 
             loss.backward()

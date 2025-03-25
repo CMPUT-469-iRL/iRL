@@ -33,8 +33,8 @@ class SigmoidDiagonalRNNFunction(torch.autograd.Function):
         r_param = initialize_exp_exp_r, (1,n_hidden)
         theta_param = initialize_theta_log, (1,n_hidden)
 
-        # initialize lambda
-        lamda = r_param  * (np.cos(theta_param))
+        # Update rows of the lambda matrix in each iteration
+        lamda = r_param  * (np.cos(theta_param)) # check if r_param and theta_param are matrices
 
         # create layers for weight matrices
         mlp_xc1 = nn.Dense(n_hidden,name='wx1',use_bias=False) 

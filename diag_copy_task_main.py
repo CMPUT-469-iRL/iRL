@@ -277,17 +277,24 @@ if torch.cuda.is_available():
 #model.rtrl_reset_grad()
 model.reset_rtrl_state()
 
+layer = nn.Linear(hidden_size, in_vocab_size).to(DEVICE)
+
 for ep in range(num_epoch):
     for idx, batch in enumerate(train_data_loader):
+
         model.train()
 
         src, tgt = batch
+
         bsz, _ = src.shape
         # reset states at the beginning of the sequence
         model.reset_rtrl_state()
 
-        #src = src.permute(1, 0)
-        #tgt = tgt.permute(1, 0)
+        src = src.permute(1, 0)
+        tgt = tgt.permute(1, 0)
+
+        print("src.shape", src.shape)
+        print("tgt.shape", tgt.shape)
 
         # We assume fully online setting
         for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
@@ -295,58 +302,45 @@ for ep in range(num_epoch):
             # print("tgt_token", tgt_token)
 #            logits, cell_out, state = model(src_token, state)
 #            logits = logits.contiguous()  # (B, num_classes)
+
+            print("args", args)
+            print("src_token.shape", src_token.shape)
+            print("tgt_token.shape", tgt_token.shape)
             labels = tgt_token.view(-1)
-            #model.h = model.h.to(DEVICE, dtype=torch.float)
-            # model.h.requires_grad = True
+
             labels = labels.to(DEVICE, dtype=torch.float32)
-
+            print("labels.shape", labels.shape)
             src_token = src_token.to(torch.float)
-            # make a prediction by doing a forward pass using the src_token input
 
-            #prediction = model.forward_step(src_token) 
+            # make a prediction by doing a forward pass using the src_token input
             torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
 
-            #output = model.forward(src)
-            # output = output.to(dtype = torch.float)
-            
-            # tgt = tgt.to(dtype = torch.float)
+            h_next = model.forward_step(src_token)
 
-            #loss = loss_fn(output, tgt)   # loss_fn(model.h, labels) # loss_fn(prediction, labels) 
-            # print("model.h", model.h)
-            # print("labels", labels)
+            output = layer(h_next).to(DEVICE)
 
+            print(output.shape) # should be [128,3]
+            print(labels.shape) # [128]
 
-            loss = loss_fn(model.h, labels) 
+            optimizer.zero_grad()
+
+            loss = loss_fn(output, labels) 
             loss.backward() # loss.backward(retain_graph=True)
 
-            model.forward_step(src_token) # model.forward_step(src_token)
-
-#            _, rtrl_states = state
-#            model.compute_gradient_rtrl(cell_out.grad, rtrl_states)
-
+            optimizer.step()
             
-
-            if not args.full_sequence:
-                if clip > 0.0:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
-
-                optimizer.step()
-#                model.reset_grad()
-#                model.rtrl_reset_grad()
-                model.reset_rtrl_state()
-
             with torch.no_grad():
                 acc_loss += loss
                 steps += 1
 
-        if args.full_sequence:
-            if clip > 0.0:
-                torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+        # if args.full_sequence:
+        #     if clip > 0.0:
+        #         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
 
-            optimizer.step()
-            # model.reset_grad()
-            # model.rtrl_reset_grad()
-            model.reset_rtrl_state()
+        #     optimizer.step()
+        #     # model.reset_grad()
+        #     # model.rtrl_reset_grad()
+        #     model.reset_rtrl_state()
 
     with torch.no_grad():
         loginf(f"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] "
