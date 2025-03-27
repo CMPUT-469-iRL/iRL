@@ -72,19 +72,20 @@ class TMazeEnv:
                 self.done = True
                 reward = 1.0 if self.goal_location == "left" else -1.0
             else:
-                reward = -0.1  # Penalty for invalid move
+                reward = -0.05  # Reduced penalty for invalid move
         elif action == 1:  # Right
             if self.pos[1] == self.corridor_length:  # At junction
                 self.pos[0] += 1
                 self.done = True
                 reward = 1.0 if self.goal_location == "right" else -1.0
             else:
-                reward = -0.1  # Penalty for invalid move
+                reward = -0.05  # Reduced penalty for invalid move
         elif action == 2:  # Forward
             if self.pos[1] < self.corridor_length:
                 self.pos[1] += 1
+                reward = 0.1  # Positive reward for moving forward
             else:
-                reward = -0.1  # Penalty for invalid move
+                reward = -0.05  # Reduced penalty for invalid move
         
         obs = self._get_observation()
         return obs, reward, self.done, {}
