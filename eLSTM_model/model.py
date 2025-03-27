@@ -222,9 +222,18 @@ class DQNModel(BaseModel):
         else:
             self.num_classes = in_vocab_size
         
+        # LSTM layer for handling partial observability
+        self.lstm = nn.LSTM(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            batch_first=True,
+            dropout=dropout if num_layers > 1 else 0
+        )
+        
         # Network layers
         self.layers = nn.ModuleList()
-        self.layers.append(nn.Linear(input_size, hidden_size))
+        self.layers.append(nn.Linear(hidden_size, hidden_size))
         
         for _ in range(num_layers - 1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
@@ -237,73 +246,60 @@ class DQNModel(BaseModel):
         if dropout > 0.0:
             self.dropout = nn.Dropout(dropout)
             
+        # Initialize hidden state
+        self.hidden = None
+        self.cell = None
 
-            
-    def forward(self, x): 
-        """ processes the input through the network."""
+    def forward(self, x, hidden=None): 
+        """ processes the input through the network with partial observability."""
         # Determine if input is a sequence
         is_sequence = len(x.shape) > 1
         
         # Handle input based on embedding option
         if self.no_embedding:
             if is_sequence:
-                # For sequence inputs, use one-hot encoding
-                out = torch.nn.functional.one_hot(x, self.num_classes).permute(1, 0, 2).float()
+                # Convert to LongTensor before one-hot encoding
+                out = torch.nn.functional.one_hot(x.long(), self.num_classes).float()
             else:
-                # For single inputs, use one-hot encoding
-                out = torch.nn.functional.one_hot(x, self.num_classes).float().unsqueeze(0)
+                out = torch.nn.functional.one_hot(x.long(), self.num_classes).float().unsqueeze(0)
         else:
             if is_sequence:
-                # For sequence inputs, use embedding
-                out = self.embedding(x).permute(1, 0, 2)  # seq dim first
+                out = self.embedding(x)
             else:
-                # For single inputs, use embedding
-                out = self.embedding(x).unsqueeze(0)  # add seq dim
+                out = self.embedding(x).unsqueeze(0)
         
-        # Process each sequence element
-        processed_seq = []
-        for seq_element in out:
-            # Pass through hidden layers
-            seq_out = seq_element
-            for layer in self.layers:
-                seq_out = torch.relu(layer(seq_out))
-                if self.dropout:
-                    seq_out = self.dropout(seq_out)
-            processed_seq.append(seq_out)
+        # Process through LSTM
+        if hidden is None:
+            lstm_out, (self.hidden, self.cell) = self.lstm(out)
+        else:
+            lstm_out, (self.hidden, self.cell) = self.lstm(out, hidden)
         
-        # Stack the processed sequence elements
-        processed_out = torch.stack(processed_seq)
+        # Process LSTM output through hidden layers
+        processed_out = lstm_out
+        for layer in self.layers:
+            processed_out = torch.relu(layer(processed_out))
+            if self.dropout:
+                processed_out = self.dropout(processed_out)
         
         # Output Q-values
         if is_sequence:
-            logits = self.out_layer(processed_out).permute(1, 0, 2)  # batch dim first
+            logits = self.out_layer(processed_out)
         else:
-            logits = self.out_layer(processed_out).squeeze(0)  # remove seq dim
+            logits = self.out_layer(processed_out.squeeze(0))
         
-        return logits
+        return logits, (self.hidden, self.cell)
     
 
     
     def act(self, state, epsilon=0.0):
-        """ choose acton"""
-
-        """
-        Select an action using an epsilon-greedy policy.
-        
-        Args:
-            state: Current state tensor
-            epsilon: Probability of selecting a random action
-            
-        Returns:
-            Selected action index
-        """
+        """ choose action"""
         if torch.rand(1).item() < epsilon:
             # Random action
             return torch.randint(0, self.out_vocab_size, (1,)).item()
         else:
             # Greedy action
             with torch.no_grad():
-                q_values = self.forward(state)
+                q_values, _ = self.forward(state)
                 if len(q_values.shape) > 2:
                     # For sequence outputs, use the last element
                     return q_values[:, -1, :].argmax(dim=-1).item()
