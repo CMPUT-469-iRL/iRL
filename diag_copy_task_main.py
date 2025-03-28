@@ -212,7 +212,7 @@ loginf(f"Output vocab size: {out_vocab_size}")
 # model
 
 loginf("Model: Quasi-LSTM")
-model = RTRLSigmoidDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size, out_vocab_size = out_vocab_size) # RTRLDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size, out_vocab_size = out_vocab_size)
+model = RTRLSigmoidDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size) # RTRLDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size, out_vocab_size = out_vocab_size)
 # RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
 #                     num_layers=num_layers, in_vocab_size=in_vocab_size,
 #                     out_vocab_size=out_vocab_size, dropout=dropout,
@@ -240,7 +240,7 @@ loginf(f"Gradient accumulation for {grad_cummulate} steps.")
 loginf(f"Seed: {args.seed}")
 learning_rate = args.learning_rate
 #print("tgt_pat_idx", tgt_pad_idx)
-loss_fn = nn.CrossEntropyLoss(ignore_index=-100)  # loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pat_idx = 2)
+loss_fn = nn.CrossEntropyLoss()  # loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pat_idx = 2)
 
 optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,
                              betas=(0.9, 0.995), eps=1e-9)
@@ -277,6 +277,7 @@ if torch.cuda.is_available():
 #model.rtrl_reset_grad()
 model.reset_rtrl_state()
 
+# define a layer to pass the hidden layer through
 layer = nn.Linear(hidden_size, in_vocab_size).to(DEVICE)
 
 for ep in range(num_epoch):
@@ -295,43 +296,46 @@ for ep in range(num_epoch):
 
         print("src.shape", src.shape)
         print("tgt.shape", tgt.shape)
-
+        print("bsz", bsz) # batch size
+        
         # We assume fully online setting
-        for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
-            # print("src_token", src_token)
-            # print("tgt_token", tgt_token)
-#            logits, cell_out, state = model(src_token, state)
-#            logits = logits.contiguous()  # (B, num_classes)
+        for sample in range(bsz): # loop through the batch to get each sample
+            for src_token, tgt_token in zip(src[sample], tgt[sample]): # for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
 
-            print("args", args)
-            print("src_token.shape", src_token.shape)
-            print("tgt_token.shape", tgt_token.shape)
-            labels = tgt_token.view(-1)
+                labels = tgt_token.view(-1)
 
-            labels = labels.to(DEVICE, dtype=torch.float32)
-            print("labels.shape", labels.shape)
-            src_token = src_token.to(torch.float)
+                labels = labels.to(DEVICE) #, dtype=torch.float32)
+                #print("labels.shape:", labels.shape)
 
-            # make a prediction by doing a forward pass using the src_token input
-            torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
+                
+                torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
 
-            h_next = model.forward_step(src_token)
+                # make a prediction by doing a forward pass using the src_token input
+                
+                src_token = torch.nn.functional.one_hot(src_token.view(-1), in_vocab_size)
+                src_token = src_token.squeeze(0)
+                #print("src_token.shape", src_token.shape)
+                # print(src_token.item())
 
-            output = layer(h_next).to(DEVICE)
+                h_next = model.forward_step(src_token) # h_next = model.forward_step(src_token.view(-1)) # h_next = model.forward_step(src_token)
 
-            print(output.shape) # should be [128,3]
-            print(labels.shape) # [128]
+                #print("h_next.shape", h_next.shape)
+                output = layer(h_next).to(DEVICE)
 
-            optimizer.zero_grad()
+                # print(output.shape) # is of size [3]
+                # print(labels.shape) #should be size [1]
 
-            loss = loss_fn(output, labels) 
-            loss.backward() # loss.backward(retain_graph=True)
+                optimizer.zero_grad()
 
-            optimizer.step()
-            
-            with torch.no_grad():
-                acc_loss += loss
-                steps += 1
+                loss = loss_fn(output.unsqueeze(0), labels) 
+                loss.backward() # loss.backward(retain_graph=True)
+
+                optimizer.step()
+                
+                print("loss", loss)
+                with torch.no_grad():
+                    acc_loss += loss
+                    steps += 1
 
         # if args.full_sequence:
         #     if clip > 0.0:

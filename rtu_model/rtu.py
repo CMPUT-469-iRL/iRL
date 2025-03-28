@@ -31,25 +31,25 @@ class SigmoidDiagonalRNNFunction(torch.autograd.Function):
 
         # get r and theta parameters
         r_param = initialize_exp_exp_r, (1,n_hidden)
-        theta_param = initialize_theta_log, (1,n_hidden)
+        #theta_param = initialize_theta_log, (1,n_hidden)
 
         # Update rows of the lambda matrix in each iteration
         lamda = r_param  * (np.cos(theta_param)) # check if r_param and theta_param are matrices
 
         # create layers for weight matrices
         mlp_xc1 = nn.Dense(n_hidden,name='wx1',use_bias=False) 
-        mlp_xc2 = nn.Dense(n_hidden,name='wx2',use_bias=False)
+        #mlp_xc2 = nn.Dense(n_hidden,name='wx2',use_bias=False)
 
         # calulate weight matrices
         w_c1_x_t = mlp_xc1(input_t)
-        w_c2_x_t = mlp_xc2(input_t) 
+        #w_c2_x_t = mlp_xc2(input_t) 
 
         # get g, phi, and norm fo h_t_c1 and h_t_c2 initializations 
         g,phi,norm = g_phi_params(r_param,theta_param)
 
 
         h_t_c1 = np.multiply(g,h_prev_c1) - np.multiply(phi,h_prev_c2) + np.multiply(norm,w_c1_x_t) #h_t_c1 = r * cos(theta) * h_prev_c1 - r * sin(theta) * h_prev_c2 + W_x_c1 * x_t
-        h_t_c2 = np.multiply(g,h_prev_c2) + np.multiply(phi,h_prev_c1) + np.multiply(norm,w_c2_x_t)
+        #h_t_c2 = np.multiply(g,h_prev_c2) + np.multiply(phi,h_prev_c1) + np.multiply(norm,w_c2_x_t)
         
         # h_next = [h_t_c1, h_t_c2]
 
@@ -75,8 +75,9 @@ class SigmoidDiagonalRNNFunction(torch.autograd.Function):
         sigmoid_lamda = torch.sigmoid(lamda)
         s_lamda_next = r_k * np.cos(theta_k) #sigmoid_lamda * s_lamda_prev + sigmoid_derivative * h_prev
         sigmoid_derivative = sigmoid_lamda * (1 - sigmoid_lamda)
-        s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
-    
+        s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]), input_ #s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        #ctx.save_for_backward(s_lamda_next, s_B_next, B)
+
         return h_next, s_lamda_next, s_B_next
 
     @staticmethod
@@ -92,23 +93,23 @@ class SigmoidDiagonalRNNFunction(torch.autograd.Function):
 
 class RTRLSigmoidDiagonalRNN(nn.Module):
     """Linear Diagonal RNN Module with RTRL"""
-    def __init__(self, hidden_size: int, in_vocab_size = None, out_vocab_size = None):
+    def __init__(self, hidden_size: int, in_vocab_size: int):
         super().__init__()
         self.hidden_size = hidden_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
-        self.B = nn.Parameter(torch.randn(hidden_size, hidden_size) / torch.sqrt(torch.tensor(hidden_size).float()))
+        self.input_size = input_size
+        self.lamda = nn.Parameter(torch.randn(hidden_size) / torch.sqrt(torch.tensor(hidden_size).float()))
+        self.B = nn.Parameter(torch.randn(hidden_size, input_size) / torch.sqrt(torch.tensor(input_size).float()))
         self.reset_rtrl_state()
-
     def reset_rtrl_state(self) -> None:
         """Resets RTRL sensitivities to zero."""
         self.s_lamda = torch.zeros(self.hidden_size)
-        self.s_B = torch.zeros((self.hidden_size, self.hidden_size))
-        self.h = torch.zeros(self.hidden_size, dtype=torch.float32, requires_grad = True)
+        self.s_B = torch.zeros((self.hidden_size, self.input_size)) #self.s_B = torch.zeros((self.hidden_size, self.hidden_size))
+        self.h = torch.zeros(self.hidden_size, dtype=torch.float32) #self.h = torch.zeros(self.hidden_size, dtype=torch.float32, requires_grad = True)
         self.h = self.h.to(device) # set the self.h to the device to work with cuda
 
     def forward_step(self, input_t) -> torch.Tensor:
         # Process input from one-hot to hidden dimension
-        self.h, self.s_lamda, self.s_B = SigmoidDiagonalRNNFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach(), self.hidden_size) # Added self.hidden_size parameter
+        self.h, self.s_lamda, self.s_B = SigmoidDiagonalRNNFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach()) #self.h, self.s_lamda, self.s_B = SigmoidDiagonalRNNFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach(), self.hidden_size) # Added self.hidden_size parameter
         return self.h
 
     def forward(self, x_sequence):
@@ -119,12 +120,12 @@ class RTRLSigmoidDiagonalRNN(nn.Module):
 
 class BPTTSigmoidDiagonalRNN(nn.Module):
     """Linear Diagonal RNN Module with BPTT"""
-    def __init__(self, hidden_size: int):
+    def __init__(self, hidden_size: int, input_size: int):
         super().__init__()
         self.hidden_size = hidden_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
-        self.B = nn.Parameter(torch.randn(hidden_size, hidden_size) /
-                              torch.sqrt(torch.tensor(hidden_size).float()))
+        self.lamda = nn.Parameter(torch.randn(hidden_size) / torch.sqrt(torch.tensor(hidden_size).float()))
+        self.B = nn.Parameter(torch.randn(hidden_size, input_size) /
+                              torch.sqrt(torch.tensor(input_size).float()))
 
     def forward(self, x_sequence):
         h = torch.zeros(self.hidden_size)
@@ -143,14 +144,14 @@ def test_gradient_correctness():
     seq_length = 5
     torch.manual_seed(42)
 
-    pre_linear1 = nn.Linear(input_size, hidden_size, bias=False)
-    pre_linear2 = nn.Linear(input_size, hidden_size, bias=False)
+    pre_linear1 = nn.Linear(input_size, input_size, bias=False)
+    pre_linear2 = nn.Linear(input_size, input_size, bias=False)
     post_linear1 = nn.Linear(hidden_size, hidden_size, bias=False)
     post_linear2 = nn.Linear(hidden_size, hidden_size, bias=False)
 
     # Create identical networks
-    rtrl_rnn = RTRLSigmoidDiagonalRNN(hidden_size)
-    bptt_rnn = BPTTSigmoidDiagonalRNN(hidden_size)
+    rtrl_rnn = RTRLSigmoidDiagonalRNN(hidden_size, input_size)
+    bptt_rnn = BPTTSigmoidDiagonalRNN(hidden_size, input_size)
 
     # Copy parameters for identical initialization.
     bptt_rnn.lamda.data = rtrl_rnn.lamda.data.clone()
@@ -192,3 +193,4 @@ def test_gradient_correctness():
 if __name__ == "__main__":
     test_gradient_correctness()
     print("All gradient tests passed!")
+

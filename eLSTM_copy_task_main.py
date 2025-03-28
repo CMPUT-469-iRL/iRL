@@ -283,12 +283,17 @@ for ep in range(num_epoch):
         src = src.permute(1, 0)
         tgt = tgt.permute(1, 0)
 
+        print("src.shape", src.shape)
+        print("tgt.shape", tgt.shape)
+        
         # We assume fully online setting
         for src_token, tgt_token in zip(src, tgt):
             logits, cell_out, state = model(src_token, state)
             logits = logits.contiguous()  # (B, num_classes)
             labels = tgt_token.view(-1)
 
+            print(tgt_token.shape)
+            print(src_token.shape)
             print("logits.shape", logits.shape)
             print("labels.shape", labels.shape)
             loss = loss_fn(logits, labels)
