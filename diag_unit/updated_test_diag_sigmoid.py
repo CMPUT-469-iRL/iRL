@@ -5,10 +5,10 @@ class SigmoidDiagonalRNNFunction(torch.autograd.Function):
     @staticmethod
     def forward(ctx, input_t, h_prev, lamda, B, s_lamda_prev, s_B_prev):
         sigmoid_lamda = torch.sigmoid(lamda)
-        h_next = sigmoid_lamda * h_prev + B.mv(input_t)
+        h_next = sigmoid_lamda * h_prev + B.mv(input_t.to('cpu', dtype=torch.float))
         sigmoid_derivative = sigmoid_lamda * (1 - sigmoid_lamda)
         s_lamda_next = sigmoid_lamda * s_lamda_prev + sigmoid_derivative * h_prev
-        s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]), input_t)
+        s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]), input_t.to('cpu', dtype=torch.float))
         ctx.save_for_backward(s_lamda_next, s_B_next, B)
         return h_next, s_lamda_next, s_B_next
 

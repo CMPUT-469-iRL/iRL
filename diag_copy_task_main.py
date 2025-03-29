@@ -11,12 +11,12 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from copy_task_data import CopyTaskDataset
-from diag_unit.test_diag_unit import DiagonalRNNFunction, RTRLDiagonalRNN, BPTTDiagonalRNN
-from diag_unit.test_diag_sigmoid import *
+#from diag_unit.test_diag_unit import DiagonalRNNFunction, RTRLDiagonalRNN, BPTTDiagonalRNN
+from diag_unit.updated_test_diag_sigmoid import *
 
 
 
-DEVICE = 'cuda'
+# DEVICE = 'cpu' #'cuda'
 
 
 parser = argparse.ArgumentParser(description='Learning to execute')
@@ -212,7 +212,7 @@ loginf(f"Output vocab size: {out_vocab_size}")
 # model
 
 loginf("Model: Quasi-LSTM")
-model = RTRLSigmoidDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size) # RTRLDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size, out_vocab_size = out_vocab_size)
+model = RTRLSigmoidDiagonalRNN(hidden_size, in_vocab_size) # RTRLDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size, out_vocab_size = out_vocab_size)
 # RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
 #                     num_layers=num_layers, in_vocab_size=in_vocab_size,
 #                     out_vocab_size=out_vocab_size, dropout=dropout,
@@ -221,7 +221,7 @@ model = RTRLSigmoidDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size) # RTR
 #loginf(f"Number of trainable params: {model.num_params()}")
 loginf(f"{model}")
 
-model = model.to(DEVICE)
+#model = model.to(DEVICE)
 
 # eval_model = BPTTDiagonalRNN(hidden_size)
 
@@ -278,7 +278,7 @@ if torch.cuda.is_available():
 model.reset_rtrl_state()
 
 # define a layer to pass the hidden layer through
-layer = nn.Linear(hidden_size, in_vocab_size).to(DEVICE)
+layer = nn.Linear(hidden_size, in_vocab_size) #.to(DEVICE)
 
 for ep in range(num_epoch):
     for idx, batch in enumerate(train_data_loader):
@@ -294,9 +294,9 @@ for ep in range(num_epoch):
         src = src.permute(1, 0)
         tgt = tgt.permute(1, 0)
 
-        print("src.shape", src.shape)
-        print("tgt.shape", tgt.shape)
-        print("bsz", bsz) # batch size
+        # print("src.shape", src.shape)
+        # print("tgt.shape", tgt.shape)
+        # print("bsz", bsz) # batch size
         
         # We assume fully online setting
         for sample in range(bsz): # loop through the batch to get each sample
@@ -304,7 +304,7 @@ for ep in range(num_epoch):
 
                 labels = tgt_token.view(-1)
 
-                labels = labels.to(DEVICE) #, dtype=torch.float32)
+                #labels = labels.to(DEVICE) #, dtype=torch.float32)
                 #print("labels.shape:", labels.shape)
 
                 
@@ -320,23 +320,24 @@ for ep in range(num_epoch):
                 h_next = model.forward_step(src_token) # h_next = model.forward_step(src_token.view(-1)) # h_next = model.forward_step(src_token)
 
                 #print("h_next.shape", h_next.shape)
-                output = layer(h_next).to(DEVICE)
+                output = layer(h_next) #.to(DEVICE)
 
                 # print(output.shape) # is of size [3]
                 # print(labels.shape) #should be size [1]
 
                 optimizer.zero_grad()
 
-                loss = loss_fn(output.unsqueeze(0), labels) 
+                loss = loss_fn(output.unsqueeze(0), labels.to('cpu')) 
                 loss.backward() # loss.backward(retain_graph=True)
 
                 optimizer.step()
                 
-                print("loss", loss)
+                #print("loss", loss)
                 with torch.no_grad():
                     acc_loss += loss
                     steps += 1
-
+                    
+        print("current average loss:", acc_loss / steps)
         # if args.full_sequence:
         #     if clip > 0.0:
         #         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)

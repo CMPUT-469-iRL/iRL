@@ -1,82 +1,41 @@
 import torch.nn as nn
 import torch
+import numpy as np
 
-device = 'cuda'
+# device = 'cuda'
 from rtu_utils import *
 
-class SigmoidDiagonalRNNFunction(torch.autograd.Function):
+class RTUFunction(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, input_t, h_prev, lamda, B, s_lamda_prev, s_B_prev, n_hidden):
+    def forward(ctx, input_t, h_prev, lamda, B, s_lamda_prev, s_B_prev):
 
-        # put all variables to device and float for training.
-        input_t = input_t.to(device, dtype=torch.float)
-        h_prev = h_prev.to(device, dtype=torch.float)
-        lamda = lamda.to(device, dtype=torch.float)
-        B = B.to(device, dtype=torch.float)
-        s_lamda_prev = s_lamda_prev.to(device, dtype=torch.float)
-        s_B_prev = s_B_prev.to(device, dtype=torch.float)
+        # sigmoid_lambda = torch.sigmoid(lamda) #(1 / (1 + np.exp(-lamda.cpu()))) # ADDED, calculates sigmoid of lambda
+        # delta_sigmoid_lambda = sigmoid_lambda * (1 - sigmoid_lambda)
 
-        # OLD SIGMOID IMPLEMENTATION:
-        # sigmoid_lamda = torch.sigmoid(lamda)
-        # h_next = sigmoid_lamda * h_prev + B.mv(input_t) # W*xt
-        # sigmoid_derivative = sigmoid_lamda * (1 - sigmoid_lamda)
-        # s_lamda_next = sigmoid_lamda * s_lamda_prev + sigmoid_derivative * h_prev
-
-        # s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        # h_next = sigmoid_lambda  * h_prev + B.mv(input_t) # h_next = lamda * h_prev + B.mv(input_t)
+        # s_lamda_next = (delta_sigmoid_lambda * h_prev + sigmoid_lambda * s_lamda_prev) # s_lamda_next = lamda * s_lamda_prev + h_prev
+ 
+        # s_B_next = torch.diag(sigmoid_lambda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t) # s_B_next = torch.diag(lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
         # ctx.save_for_backward(s_lamda_next, s_B_next, B)
 
-        # RTU IMPLEMENTATION: (pg. 4-5 of paper) 
-        # extract previous h-values
-        h_prev_c1,h_prev_c2 = h_prev
+        # input_t = input_t.to(device, dtype=torch.float)
+        # h_prev = h_prev.to(device, dtype=torch.float)
+        # lamda = lamda.to(device, dtype=torch.float)
+        # B = B.to(device, dtype=torch.float)
+        # s_lamda_prev = s_lamda_prev.to(device, dtype=torch.float)
+        # s_B_prev = s_B_prev.to(device, dtype=torch.float)
 
-        # get r and theta parameters
-        r_param = initialize_exp_exp_r, (1,n_hidden)
-        #theta_param = initialize_theta_log, (1,n_hidden)
-
-        # Update rows of the lambda matrix in each iteration
-        lamda = r_param  * (np.cos(theta_param)) # check if r_param and theta_param are matrices
-
-        # create layers for weight matrices
-        mlp_xc1 = nn.Dense(n_hidden,name='wx1',use_bias=False) 
-        #mlp_xc2 = nn.Dense(n_hidden,name='wx2',use_bias=False)
-
-        # calulate weight matrices
-        w_c1_x_t = mlp_xc1(input_t)
-        #w_c2_x_t = mlp_xc2(input_t) 
-
-        # get g, phi, and norm fo h_t_c1 and h_t_c2 initializations 
-        g,phi,norm = g_phi_params(r_param,theta_param)
-
-
-        h_t_c1 = np.multiply(g,h_prev_c1) - np.multiply(phi,h_prev_c2) + np.multiply(norm,w_c1_x_t) #h_t_c1 = r * cos(theta) * h_prev_c1 - r * sin(theta) * h_prev_c2 + W_x_c1 * x_t
-        #h_t_c2 = np.multiply(g,h_prev_c2) + np.multiply(phi,h_prev_c1) + np.multiply(norm,w_c2_x_t)
-        
-        # h_next = [h_t_c1, h_t_c2]
-
-        # calculate gradients for RTU:
-        d_g_w_r, d_g_w_theta, d_phi_w_r, d_phi_w_theta, d_norm_w_r = d_g_phi_exp_exp_nu_params(r_param,theta_param,g,phi,norm) 
-
-        new_grad_memory_hc1_w_r = d_g_w_r * h_prev_c1 + g * grad_memory[0] - d_phi_w_r * h_prev_c2 - phi * grad_memory[1] + np.multiply(d_norm_w_r,w_c1_x_t)
-        new_grad_memory_hc2_w_r = d_g_w_r * h_prev_c2 + g * grad_memory[1] + d_phi_w_r * h_prev_c1 + phi * grad_memory[0] + np.multiply(d_norm_w_r,w_c2_x_t)
-        
-        new_grad_memory_hc1_w_theta = d_g_w_theta * h_prev_c1 + g * grad_memory[2] - d_phi_w_theta * h_prev_c2 - phi * grad_memory[3]
-        new_grad_memory_hc2_w_theta = d_g_w_theta * h_prev_c2 + g * grad_memory[3] + d_phi_w_theta * h_prev_c1 + phi * grad_memory[2]
-       
-           
-        new_grad_c1_wx1 = np.multiply(g,grad_memory[4]) - np.multiply(phi,grad_memory[5]) + np.multiply(norm,np.repeat(np.expand_dims(input_t,2),h_t_c1.shape[-1],axis=2))
-        new_grad_c1_wx2 = np.multiply(g,grad_memory[6]) - np.multiply(phi,grad_memory[7]) 
-        
-        new_grad_c2_wx1 = np.multiply(g,grad_memory[5]) + np.multiply(phi,grad_memory[4]) 
-        new_grad_c2_wx2 = np.multiply(g,grad_memory[7]) + np.multiply(phi,grad_memory[6]) + np.multiply(norm,np.repeat(np.expand_dims(input_t,2),h_t_c2.shape[-1],axis=2))
-    
-        new_grad_memory = (new_grad_memory_hc1_w_r,new_grad_memory_hc2_w_r,new_grad_memory_hc1_w_theta,new_grad_memory_hc2_w_theta,new_grad_c1_wx1,new_grad_c2_wx1,new_grad_c1_wx2,new_grad_c2_wx2)
-
-        # calulations for s_lambda_next and s_B_next are maybe the same or similar *******************************
         sigmoid_lamda = torch.sigmoid(lamda)
-        s_lamda_next = r_k * np.cos(theta_k) #sigmoid_lamda * s_lamda_prev + sigmoid_derivative * h_prev
+        #sigmoid_lamda = sigmoid_lamda.to(device, dtype=torch.float)
+
+        h_next = sigmoid_lamda * h_prev + B.mv(input_t) # h_next = sigmoid_lamda * h_prev + B.mv(input_t)
+
         sigmoid_derivative = sigmoid_lamda * (1 - sigmoid_lamda)
-        s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]), input_ #s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
-        #ctx.save_for_backward(s_lamda_next, s_B_next, B)
+
+        s_lamda_next = sigmoid_lamda * s_lamda_prev + sigmoid_derivative * h_prev
+        s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        ctx.save_for_backward(s_lamda_next, s_B_next, B)
+
 
         return h_next, s_lamda_next, s_B_next
 
@@ -91,25 +50,26 @@ class SigmoidDiagonalRNNFunction(torch.autograd.Function):
         grad_s_B_prev = None
         return grad_input_t, grad_h_prev, grad_lamda, grad_B, grad_s_lamda_prev, grad_s_B_prev
 
-class RTRLSigmoidDiagonalRNN(nn.Module):
+class RTRLRTU(nn.Module):
     """Linear Diagonal RNN Module with RTRL"""
-    def __init__(self, hidden_size: int, in_vocab_size: int):
+    def __init__(self, hidden_size: int, in_vocab_size):
         super().__init__()
         self.hidden_size = hidden_size
-        self.input_size = input_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) / torch.sqrt(torch.tensor(hidden_size).float()))
-        self.B = nn.Parameter(torch.randn(hidden_size, input_size) / torch.sqrt(torch.tensor(input_size).float()))
+        self.input_size = in_vocab_size
+        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
+        self.B = nn.Parameter(torch.randn(hidden_size, in_vocab_size) / torch.sqrt(torch.tensor(in_vocab_size)).float())
         self.reset_rtrl_state()
+
     def reset_rtrl_state(self) -> None:
         """Resets RTRL sensitivities to zero."""
         self.s_lamda = torch.zeros(self.hidden_size)
-        self.s_B = torch.zeros((self.hidden_size, self.input_size)) #self.s_B = torch.zeros((self.hidden_size, self.hidden_size))
-        self.h = torch.zeros(self.hidden_size, dtype=torch.float32) #self.h = torch.zeros(self.hidden_size, dtype=torch.float32, requires_grad = True)
-        self.h = self.h.to(device) # set the self.h to the device to work with cuda
+        self.s_B = torch.zeros((self.hidden_size, self.input_size))
+        self.h = torch.zeros(self.hidden_size, dtype=torch.float32) #, requires_grad = True)
+        #self.h = self.h.to(device) # set the self.h to the device to work with cuda
 
     def forward_step(self, input_t) -> torch.Tensor:
         # Process input from one-hot to hidden dimension
-        self.h, self.s_lamda, self.s_B = SigmoidDiagonalRNNFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach()) #self.h, self.s_lamda, self.s_B = SigmoidDiagonalRNNFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach(), self.hidden_size) # Added self.hidden_size parameter
+        self.h, self.s_lamda, self.s_B = RTUFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach())
         return self.h
 
     def forward(self, x_sequence):
@@ -118,12 +78,12 @@ class RTRLSigmoidDiagonalRNN(nn.Module):
             outputs.append(self.forward_step(x_t))
         return torch.stack(outputs)
 
-class BPTTSigmoidDiagonalRNN(nn.Module):
+class BPTTRTU(nn.Module):
     """Linear Diagonal RNN Module with BPTT"""
     def __init__(self, hidden_size: int, input_size: int):
         super().__init__()
         self.hidden_size = hidden_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) / torch.sqrt(torch.tensor(hidden_size).float()))
+        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
         self.B = nn.Parameter(torch.randn(hidden_size, input_size) /
                               torch.sqrt(torch.tensor(input_size).float()))
 
@@ -131,7 +91,10 @@ class BPTTSigmoidDiagonalRNN(nn.Module):
         h = torch.zeros(self.hidden_size)
         outputs = []
         for x_t in x_sequence:
-            h = torch.sigmoid(self.lamda) * h + self.B.mv(x_t)
+            # h = torch.sigmoid(self.lamda) * h + self.B.mv(x_t)
+            w_c1_x_t = mlp_xc1(x_t)
+            g,phi,norm = g_phi_params(r_param,theta_param)
+            h = np.multiply(g,h) + np.multiply(norm,w_c1_x_t)
             outputs.append(h)
         return torch.stack(outputs)
 
@@ -139,8 +102,8 @@ class BPTTSigmoidDiagonalRNN(nn.Module):
 
 def test_gradient_correctness():
     # Setup
-    input_size = 10
-    hidden_size = 8
+    input_size = 3
+    hidden_size = 2048
     seq_length = 5
     torch.manual_seed(42)
 
@@ -150,8 +113,8 @@ def test_gradient_correctness():
     post_linear2 = nn.Linear(hidden_size, hidden_size, bias=False)
 
     # Create identical networks
-    rtrl_rnn = RTRLSigmoidDiagonalRNN(hidden_size, input_size)
-    bptt_rnn = BPTTSigmoidDiagonalRNN(hidden_size, input_size)
+    rtrl_rnn = RTRLRTU(hidden_size, input_size)
+    bptt_rnn = BPTTRTU(hidden_size, input_size)
 
     # Copy parameters for identical initialization.
     bptt_rnn.lamda.data = rtrl_rnn.lamda.data.clone()
@@ -193,4 +156,3 @@ def test_gradient_correctness():
 if __name__ == "__main__":
     test_gradient_correctness()
     print("All gradient tests passed!")
-
