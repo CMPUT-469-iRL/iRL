@@ -337,7 +337,6 @@ for ep in range(num_epoch):
                     acc_loss += loss
                     steps += 1
                     
-        print("current average loss:", acc_loss / steps)
         # if args.full_sequence:
         #     if clip > 0.0:
         #         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)

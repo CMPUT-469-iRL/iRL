@@ -1,16 +1,17 @@
-import jax 
-import jax.numpy as jnp
-from jax import lax
-import flax.linen as nn
+# import jax 
+# import jax.numpy as jnp
+# from jax import lax
+# import flax.linen as nn
 
 import numpy as np
 import torch
+import torch.nn as nn
 
 # This code is from the RTU github repo, https://github.com/esraaelelimy/rtus/
 '''
 ExpExp_nu parameterization: Learn nu_log and theta_log. r = exp(-exp(nu_log)). By design r is always less than 1
 '''
-@jax.jit
+# @jax.jit
 def g_phi_params(nu_log,theta_log,eps=1e-8):
     nu = np.exp(nu_log)
     r = np.exp(-nu)
@@ -34,7 +35,7 @@ def initialize_theta_log(key,shape, max_phase = 6.28):
 
 
 ## Derivatives of g and phi w.r.t w_r and w_theta
-@jax.jit
+# @jax.jit
 def d_g_phi_exp_exp_nu_params(w_r,w_theta,g,phi,norm):
     d_g_w_r = -jnp.exp(w_r) * g
     d_g_w_theta = - phi
@@ -43,27 +44,27 @@ def d_g_phi_exp_exp_nu_params(w_r,w_theta,g,phi,norm):
     d_norm_w_r = jnp.exp(w_r)*jnp.exp(-2*jnp.exp(w_r))/norm
     return d_g_w_r, d_g_w_theta, d_phi_w_r, d_phi_w_theta, d_norm_w_r
 
-@jax.jit
+# @jax.jit
 def linear_act(x):
     return x
 
-@jax.jit
+# @jax.jit
 def drelu(x):
     return lax.select(x > 0, lax.full_like(x, 1), lax.full_like(x, 0))
 
-@jax.jit 
+# @jax.jit 
 def dtanh(x):
     return 1 - jnp.tanh(x)**2
 
-@jax.jit
+# @jax.jit
 def dlinear(x):
     return lax.full_like(x, 1)
     
 
-act_options = {'relu':nn.relu, 
-                'tanh':nn.tanh,
-                'linear':linear_act}
+# act_options = {'relu':nn.relu, 
+#                 'tanh':nn.tanh,
+#                 'linear':linear_act}
 
-d_act = {'relu':drelu,
-         'tanh':dtanh,
-         'linear':dlinear}
+# d_act = {'relu':drelu,
+#          'tanh':dtanh,
+#          'linear':dlinear}

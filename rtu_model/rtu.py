@@ -80,21 +80,50 @@ class RTRLRTU(nn.Module):
 
 class BPTTRTU(nn.Module):
     """Linear Diagonal RNN Module with BPTT"""
-    def __init__(self, hidden_size: int, input_size: int):
+    def __init__(self, hidden_size: int, input_size: int):  # input_size = in_vocab_size
         super().__init__()
         self.hidden_size = hidden_size
+        self.input_size = input_size
         self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
         self.B = nn.Parameter(torch.randn(hidden_size, input_size) /
                               torch.sqrt(torch.tensor(input_size).float()))
+        
+        # RTU-only parameters
+
 
     def forward(self, x_sequence):
         h = torch.zeros(self.hidden_size)
         outputs = []
         for x_t in x_sequence:
-            # h = torch.sigmoid(self.lamda) * h + self.B.mv(x_t)
-            w_c1_x_t = mlp_xc1(x_t)
-            g,phi,norm = g_phi_params(r_param,theta_param)
-            h = np.multiply(g,h) + np.multiply(norm,w_c1_x_t)
+            #h = torch.sigmoid(self.lamda) * h + self.B.mv(x_t)
+
+            # # λk = rk exp(iθ_k) = exp(− exp(νlogk)+i exp(θlogk))
+
+            # g,phi,norm = g_phi_params(r_param,theta_param)
+
+            # g = torch.sigmoid(self.lamda)
+            # norm = torch.norm(x_t)
+            
+            # h = g * h + w_c1_x_t #np.multiply(g,h) + np.multiply(w_c1_x_t) # h = np.multiply(g,h) + np.multiply(w_c1_x_t)
+
+            #𝐖_hh=𝐏⁢𝚲𝐏^-1 ; P is matrix of eigenvectors, lamda is matrix of eigenvalues
+            # x_t = x_t.detach().numpy()
+            # lamda, P = np.linalg.eig(x_t) # comput eigenvalues and eigenvectors of input matrix
+
+            # https://pytorch.org/docs/stable/nn.html
+            mlp_xc1 = nn.Linear(self.input_size, self.hidden_size, bias = False) # nxd  #nn.Softmax(dim=None) #nn.Dense(self.n_hidden,name='wx1',use_bias=False) 
+            W_x = mlp_xc1(x_t) # use W_x.transpose later since dimantions are flipped
+            
+            # 𝐡t≐𝐖_h * 𝐡t−1 + 𝐖_x * 𝐮(𝐱t), where 𝐮 can be any transformation of the inputs 𝐱t before they are inputted into the recurrent layer
+            # h = W_h * h +  W_x + mlp_xc1(x_t) * torch.sigmoid(x_t)
+
+            # h_t = Λh_t−1 + Wx * xt
+
+            # print("W_x.shape", W_x.shape)
+            # print("x_t.shape", x_t.shape)
+
+            h = torch.sigmoid(self.lamda) * h + W_x.T  #* (x_t)
+
             outputs.append(h)
         return torch.stack(outputs)
 
