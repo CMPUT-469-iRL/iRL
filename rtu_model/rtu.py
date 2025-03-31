@@ -111,8 +111,8 @@ class BPTTRTU(nn.Module):
             # lamda, P = np.linalg.eig(x_t) # comput eigenvalues and eigenvectors of input matrix
 
             # https://pytorch.org/docs/stable/nn.html
-            mlp_xc1 = nn.Linear(self.input_size, self.hidden_size, bias = False) # nxd  #nn.Softmax(dim=None) #nn.Dense(self.n_hidden,name='wx1',use_bias=False) 
-            W_x = mlp_xc1(x_t) # use W_x.transpose later since dimantions are flipped
+            mlp_x = nn.Linear(self.input_size, self.hidden_size, bias = False) # nxd  #nn.Softmax(dim=None) #nn.Dense(self.n_hidden,name='wx1',use_bias=False) 
+            W_x = mlp_x(x_t) # Ax + bias (bias = 0 here) # use W_x.transpose later since dimantions are flipped
             
             # 𝐡t≐𝐖_h * 𝐡t−1 + 𝐖_x * 𝐮(𝐱t), where 𝐮 can be any transformation of the inputs 𝐱t before they are inputted into the recurrent layer
             # h = W_h * h +  W_x + mlp_xc1(x_t) * torch.sigmoid(x_t)
