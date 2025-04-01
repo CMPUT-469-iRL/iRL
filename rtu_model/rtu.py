@@ -1,6 +1,8 @@
 import torch.nn as nn
 import torch
 import numpy as np
+import math
+import random
 
 # device = 'cuda'
 from rtu_utils import *
@@ -25,15 +27,21 @@ class RTUFunction(torch.autograd.Function):
         # s_lamda_prev = s_lamda_prev.to(device, dtype=torch.float)
         # s_B_prev = s_B_prev.to(device, dtype=torch.float)
 
-        sigmoid_lamda = torch.sigmoid(lamda)
-        #sigmoid_lamda = sigmoid_lamda.to(device, dtype=torch.float)
 
-        h_next = sigmoid_lamda * h_prev + B.mv(input_t) # h_next = sigmoid_lamda * h_prev + B.mv(input_t)
+        theta = math.log(6.28 * random.uniform(1, B.shape[0]))   # hidden_size = B.shape[0]
+        r_max = 1
+        r_min = 0
+        r = math.log(0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
 
-        sigmoid_derivative = sigmoid_lamda * (1 - sigmoid_lamda)
+        # y = torch.tensor([math.exp(-math.exp(i)) for i in (self.lamda)])
 
-        s_lamda_next = sigmoid_lamda * s_lamda_prev + sigmoid_derivative * h_prev
-        s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        y = torch.exp(-torch.exp(lamda))
+
+        h_next = y * h_prev + torch.sqrt(1-(y**2)) * B.mv(input_t)        #sigmoid_lamda * h_prev + B.mv(input_t) # h_next = sigmoid_lamda * h_prev + B.mv(input_t)
+
+        s_lamda_next = -torch.exp(lamda) * y * h_prev + y * s_lamda_prev + (-y / torch.sqrt(1-(y**2))) * -torch.exp(lamda) * y * B.mv(input_t)  # derivative of h
+
+        s_B_next = y.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
         ctx.save_for_backward(s_lamda_next, s_B_next, B)
 
 
@@ -92,37 +100,27 @@ class BPTTRTU(nn.Module):
 
 
     def forward(self, x_sequence):
-        h = torch.zeros(self.hidden_size)
+        h = torch.zeros(self.hidden_size) #, self.hidden_size) # h = torch.zeros(self.hidden_size)
         outputs = []
         for x_t in x_sequence:
-            #h = torch.sigmoid(self.lamda) * h + self.B.mv(x_t)
-
-            # # λk = rk exp(iθ_k) = exp(− exp(νlogk)+i exp(θlogk))
-
-            # g,phi,norm = g_phi_params(r_param,theta_param)
-
-            # g = torch.sigmoid(self.lamda)
-            # norm = torch.norm(x_t)
-            
-            # h = g * h + w_c1_x_t #np.multiply(g,h) + np.multiply(w_c1_x_t) # h = np.multiply(g,h) + np.multiply(w_c1_x_t)
-
-            #𝐖_hh=𝐏⁢𝚲𝐏^-1 ; P is matrix of eigenvectors, lamda is matrix of eigenvalues
-            # x_t = x_t.detach().numpy()
-            # lamda, P = np.linalg.eig(x_t) # comput eigenvalues and eigenvectors of input matrix
 
             # https://pytorch.org/docs/stable/nn.html
-            mlp_x = nn.Linear(self.input_size, self.hidden_size, bias = False) # nxd  #nn.Softmax(dim=None) #nn.Dense(self.n_hidden,name='wx1',use_bias=False) 
-            W_x = mlp_x(x_t) # Ax + bias (bias = 0 here) # use W_x.transpose later since dimantions are flipped
-            
-            # 𝐡t≐𝐖_h * 𝐡t−1 + 𝐖_x * 𝐮(𝐱t), where 𝐮 can be any transformation of the inputs 𝐱t before they are inputted into the recurrent layer
-            # h = W_h * h +  W_x + mlp_xc1(x_t) * torch.sigmoid(x_t)
+            # mlp_x = nn.Linear(self.input_size, self.hidden_size, bias = False) # nxd  #nn.Softmax(dim=None) #nn.Dense(self.n_hidden,name='wx1',use_bias=False) 
+            # W_x = mlp_x(x_t) # Ax + bias (bias = 0 here) # use W_x.transpose later since dimantions are flipped
 
-            # h_t = Λh_t−1 + Wx * xt
 
-            # print("W_x.shape", W_x.shape)
-            # print("x_t.shape", x_t.shape)
+            theta = math.log(6.28 * random.uniform(1, self.hidden_size))   # math.pi / 2
+            r_max = 1
+            r_min = 0
+            r = math.log(0.5 * math.log(random.uniform(1, self.hidden_size) * (r_max**2 - r_min**2) + r_min**2))
 
-            h = torch.sigmoid(self.lamda) * h + W_x.T  #* (x_t)
+            # y = torch.tensor([math.exp(-math.exp(i)) for i in (self.lamda)])
+
+            y = torch.exp(-torch.exp(self.lamda))
+
+            h = y * h + torch.sqrt(1-(y**2)) * self.B.mv(x_t)
+
+
 
             outputs.append(h)
         return torch.stack(outputs)
