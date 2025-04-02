@@ -9,7 +9,7 @@ from rtu_utils import *
 
 class RTUFunction(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, input_t, h_prev, lamda, B, s_lamda_prev, s_B_prev):
+    def forward(ctx, input_t, h_prev_c1, h_prev_c2, lamda, B_c1, B_c2, s_lamda_prev, s_B_c1_prev, s_B_c2_prev):
 
         # sigmoid_lambda = torch.sigmoid(lamda) #(1 / (1 + np.exp(-lamda.cpu()))) # ADDED, calculates sigmoid of lambda
         # delta_sigmoid_lambda = sigmoid_lambda * (1 - sigmoid_lambda)
@@ -36,17 +36,28 @@ class RTUFunction(torch.autograd.Function):
         # y = torch.tensor([math.exp(-math.exp(i)) for i in (self.lamda)])
 
         y = torch.exp(-torch.exp(lamda))
+
+
         gamma = torch.sqrt(1-(y**2))
 
-        h_next = y * h_prev + gamma * B.mv(input_t)        #sigmoid_lamda * h_prev + B.mv(input_t) # h_next = sigmoid_lamda * h_prev + B.mv(input_t)
+        h_next_c1 = y * torch.cos(torch.exp(theta)) * h_prev_c1 - y * torch.sin(torch.exp(theta)) * h_prev_c2 + gamma * B_c1 * input_t
+        h_next_c2 = y * torch.cos(torch.exp(theta)) * h_prev_c1 + y * torch.sin(torch.exp(theta)) * h_prev_c1 + gamma * B_c2 * input_t
 
-        s_lamda_next = -torch.exp(lamda) * y * h_prev + y * s_lamda_prev + (-y / gamma) * -torch.exp(lamda) * y * B.mv(input_t)  # derivative of h
+        # get gradients of h wrt. r
+        s_lamda_c1_next_r = 
+        s_lamda_c2_next_r = 
 
-        s_B_next = y.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
-        ctx.save_for_backward(s_lamda_next, s_B_next, B)
+        # get gradients of h wrt. theta
+        s_lamda_c1_next_theta = 
+        s_lamda_c2_next_theta = 
+
+        s_B_c1_next = y.unsqueeze(1) * s_B_c1_prev + torch.outer(torch.ones(B_c1.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        s_B_c2_next = y.unsqueeze(1) * s_B_c1_prev + torch.outer(torch.ones(B_c2.shape[0]), input_t)
+
+        ctx.save_for_backward(s_lamda_c1_next_r, s_lamda_c2_next_r, s_lamda_c1_next_theta, s_lamda_c2_next_theta, s_B_c1_next, s_B_c2_next, B_c1, B_c2)
 
 
-        return h_next, s_lamda_next, s_B_next
+        return [h_next_c1, h_next_c2], [s_lamda_c1_next_r, s_lamda_c2_next_r],[s_lamda_c1_next_theta, s_lamda_c2_next_theta] [s_B_c1_next, s_B_c2_next]
 
     @staticmethod
     def backward(ctx, grad_output_h_next, grad_output_s_lamda_next, grad_output_s_B_next):
@@ -94,9 +105,10 @@ class BPTTRTU(nn.Module):
         self.hidden_size = hidden_size
         self.input_size = input_size
         self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
-        self.B = nn.Parameter(torch.randn(hidden_size, input_size) /
+        self.B_c1 = nn.Parameter(torch.randn(hidden_size, input_size) /
                               torch.sqrt(torch.tensor(input_size).float()))
-        
+        self.B_c2 = nn.Parameter(torch.randn(hidden_size, input_size) /
+                              torch.sqrt(torch.tensor(input_size).float()))
         # RTU-only parameters
 
 
@@ -119,11 +131,12 @@ class BPTTRTU(nn.Module):
 
             y = torch.exp(-torch.exp(self.lamda))
             gamma = torch.sqrt(1-(y**2))
-            h = y * h + gamma  * self.B.mv(x_t)
+
+            h_c1 = y * torch.cos(torch.exp(theta)) * h_c1 - y * torch.sin(torch.exp(theta)) * h_c2 + gamma * self.B_c1 * x_t
+            h_c2 = y * torch.cos(torch.exp(theta)) * h_c1 + y * torch.sin(torch.exp(theta)) * h_c1 + gamma * self.B_c2 * x_t
 
 
-
-            outputs.append(h)
+            outputs.append(h_c1, h_c2)
         return torch.stack(outputs)
 
 ############################################################################################
