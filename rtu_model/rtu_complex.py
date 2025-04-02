@@ -76,14 +76,24 @@ class RTRLRTU(nn.Module):
         super().__init__()
         self.hidden_size = hidden_size
         self.input_size = in_vocab_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
-        self.B = nn.Parameter(torch.randn(hidden_size, in_vocab_size) / torch.sqrt(torch.tensor(in_vocab_size)).float())
+        # self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
+        self.lamda_c1 = nn.Parameter(torch.randn(hidden_size) * 0.2)
+        self.lamda_c2 = nn.Parameter(torch.randn(hidden_size) * 0.2)
+        # self.B = nn.Parameter(torch.randn(hidden_size, in_vocab_size) / torch.sqrt(torch.tensor(in_vocab_size)).float())
+        self.B_c1 = nn.Parameter(torch.randn(hidden_size, self.input_size) /
+                              torch.sqrt(torch.tensor(self.input_size).float()))
+        self.B_c2 = nn.Parameter(torch.randn(hidden_size, self.input_size) /
+                              torch.sqrt(torch.tensor(self.input_size).float()))
         self.reset_rtrl_state()
 
     def reset_rtrl_state(self) -> None:
         """Resets RTRL sensitivities to zero."""
-        self.s_lamda = torch.zeros(self.hidden_size)
-        self.s_B = torch.zeros((self.hidden_size, self.input_size))
+        # self.s_lamda = torch.zeros(self.hidden_size)
+        self.s_lamda_c1 = torch.zeros(self.hidden_size)
+        self.s_lamda_c2 = torch.zeros(self.hidden_size)
+        # self.s_B = torch.zeros((self.hidden_size, self.input_size))
+        self.s_B_c1 = torch.zeros((self.hidden_size, self.input_size))
+        self.s_B_c2 = torch.zeros((self.hidden_size, self.input_size))
         self.h = torch.zeros(self.hidden_size, dtype=torch.float32) #, requires_grad = True)
         #self.h = self.h.to(device) # set the self.h to the device to work with cuda
 
