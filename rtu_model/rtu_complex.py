@@ -44,17 +44,17 @@ class RTUFunction(torch.autograd.Function):
         h_next_c2 = y * torch.cos(torch.exp(theta)) * h_prev_c1 + y * torch.sin(torch.exp(theta)) * h_prev_c1 + gamma * B_c2 * input_t
 
         # get gradients of h wrt. r
-        s_lamda_c1_next_r = 
-        s_lamda_c2_next_r = 
+        s_r_c1_next = 
+        s_r_c2_next = 
 
         # get gradients of h wrt. theta
-        s_lamda_c1_next_theta = 
-        s_lamda_c2_next_theta = 
+        s_theta_c1_next = 
+        s_theta_c2_next = 
 
         s_B_c1_next = y.unsqueeze(1) * s_B_c1_prev + torch.outer(torch.ones(B_c1.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
         s_B_c2_next = y.unsqueeze(1) * s_B_c1_prev + torch.outer(torch.ones(B_c2.shape[0]), input_t)
 
-        ctx.save_for_backward(s_lamda_c1_next_r, s_lamda_c2_next_r, s_lamda_c1_next_theta, s_lamda_c2_next_theta, s_B_c1_next, s_B_c2_next, B_c1, B_c2)
+        ctx.save_for_backward(s_r_c1_next, s_r_c2_next, s_theta_c1_next, s_theta_c2_next, s_B_c1_next, s_B_c2_next, B_c1, B_c2)
 
 
         return [h_next_c1, h_next_c2], [s_lamda_c1_next_r, s_lamda_c2_next_r],[s_lamda_c1_next_theta, s_lamda_c2_next_theta] [s_B_c1_next, s_B_c2_next]
@@ -76,9 +76,7 @@ class RTRLRTU(nn.Module):
         super().__init__()
         self.hidden_size = hidden_size
         self.input_size = in_vocab_size
-        # self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
-        self.lamda_c1 = nn.Parameter(torch.randn(hidden_size) * 0.2)
-        self.lamda_c2 = nn.Parameter(torch.randn(hidden_size) * 0.2)
+        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
         # self.B = nn.Parameter(torch.randn(hidden_size, in_vocab_size) / torch.sqrt(torch.tensor(in_vocab_size)).float())
         self.B_c1 = nn.Parameter(torch.randn(hidden_size, self.input_size) /
                               torch.sqrt(torch.tensor(self.input_size).float()))
@@ -88,9 +86,7 @@ class RTRLRTU(nn.Module):
 
     def reset_rtrl_state(self) -> None:
         """Resets RTRL sensitivities to zero."""
-        # self.s_lamda = torch.zeros(self.hidden_size)
-        self.s_lamda_c1 = torch.zeros(self.hidden_size)
-        self.s_lamda_c2 = torch.zeros(self.hidden_size)
+        self.s_lamda = torch.zeros(self.hidden_size)
         # self.s_B = torch.zeros((self.hidden_size, self.input_size))
         self.s_B_c1 = torch.zeros((self.hidden_size, self.input_size))
         self.s_B_c2 = torch.zeros((self.hidden_size, self.input_size))
