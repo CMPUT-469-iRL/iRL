@@ -36,20 +36,24 @@ class RTUFunction(torch.autograd.Function):
         # y = torch.tensor([math.exp(-math.exp(i)) for i in (self.lamda)])
 
         y = torch.exp(-torch.exp(lamda))
-
+        z = torch.exp(theta)
 
         gamma = torch.sqrt(1-(y**2))
+        
+        gamma_gradient = -y / gamma
+        y_gradient = -torch.exp(r) * y
+        z_gradient = torch.exp(theta)
 
         h_next_c1 = y * torch.cos(torch.exp(theta)) * h_prev_c1 - y * torch.sin(torch.exp(theta)) * h_prev_c2 + gamma * B_c1 * input_t
         h_next_c2 = y * torch.cos(torch.exp(theta)) * h_prev_c1 + y * torch.sin(torch.exp(theta)) * h_prev_c1 + gamma * B_c2 * input_t
 
         # get gradients of h wrt. r
-        s_r_c1_next = 
-        s_r_c2_next = 
+        s_r_c1_next = (y_gradient * torch.cos(z) * h_next_c1) + (y * torch.cos(z) * s_r_c1_prev) - (y_gradient * torch.sin(z) * h_prev_c2) - (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B_c1.mv(input_t))
+        s_r_c2_next = (y_gradient * torch.cos(z) * h_next_c2) + (y * torch.cos(z) * s_r_c2_prev) + (y_gradient * torch.sin(z) * h_next_c1) + (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B_c2.mv(input_t))
 
         # get gradients of h wrt. theta
-        s_theta_c1_next = 
-        s_theta_c2_next = 
+        s_theta_c1_next = (-y * torch.sin(z) * z_gradient * h_next_c1) + (y * torch.cos(z) * s_theta_c1_prev) - (y * torch.cos(z) * z_gradient * h_next_c2) - (y * torch.sin(z) * s_theta_c2_prev)
+        s_theta_c2_next = (-y * torch.sin(z) * z_gradient * h_prev_c2) + (y * torch.cos(z) * s_theta_c2_prev) + (y * torch.cos(z) * z_gradient * h_prev_c1) + (y * torch.sin(z) * s_theta_c1_prev)
 
         s_B_c1_next = y.unsqueeze(1) * s_B_c1_prev + torch.outer(torch.ones(B_c1.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
         s_B_c2_next = y.unsqueeze(1) * s_B_c1_prev + torch.outer(torch.ones(B_c2.shape[0]), input_t)
