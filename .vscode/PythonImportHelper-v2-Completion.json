@@ -1,0 +1,1081 @@
+[
+    {
+        "label": "torch",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "torch",
+        "description": "torch",
+        "detail": "torch",
+        "documentation": {}
+    },
+    {
+        "label": "torch.nn",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "torch.nn",
+        "description": "torch.nn",
+        "detail": "torch.nn",
+        "documentation": {}
+    },
+    {
+        "label": "torch.nn.functional",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "torch.nn.functional",
+        "description": "torch.nn.functional",
+        "detail": "torch.nn.functional",
+        "documentation": {}
+    },
+    {
+        "label": "QuasiLSTMlayer",
+        "importPath": "eLSTM_model.layers",
+        "description": "eLSTM_model.layers",
+        "isExtraImport": true,
+        "detail": "eLSTM_model.layers",
+        "documentation": {}
+    },
+    {
+        "label": "RTRLQuasiLSTMlayer",
+        "importPath": "eLSTM_model.rtrl_layers",
+        "description": "eLSTM_model.rtrl_layers",
+        "isExtraImport": true,
+        "detail": "eLSTM_model.rtrl_layers",
+        "documentation": {}
+    },
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "random",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "randrange",
+        "importPath": "random",
+        "description": "random",
+        "isExtraImport": true,
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "Dataset",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
+        "label": "Dataset",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
+        "label": "DataLoader",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
+        "documentation": {}
+    },
+    {
+        "label": "CopyTaskDataset",
+        "importPath": "copy_task_data",
+        "description": "copy_task_data",
+        "isExtraImport": true,
+        "detail": "copy_task_data",
+        "documentation": {}
+    },
+    {
+        "label": "QuasiLSTMModel",
+        "importPath": "eLSTM_model.model",
+        "description": "eLSTM_model.model",
+        "isExtraImport": true,
+        "detail": "eLSTM_model.model",
+        "documentation": {}
+    },
+    {
+        "label": "RTRLQuasiLSTMModel",
+        "importPath": "eLSTM_model.model",
+        "description": "eLSTM_model.model",
+        "isExtraImport": true,
+        "detail": "eLSTM_model.model",
+        "documentation": {}
+    },
+    {
+        "label": "RTRLQuasiLSTMModel",
+        "importPath": "eLSTM_model.model",
+        "description": "eLSTM_model.model",
+        "isExtraImport": true,
+        "detail": "eLSTM_model.model",
+        "documentation": {}
+    },
+    {
+        "label": "RTRLQuasiLSTMModel",
+        "importPath": "eLSTM_model.model",
+        "description": "eLSTM_model.model",
+        "isExtraImport": true,
+        "detail": "eLSTM_model.model",
+        "documentation": {}
+    },
+    {
+        "label": "compute_accuracy",
+        "importPath": "eval_utils",
+        "description": "eval_utils",
+        "isExtraImport": true,
+        "detail": "eval_utils",
+        "documentation": {}
+    },
+    {
+        "label": "gym",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "gym",
+        "description": "gym",
+        "detail": "gym",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "Categorical",
+        "importPath": "torch.distributions",
+        "description": "torch.distributions",
+        "isExtraImport": true,
+        "detail": "torch.distributions",
+        "documentation": {}
+    },
+    {
+        "label": "Normal",
+        "importPath": "torch.distributions",
+        "description": "torch.distributions",
+        "isExtraImport": true,
+        "detail": "torch.distributions",
+        "documentation": {}
+    },
+    {
+        "label": "Categorical",
+        "importPath": "torch.distributions",
+        "description": "torch.distributions",
+        "isExtraImport": true,
+        "detail": "torch.distributions",
+        "documentation": {}
+    },
+    {
+        "label": "Normal",
+        "importPath": "torch.distributions",
+        "description": "torch.distributions",
+        "isExtraImport": true,
+        "detail": "torch.distributions",
+        "documentation": {}
+    },
+    {
+        "label": "model_path",
+        "kind": 5,
+        "importPath": "eLSTM-saved-model.inspect_model",
+        "description": "eLSTM-saved-model.inspect_model",
+        "peekOfCode": "model_path = \"eLSTM-saved-model/best_model.pt\"\ncheckpoint = torch.load(model_path, map_location=torch.device('cpu'))\nprint(\"Model Keys:\", checkpoint.keys())\nprint(\"Model State Dict Keys:\", checkpoint['model_state_dict'].keys())\nembedding_weight = checkpoint['model_state_dict'].get('embedding.weight')\nif embedding_weight is not None:\n    print(\"Embedding Weight Shape:\", embedding_weight.shape)",
+        "detail": "eLSTM-saved-model.inspect_model",
+        "documentation": {}
+    },
+    {
+        "label": "checkpoint",
+        "kind": 5,
+        "importPath": "eLSTM-saved-model.inspect_model",
+        "description": "eLSTM-saved-model.inspect_model",
+        "peekOfCode": "checkpoint = torch.load(model_path, map_location=torch.device('cpu'))\nprint(\"Model Keys:\", checkpoint.keys())\nprint(\"Model State Dict Keys:\", checkpoint['model_state_dict'].keys())\nembedding_weight = checkpoint['model_state_dict'].get('embedding.weight')\nif embedding_weight is not None:\n    print(\"Embedding Weight Shape:\", embedding_weight.shape)",
+        "detail": "eLSTM-saved-model.inspect_model",
+        "documentation": {}
+    },
+    {
+        "label": "embedding_weight",
+        "kind": 5,
+        "importPath": "eLSTM-saved-model.inspect_model",
+        "description": "eLSTM-saved-model.inspect_model",
+        "peekOfCode": "embedding_weight = checkpoint['model_state_dict'].get('embedding.weight')\nif embedding_weight is not None:\n    print(\"Embedding Weight Shape:\", embedding_weight.shape)",
+        "detail": "eLSTM-saved-model.inspect_model",
+        "documentation": {}
+    },
+    {
+        "label": "QuasiLSTMlayer",
+        "kind": 6,
+        "importPath": "eLSTM_model.layers",
+        "description": "eLSTM_model.layers",
+        "peekOfCode": "class QuasiLSTMlayer(nn.Module):\n    def __init__(self, input_dim, hidden_dim, forget_bias=0.):\n        super().__init__()\n        self.input_dim = input_dim\n        self.hidden_dim = hidden_dim\n        # weight matrices\n        self.wm_z = nn.Parameter(torch.rand(hidden_dim, input_dim))\n        self.wm_f = nn.Parameter(torch.rand(hidden_dim, input_dim))\n        # weight vectors\n        self.wv_z = nn.Parameter(torch.rand(1, hidden_dim))  # append B dim",
+        "detail": "eLSTM_model.layers",
+        "documentation": {}
+    },
+    {
+        "label": "elu_p1",
+        "kind": 2,
+        "importPath": "eLSTM_model.layers",
+        "description": "eLSTM_model.layers",
+        "peekOfCode": "def elu_p1(x):\n    return F.elu(x, 1., False) + 1.\n@torch.jit.script\ndef sum_norm(x):\n    return x / x.sum(-1, keepdim=True)\n# Quasi RNN-like https://arxiv.org/abs/1611.01576\n# But the output gate is conditioned by c(t) instead of c(t-1)\nclass QuasiLSTMlayer(nn.Module):\n    def __init__(self, input_dim, hidden_dim, forget_bias=0.):\n        super().__init__()",
+        "detail": "eLSTM_model.layers",
+        "documentation": {}
+    },
+    {
+        "label": "sum_norm",
+        "kind": 2,
+        "importPath": "eLSTM_model.layers",
+        "description": "eLSTM_model.layers",
+        "peekOfCode": "def sum_norm(x):\n    return x / x.sum(-1, keepdim=True)\n# Quasi RNN-like https://arxiv.org/abs/1611.01576\n# But the output gate is conditioned by c(t) instead of c(t-1)\nclass QuasiLSTMlayer(nn.Module):\n    def __init__(self, input_dim, hidden_dim, forget_bias=0.):\n        super().__init__()\n        self.input_dim = input_dim\n        self.hidden_dim = hidden_dim\n        # weight matrices",
+        "detail": "eLSTM_model.layers",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "kind": 6,
+        "importPath": "eLSTM_model.model",
+        "description": "eLSTM_model.model",
+        "peekOfCode": "class BaseModel(nn.Module):\n    def __init__(self):\n        super().__init__()\n    # return number of parameters\n    def num_params(self):\n        return sum(p.numel() for p in self.parameters() if p.requires_grad)\n    def reset_grad(self):\n        # More efficient than optimizer.zero_grad() according to:\n        # Szymon Migacz \"PYTORCH PERFORMANCE TUNING GUIDE\" at GTC-21.\n        # - doesn't execute memset for every parameter",
+        "detail": "eLSTM_model.model",
+        "documentation": {}
+    },
+    {
+        "label": "LSTMModel",
+        "kind": 6,
+        "importPath": "eLSTM_model.model",
+        "description": "eLSTM_model.model",
+        "peekOfCode": "class LSTMModel(BaseModel):\n    def __init__(self, emb_dim, hidden_size, in_vocab_size, out_vocab_size,\n                 dropout=0.0, num_layers=1, no_embedding=False):\n        super().__init__()\n        self.in_vocab_size = in_vocab_size\n        self.out_vocab_size = out_vocab_size\n        self.hidden_size = hidden_size\n        self.no_embedding = no_embedding\n        rnn_input_size = in_vocab_size\n        if not no_embedding:",
+        "detail": "eLSTM_model.model",
+        "documentation": {}
+    },
+    {
+        "label": "QuasiLSTMModel",
+        "kind": 6,
+        "importPath": "eLSTM_model.model",
+        "description": "eLSTM_model.model",
+        "peekOfCode": "class QuasiLSTMModel(BaseModel):\n    def __init__(self, emb_dim, hidden_size, in_vocab_size, out_vocab_size,\n                 dropout=0.0, num_layers=1, no_embedding=False):\n        super().__init__()\n        self.in_vocab_size = in_vocab_size\n        self.out_vocab_size = out_vocab_size\n        self.hidden_size = hidden_size\n        self.no_embedding = no_embedding\n        rnn_input_size = in_vocab_size\n        if not no_embedding:",
+        "detail": "eLSTM_model.model",
+        "documentation": {}
+    },
+    {
+        "label": "RTRLQuasiLSTMModel",
+        "kind": 6,
+        "importPath": "eLSTM_model.model",
+        "description": "eLSTM_model.model",
+        "peekOfCode": "class RTRLQuasiLSTMModel(BaseModel):\n    def __init__(self, emb_dim, hidden_size, in_vocab_size, out_vocab_size,\n                 dropout=0.0, num_layers=1, no_embedding=False):\n        super().__init__()\n        self.in_vocab_size = in_vocab_size\n        self.out_vocab_size = out_vocab_size\n        self.hidden_size = hidden_size\n        self.no_embedding = no_embedding\n        rnn_input_size = in_vocab_size\n        self.num_classes = in_vocab_size",
+        "detail": "eLSTM_model.model",
+        "documentation": {}
+    },
+    {
+        "label": "RTRLQuasiLSTMlayer",
+        "kind": 6,
+        "importPath": "eLSTM_model.rtrl_layers",
+        "description": "eLSTM_model.rtrl_layers",
+        "peekOfCode": "class RTRLQuasiLSTMlayer(nn.Module):\n    def __init__(self, input_dim, hidden_dim, forget_bias=0.):\n        super().__init__()\n        self.input_dim = input_dim\n        self.hidden_dim = hidden_dim\n        # weight matrices\n        self.wm_z = nn.Parameter(torch.rand(hidden_dim, input_dim), requires_grad=False)\n        self.wm_f = nn.Parameter(torch.rand(hidden_dim, input_dim), requires_grad=False)\n        # weight vectors\n        self.wv_z = nn.Parameter(torch.rand(1, hidden_dim), requires_grad=False)  # append B dim",
+        "detail": "eLSTM_model.rtrl_layers",
+        "documentation": {}
+    },
+    {
+        "label": "elu_p1",
+        "kind": 2,
+        "importPath": "eLSTM_model.rtrl_layers",
+        "description": "eLSTM_model.rtrl_layers",
+        "peekOfCode": "def elu_p1(x):\n    return F.elu(x, 1., False) + 1.\n@torch.jit.script\ndef sum_norm(x):\n    return x / x.sum(-1, keepdim=True)\nclass RTRLQuasiLSTMlayer(nn.Module):\n    def __init__(self, input_dim, hidden_dim, forget_bias=0.):\n        super().__init__()\n        self.input_dim = input_dim\n        self.hidden_dim = hidden_dim",
+        "detail": "eLSTM_model.rtrl_layers",
+        "documentation": {}
+    },
+    {
+        "label": "sum_norm",
+        "kind": 2,
+        "importPath": "eLSTM_model.rtrl_layers",
+        "description": "eLSTM_model.rtrl_layers",
+        "peekOfCode": "def sum_norm(x):\n    return x / x.sum(-1, keepdim=True)\nclass RTRLQuasiLSTMlayer(nn.Module):\n    def __init__(self, input_dim, hidden_dim, forget_bias=0.):\n        super().__init__()\n        self.input_dim = input_dim\n        self.hidden_dim = hidden_dim\n        # weight matrices\n        self.wm_z = nn.Parameter(torch.rand(hidden_dim, input_dim), requires_grad=False)\n        self.wm_f = nn.Parameter(torch.rand(hidden_dim, input_dim), requires_grad=False)",
+        "detail": "eLSTM_model.rtrl_layers",
+        "documentation": {}
+    },
+    {
+        "label": "num_token",
+        "kind": 2,
+        "importPath": "utils.copy_task_generator",
+        "description": "utils.copy_task_generator",
+        "peekOfCode": "def num_token(string):\n    return len(string.split())\n# max_seq_length is the max seq length of the pattern/code to be memorized\n# for length-padding, use the same token as memory token and skip from the loss\ndef get_data_pair(max_seq_length, pad_id=2):\n    '''Get one example of input/output pair.'''\n    slen = drw(1, max_seq_length + 1)\n    pattern = np.random.randint(2, size=slen)\n    spaces = np.ones_like(pattern) * pad_id\n    padding = np.ones([max_seq_length - slen]).astype(int) * pad_id",
+        "detail": "utils.copy_task_generator",
+        "documentation": {}
+    },
+    {
+        "label": "get_data_pair",
+        "kind": 2,
+        "importPath": "utils.copy_task_generator",
+        "description": "utils.copy_task_generator",
+        "peekOfCode": "def get_data_pair(max_seq_length, pad_id=2):\n    '''Get one example of input/output pair.'''\n    slen = drw(1, max_seq_length + 1)\n    pattern = np.random.randint(2, size=slen)\n    spaces = np.ones_like(pattern) * pad_id\n    padding = np.ones([max_seq_length - slen]).astype(int) * pad_id\n    input_str = np.concatenate((pattern, spaces, padding))\n    tgt_str = np.concatenate((spaces, pattern, padding))\n    input_str = ' '.join(map(str, input_str))\n    tgt_str = ' '.join(map(str, tgt_str))",
+        "detail": "utils.copy_task_generator",
+        "documentation": {}
+    },
+    {
+        "label": "visualize",
+        "kind": 2,
+        "importPath": "utils.copy_task_generator",
+        "description": "utils.copy_task_generator",
+        "peekOfCode": "def visualize(code_str, tgt_str):\n    print(\"=== Code string ============ \")\n    print(code_str)\n    print(\"\\n=== Target string ========== \")\n    print(tgt_str)\n    print(\"=== END \")\nif __name__ == '__main__':\n    import argparse\n    from tqdm import tqdm\n    parser = argparse.ArgumentParser(description='Generate data.')",
+        "detail": "utils.copy_task_generator",
+        "documentation": {}
+    },
+    {
+        "label": "rnd_seed",
+        "kind": 5,
+        "importPath": "utils.copy_task_generator",
+        "description": "utils.copy_task_generator",
+        "peekOfCode": "rnd_seed = 42\nrandom.seed(rnd_seed)\nnp.random.seed(rnd_seed)\n# Get number of characters in the string w/o spaces\n# NB: line break '\\n' counts as one character.\ndef num_token(string):\n    return len(string.split())\n# max_seq_length is the max seq length of the pattern/code to be memorized\n# for length-padding, use the same token as memory token and skip from the loss\ndef get_data_pair(max_seq_length, pad_id=2):",
+        "detail": "utils.copy_task_generator",
+        "documentation": {}
+    },
+    {
+        "label": "Vocabulary",
+        "kind": 6,
+        "importPath": "copy_task_data",
+        "description": "copy_task_data",
+        "peekOfCode": "class Vocabulary(object):\n    def __init__(self, vocab_dict=None, vocab_file=None,\n                 include_unk=False, unk_str='<unk>',\n                 include_eos=False, eos_str='<eos>'):\n        # If provided, contruction from dict is prioritized.\n        self.str2idx = {}\n        self.idx2str = []\n        if include_eos:\n            self.add_str(eos_str)\n            self.eos_str = eos_str",
+        "detail": "copy_task_data",
+        "documentation": {}
+    },
+    {
+        "label": "CopyTaskDataset",
+        "kind": 6,
+        "importPath": "copy_task_data",
+        "description": "copy_task_data",
+        "peekOfCode": "class CopyTaskDataset(Dataset):\n    def __init__(self, src_file, tgt_file, src_pad_idx, tgt_pad_idx,\n                 src_vocab=None, tgt_vocab=None, device='cuda'):\n        self.src_max_seq_length = None  # set by text_to_data\n        self.tgt_max_seq_length = None\n        build_src_vocab = False\n        if src_vocab is None:\n            build_src_vocab = True\n            self.src_vocab = Vocabulary()\n        else:",
+        "detail": "copy_task_data",
+        "documentation": {}
+    },
+    {
+        "label": "seed_worker",
+        "kind": 2,
+        "importPath": "copy_task_data",
+        "description": "copy_task_data",
+        "peekOfCode": "def seed_worker(worker_id):\n    worker_seed = torch.initial_seed() % 2**32\n    numpy.random.seed(worker_seed)\n    random.seed(worker_seed)\nclass Vocabulary(object):\n    def __init__(self, vocab_dict=None, vocab_file=None,\n                 include_unk=False, unk_str='<unk>',\n                 include_eos=False, eos_str='<eos>'):\n        # If provided, contruction from dict is prioritized.\n        self.str2idx = {}",
+        "detail": "copy_task_data",
+        "documentation": {}
+    },
+    {
+        "label": "Vocabulary",
+        "kind": 6,
+        "importPath": "data",
+        "description": "data",
+        "peekOfCode": "class Vocabulary(object):\n    def __init__(self, vocab_dict=None, vocab_file=None,\n                 include_unk=False, unk_str='<unk>',\n                 include_eos=False, eos_str='<eos>',\n                 no_out_str='_',\n                 pad_id=None, pad_str=None):\n        # If provided, contruction from dict is prioritized.\n        self.str2idx = {}\n        self.idx2str = []\n        self.no_out_str = no_out_str",
+        "detail": "data",
+        "documentation": {}
+    },
+    {
+        "label": "LTEDataset",
+        "kind": 6,
+        "importPath": "data",
+        "description": "data",
+        "peekOfCode": "class LTEDataset(Dataset):\n    def __init__(self, src_file, tgt_file, src_pad_idx, tgt_pad_idx,\n                 src_vocab=None, tgt_vocab=None, device='cuda'):\n        self.src_max_seq_length = None  # set by text_to_data\n        self.tgt_max_seq_length = None\n        build_src_vocab = False\n        if src_vocab is None:\n            build_src_vocab = True\n            self.src_vocab = Vocabulary()\n        else:",
+        "detail": "data",
+        "documentation": {}
+    },
+    {
+        "label": "seed_worker",
+        "kind": 2,
+        "importPath": "data",
+        "description": "data",
+        "peekOfCode": "def seed_worker(worker_id):\n    worker_seed = torch.initial_seed() % 2**32\n    numpy.random.seed(worker_seed)\n    random.seed(worker_seed)\nclass Vocabulary(object):\n    def __init__(self, vocab_dict=None, vocab_file=None,\n                 include_unk=False, unk_str='<unk>',\n                 include_eos=False, eos_str='<eos>',\n                 no_out_str='_',\n                 pad_id=None, pad_str=None):",
+        "detail": "data",
+        "documentation": {}
+    },
+    {
+        "label": "DEVICE",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "DEVICE = 'cuda'\nparser = argparse.ArgumentParser(description='Learning to execute')\nparser.add_argument('--data_dir', type=str,\n                    default='utils/data/',\n                    help='location of the data corpus')\nparser.add_argument('--level', type=int, default=500,\n                    choices=[50, 500],\n                    help='Number of variables (3, 5 or 10)')\nparser.add_argument('--work_dir', default='save_models', type=str,\n                    help='where to save model ckpt.')",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "parser",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "parser = argparse.ArgumentParser(description='Learning to execute')\nparser.add_argument('--data_dir', type=str,\n                    default='utils/data/',\n                    help='location of the data corpus')\nparser.add_argument('--level', type=int, default=500,\n                    choices=[50, 500],\n                    help='Number of variables (3, 5 or 10)')\nparser.add_argument('--work_dir', default='save_models', type=str,\n                    help='where to save model ckpt.')\nparser.add_argument('--full_sequence', action='store_true', ",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "args",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "args = parser.parse_args()\n# Set seed\ntorch.manual_seed(args.seed)\nrandom.seed(args.seed)\nif torch.cuda.is_available():\n    torch.cuda.manual_seed_all(args.seed)\n# Set work directory\nargs.work_dir = os.path.join(args.work_dir, time.strftime('%Y%m%d-%H%M%S'))\nif not os.path.exists(args.work_dir):\n    os.makedirs(args.work_dir)",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "args.work_dir",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "args.work_dir = os.path.join(args.work_dir, time.strftime('%Y%m%d-%H%M%S'))\nif not os.path.exists(args.work_dir):\n    os.makedirs(args.work_dir)\n# logging\nlog_file_name = f\"{args.work_dir}/log.txt\"\nhandlers = [logging.FileHandler(log_file_name), logging.StreamHandler()]\nlogging.basicConfig(\n    level=logging.INFO, format='%(message)s', handlers=handlers)\nloginf = logging.info\nloginf(f\"torch version: {torch.__version__}\")",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "log_file_name",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "log_file_name = f\"{args.work_dir}/log.txt\"\nhandlers = [logging.FileHandler(log_file_name), logging.StreamHandler()]\nlogging.basicConfig(\n    level=logging.INFO, format='%(message)s', handlers=handlers)\nloginf = logging.info\nloginf(f\"torch version: {torch.__version__}\")\n# loginf(f\"Last commit: {subprocess.check_output(['git', 'rev-parse', 'HEAD'])}\")\nloginf(f\"Work dir: {args.work_dir}\")\nmodel_name = 'rtrl_elstm'\n# wandb settings",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "handlers",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "handlers = [logging.FileHandler(log_file_name), logging.StreamHandler()]\nlogging.basicConfig(\n    level=logging.INFO, format='%(message)s', handlers=handlers)\nloginf = logging.info\nloginf(f\"torch version: {torch.__version__}\")\n# loginf(f\"Last commit: {subprocess.check_output(['git', 'rev-parse', 'HEAD'])}\")\nloginf(f\"Work dir: {args.work_dir}\")\nmodel_name = 'rtrl_elstm'\n# wandb settings\nif args.use_wandb:  # configure wandb.",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "loginf",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "loginf = logging.info\nloginf(f\"torch version: {torch.__version__}\")\n# loginf(f\"Last commit: {subprocess.check_output(['git', 'rev-parse', 'HEAD'])}\")\nloginf(f\"Work dir: {args.work_dir}\")\nmodel_name = 'rtrl_elstm'\n# wandb settings\nif args.use_wandb:  # configure wandb.\n    import wandb\n    use_wandb = True\n    if args.project_name is None:",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "model_name",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "model_name = 'rtrl_elstm'\n# wandb settings\nif args.use_wandb:  # configure wandb.\n    import wandb\n    use_wandb = True\n    if args.project_name is None:\n        project_name = (os.uname()[1]\n                        + datetime.now().strftime(\"%Y-%m-%d-%H-%M-%S\"))\n    else:\n        project_name = args.project_name",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "data_path",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "data_path = args.data_dir\nsrc_pad_idx = 2  # src_pad does not matter; as padding is aligned.\ntgt_pad_idx = 2  # to be passed to the loss func.\n# train_batch_size = 64\ntrain_batch_size = args.batch_size\nvalid_batch_size = train_batch_size\ntest_batch_size = train_batch_size\ntrain_file_src = f\"{data_path}/train_{args.level}.src\"\ntrain_file_tgt = f\"{data_path}/train_{args.level}.tgt\"\nvalid_file_src = f\"{data_path}/valid_{args.level}.src\"",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "src_pad_idx",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "src_pad_idx = 2  # src_pad does not matter; as padding is aligned.\ntgt_pad_idx = 2  # to be passed to the loss func.\n# train_batch_size = 64\ntrain_batch_size = args.batch_size\nvalid_batch_size = train_batch_size\ntest_batch_size = train_batch_size\ntrain_file_src = f\"{data_path}/train_{args.level}.src\"\ntrain_file_tgt = f\"{data_path}/train_{args.level}.tgt\"\nvalid_file_src = f\"{data_path}/valid_{args.level}.src\"\nvalid_file_tgt = f\"{data_path}/valid_{args.level}.tgt\"",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "tgt_pad_idx",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "tgt_pad_idx = 2  # to be passed to the loss func.\n# train_batch_size = 64\ntrain_batch_size = args.batch_size\nvalid_batch_size = train_batch_size\ntest_batch_size = train_batch_size\ntrain_file_src = f\"{data_path}/train_{args.level}.src\"\ntrain_file_tgt = f\"{data_path}/train_{args.level}.tgt\"\nvalid_file_src = f\"{data_path}/valid_{args.level}.src\"\nvalid_file_tgt = f\"{data_path}/valid_{args.level}.tgt\"\ntest_file_src = f\"{data_path}/test_{args.level}.src\"",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "train_batch_size",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "train_batch_size = args.batch_size\nvalid_batch_size = train_batch_size\ntest_batch_size = train_batch_size\ntrain_file_src = f\"{data_path}/train_{args.level}.src\"\ntrain_file_tgt = f\"{data_path}/train_{args.level}.tgt\"\nvalid_file_src = f\"{data_path}/valid_{args.level}.src\"\nvalid_file_tgt = f\"{data_path}/valid_{args.level}.tgt\"\ntest_file_src = f\"{data_path}/test_{args.level}.src\"\ntest_file_tgt = f\"{data_path}/test_{args.level}.tgt\"\n# Construct dataset",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "valid_batch_size",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "valid_batch_size = train_batch_size\ntest_batch_size = train_batch_size\ntrain_file_src = f\"{data_path}/train_{args.level}.src\"\ntrain_file_tgt = f\"{data_path}/train_{args.level}.tgt\"\nvalid_file_src = f\"{data_path}/valid_{args.level}.src\"\nvalid_file_tgt = f\"{data_path}/valid_{args.level}.tgt\"\ntest_file_src = f\"{data_path}/test_{args.level}.src\"\ntest_file_tgt = f\"{data_path}/test_{args.level}.tgt\"\n# Construct dataset\ntrain_data = CopyTaskDataset(src_file=train_file_src, tgt_file=train_file_tgt,",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "test_batch_size",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "test_batch_size = train_batch_size\ntrain_file_src = f\"{data_path}/train_{args.level}.src\"\ntrain_file_tgt = f\"{data_path}/train_{args.level}.tgt\"\nvalid_file_src = f\"{data_path}/valid_{args.level}.src\"\nvalid_file_tgt = f\"{data_path}/valid_{args.level}.tgt\"\ntest_file_src = f\"{data_path}/test_{args.level}.src\"\ntest_file_tgt = f\"{data_path}/test_{args.level}.tgt\"\n# Construct dataset\ntrain_data = CopyTaskDataset(src_file=train_file_src, tgt_file=train_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "train_file_src",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "train_file_src = f\"{data_path}/train_{args.level}.src\"\ntrain_file_tgt = f\"{data_path}/train_{args.level}.tgt\"\nvalid_file_src = f\"{data_path}/valid_{args.level}.src\"\nvalid_file_tgt = f\"{data_path}/valid_{args.level}.tgt\"\ntest_file_src = f\"{data_path}/test_{args.level}.src\"\ntest_file_tgt = f\"{data_path}/test_{args.level}.tgt\"\n# Construct dataset\ntrain_data = CopyTaskDataset(src_file=train_file_src, tgt_file=train_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=None, tgt_vocab=None)",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "train_file_tgt",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "train_file_tgt = f\"{data_path}/train_{args.level}.tgt\"\nvalid_file_src = f\"{data_path}/valid_{args.level}.src\"\nvalid_file_tgt = f\"{data_path}/valid_{args.level}.tgt\"\ntest_file_src = f\"{data_path}/test_{args.level}.src\"\ntest_file_tgt = f\"{data_path}/test_{args.level}.tgt\"\n# Construct dataset\ntrain_data = CopyTaskDataset(src_file=train_file_src, tgt_file=train_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=None, tgt_vocab=None)\nsrc_vocab = train_data.src_vocab",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "valid_file_src",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "valid_file_src = f\"{data_path}/valid_{args.level}.src\"\nvalid_file_tgt = f\"{data_path}/valid_{args.level}.tgt\"\ntest_file_src = f\"{data_path}/test_{args.level}.src\"\ntest_file_tgt = f\"{data_path}/test_{args.level}.tgt\"\n# Construct dataset\ntrain_data = CopyTaskDataset(src_file=train_file_src, tgt_file=train_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=None, tgt_vocab=None)\nsrc_vocab = train_data.src_vocab\ntgt_vocab = train_data.tgt_vocab",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "valid_file_tgt",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "valid_file_tgt = f\"{data_path}/valid_{args.level}.tgt\"\ntest_file_src = f\"{data_path}/test_{args.level}.src\"\ntest_file_tgt = f\"{data_path}/test_{args.level}.tgt\"\n# Construct dataset\ntrain_data = CopyTaskDataset(src_file=train_file_src, tgt_file=train_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=None, tgt_vocab=None)\nsrc_vocab = train_data.src_vocab\ntgt_vocab = train_data.tgt_vocab\nno_print_idx = 2  # Used to compute print accuracy.",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "test_file_src",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "test_file_src = f\"{data_path}/test_{args.level}.src\"\ntest_file_tgt = f\"{data_path}/test_{args.level}.tgt\"\n# Construct dataset\ntrain_data = CopyTaskDataset(src_file=train_file_src, tgt_file=train_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=None, tgt_vocab=None)\nsrc_vocab = train_data.src_vocab\ntgt_vocab = train_data.tgt_vocab\nno_print_idx = 2  # Used to compute print accuracy.\nvalid_data = CopyTaskDataset(src_file=valid_file_src, tgt_file=valid_file_tgt,",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "test_file_tgt",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "test_file_tgt = f\"{data_path}/test_{args.level}.tgt\"\n# Construct dataset\ntrain_data = CopyTaskDataset(src_file=train_file_src, tgt_file=train_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=None, tgt_vocab=None)\nsrc_vocab = train_data.src_vocab\ntgt_vocab = train_data.tgt_vocab\nno_print_idx = 2  # Used to compute print accuracy.\nvalid_data = CopyTaskDataset(src_file=valid_file_src, tgt_file=valid_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "train_data",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "train_data = CopyTaskDataset(src_file=train_file_src, tgt_file=train_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=None, tgt_vocab=None)\nsrc_vocab = train_data.src_vocab\ntgt_vocab = train_data.tgt_vocab\nno_print_idx = 2  # Used to compute print accuracy.\nvalid_data = CopyTaskDataset(src_file=valid_file_src, tgt_file=valid_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=src_vocab, tgt_vocab=tgt_vocab)\n# Set dataloader",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "src_vocab",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "src_vocab = train_data.src_vocab\ntgt_vocab = train_data.tgt_vocab\nno_print_idx = 2  # Used to compute print accuracy.\nvalid_data = CopyTaskDataset(src_file=valid_file_src, tgt_file=valid_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=src_vocab, tgt_vocab=tgt_vocab)\n# Set dataloader\ntrain_data_loader = DataLoader(\n    dataset=train_data, batch_size=train_batch_size, shuffle=True)\nvalid_data_loader = DataLoader(",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "tgt_vocab",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "tgt_vocab = train_data.tgt_vocab\nno_print_idx = 2  # Used to compute print accuracy.\nvalid_data = CopyTaskDataset(src_file=valid_file_src, tgt_file=valid_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=src_vocab, tgt_vocab=tgt_vocab)\n# Set dataloader\ntrain_data_loader = DataLoader(\n    dataset=train_data, batch_size=train_batch_size, shuffle=True)\nvalid_data_loader = DataLoader(\n    dataset=valid_data, batch_size=valid_batch_size, shuffle=False)",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "no_print_idx",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "no_print_idx = 2  # Used to compute print accuracy.\nvalid_data = CopyTaskDataset(src_file=valid_file_src, tgt_file=valid_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=src_vocab, tgt_vocab=tgt_vocab)\n# Set dataloader\ntrain_data_loader = DataLoader(\n    dataset=train_data, batch_size=train_batch_size, shuffle=True)\nvalid_data_loader = DataLoader(\n    dataset=valid_data, batch_size=valid_batch_size, shuffle=False)\nmodel_type = args.model_type  # 0 for LSTM, 1 for regular Trafo",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "valid_data",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "valid_data = CopyTaskDataset(src_file=valid_file_src, tgt_file=valid_file_tgt,\n                        src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                        src_vocab=src_vocab, tgt_vocab=tgt_vocab)\n# Set dataloader\ntrain_data_loader = DataLoader(\n    dataset=train_data, batch_size=train_batch_size, shuffle=True)\nvalid_data_loader = DataLoader(\n    dataset=valid_data, batch_size=valid_batch_size, shuffle=False)\nmodel_type = args.model_type  # 0 for LSTM, 1 for regular Trafo\nassert model_type == 11",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "train_data_loader",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "train_data_loader = DataLoader(\n    dataset=train_data, batch_size=train_batch_size, shuffle=True)\nvalid_data_loader = DataLoader(\n    dataset=valid_data, batch_size=valid_batch_size, shuffle=False)\nmodel_type = args.model_type  # 0 for LSTM, 1 for regular Trafo\nassert model_type == 11\n# LSTM params:\nemb_dim = args.emb_size\nhidden_size = args.hidden_size\nnum_layers = args.num_layer",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "valid_data_loader",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "valid_data_loader = DataLoader(\n    dataset=valid_data, batch_size=valid_batch_size, shuffle=False)\nmodel_type = args.model_type  # 0 for LSTM, 1 for regular Trafo\nassert model_type == 11\n# LSTM params:\nemb_dim = args.emb_size\nhidden_size = args.hidden_size\nnum_layers = args.num_layer\ndropout = args.dropout\n# Common params:",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "model_type",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "model_type = args.model_type  # 0 for LSTM, 1 for regular Trafo\nassert model_type == 11\n# LSTM params:\nemb_dim = args.emb_size\nhidden_size = args.hidden_size\nnum_layers = args.num_layer\ndropout = args.dropout\n# Common params:\nin_vocab_size = src_vocab.size()\nout_vocab_size = tgt_vocab.size()",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "emb_dim",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "emb_dim = args.emb_size\nhidden_size = args.hidden_size\nnum_layers = args.num_layer\ndropout = args.dropout\n# Common params:\nin_vocab_size = src_vocab.size()\nout_vocab_size = tgt_vocab.size()\nloginf(f\"Input vocab size: {in_vocab_size}\")\nloginf(f\"Output vocab size: {out_vocab_size}\")\n# model",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "hidden_size",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "hidden_size = args.hidden_size\nnum_layers = args.num_layer\ndropout = args.dropout\n# Common params:\nin_vocab_size = src_vocab.size()\nout_vocab_size = tgt_vocab.size()\nloginf(f\"Input vocab size: {in_vocab_size}\")\nloginf(f\"Output vocab size: {out_vocab_size}\")\n# model\nloginf(\"Model: Quasi-LSTM\")",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "num_layers",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "num_layers = args.num_layer\ndropout = args.dropout\n# Common params:\nin_vocab_size = src_vocab.size()\nout_vocab_size = tgt_vocab.size()\nloginf(f\"Input vocab size: {in_vocab_size}\")\nloginf(f\"Output vocab size: {out_vocab_size}\")\n# model\nloginf(\"Model: Quasi-LSTM\")\nmodel = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "dropout",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "dropout = args.dropout\n# Common params:\nin_vocab_size = src_vocab.size()\nout_vocab_size = tgt_vocab.size()\nloginf(f\"Input vocab size: {in_vocab_size}\")\nloginf(f\"Output vocab size: {out_vocab_size}\")\n# model\nloginf(\"Model: Quasi-LSTM\")\nmodel = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,\n                    num_layers=num_layers, in_vocab_size=in_vocab_size,",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "in_vocab_size",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "in_vocab_size = src_vocab.size()\nout_vocab_size = tgt_vocab.size()\nloginf(f\"Input vocab size: {in_vocab_size}\")\nloginf(f\"Output vocab size: {out_vocab_size}\")\n# model\nloginf(\"Model: Quasi-LSTM\")\nmodel = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,\n                    num_layers=num_layers, in_vocab_size=in_vocab_size,\n                    out_vocab_size=out_vocab_size, dropout=dropout,\n                    no_embedding=args.no_embedding)",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "out_vocab_size",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "out_vocab_size = tgt_vocab.size()\nloginf(f\"Input vocab size: {in_vocab_size}\")\nloginf(f\"Output vocab size: {out_vocab_size}\")\n# model\nloginf(\"Model: Quasi-LSTM\")\nmodel = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,\n                    num_layers=num_layers, in_vocab_size=in_vocab_size,\n                    out_vocab_size=out_vocab_size, dropout=dropout,\n                    no_embedding=args.no_embedding)\nloginf(f\"Number of trainable params: {model.num_params()}\")",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "model",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "model = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,\n                    num_layers=num_layers, in_vocab_size=in_vocab_size,\n                    out_vocab_size=out_vocab_size, dropout=dropout,\n                    no_embedding=args.no_embedding)\nloginf(f\"Number of trainable params: {model.num_params()}\")\nloginf(f\"{model}\")\nmodel = model.to(DEVICE)\neval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,\n                    num_layers=num_layers, in_vocab_size=in_vocab_size,\n                    out_vocab_size=out_vocab_size, dropout=dropout,",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "model",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "model = model.to(DEVICE)\neval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,\n                    num_layers=num_layers, in_vocab_size=in_vocab_size,\n                    out_vocab_size=out_vocab_size, dropout=dropout,\n                    no_embedding=args.no_embedding)\neval_model = eval_model.to(DEVICE)\n# Optimization settings:\nnum_epoch = args.num_epoch\ngrad_cummulate = args.grad_cummulate\nloginf(f\"Batch size: {train_batch_size}\")",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "eval_model",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "eval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,\n                    num_layers=num_layers, in_vocab_size=in_vocab_size,\n                    out_vocab_size=out_vocab_size, dropout=dropout,\n                    no_embedding=args.no_embedding)\neval_model = eval_model.to(DEVICE)\n# Optimization settings:\nnum_epoch = args.num_epoch\ngrad_cummulate = args.grad_cummulate\nloginf(f\"Batch size: {train_batch_size}\")\nloginf(f\"Gradient accumulation for {grad_cummulate} steps.\")",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "eval_model",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "eval_model = eval_model.to(DEVICE)\n# Optimization settings:\nnum_epoch = args.num_epoch\ngrad_cummulate = args.grad_cummulate\nloginf(f\"Batch size: {train_batch_size}\")\nloginf(f\"Gradient accumulation for {grad_cummulate} steps.\")\nloginf(f\"Seed: {args.seed}\")\nlearning_rate = args.learning_rate\nloss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)\noptimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "num_epoch",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "num_epoch = args.num_epoch\ngrad_cummulate = args.grad_cummulate\nloginf(f\"Batch size: {train_batch_size}\")\nloginf(f\"Gradient accumulation for {grad_cummulate} steps.\")\nloginf(f\"Seed: {args.seed}\")\nlearning_rate = args.learning_rate\nloss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)\noptimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,\n                             betas=(0.9, 0.995), eps=1e-9)\nclip = args.clip",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "grad_cummulate",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "grad_cummulate = args.grad_cummulate\nloginf(f\"Batch size: {train_batch_size}\")\nloginf(f\"Gradient accumulation for {grad_cummulate} steps.\")\nloginf(f\"Seed: {args.seed}\")\nlearning_rate = args.learning_rate\nloss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)\noptimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,\n                             betas=(0.9, 0.995), eps=1e-9)\nclip = args.clip\nloginf(f\"Learning rate: {learning_rate}\")",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "learning_rate",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "learning_rate = args.learning_rate\nloss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)\noptimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,\n                             betas=(0.9, 0.995), eps=1e-9)\nclip = args.clip\nloginf(f\"Learning rate: {learning_rate}\")\nloginf(f\"clip at: {clip}\")\n# Training\nacc_loss = 0.\nsteps = 0",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "loss_fn",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)\noptimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,\n                             betas=(0.9, 0.995), eps=1e-9)\nclip = args.clip\nloginf(f\"Learning rate: {learning_rate}\")\nloginf(f\"clip at: {clip}\")\n# Training\nacc_loss = 0.\nsteps = 0\nstop_acc = 100",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "optimizer",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,\n                             betas=(0.9, 0.995), eps=1e-9)\nclip = args.clip\nloginf(f\"Learning rate: {learning_rate}\")\nloginf(f\"clip at: {clip}\")\n# Training\nacc_loss = 0.\nsteps = 0\nstop_acc = 100\nbest_val_acc = 0.0",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "clip",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "clip = args.clip\nloginf(f\"Learning rate: {learning_rate}\")\nloginf(f\"clip at: {clip}\")\n# Training\nacc_loss = 0.\nsteps = 0\nstop_acc = 100\nbest_val_acc = 0.0\nbest_epoch = 1\ncheck_between_epochs = False",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "acc_loss",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "acc_loss = 0.\nsteps = 0\nstop_acc = 100\nbest_val_acc = 0.0\nbest_epoch = 1\ncheck_between_epochs = False\nreport_every = args.report_every\nbest_model_path = os.path.join(args.work_dir, 'best_model.pt')\nlastest_model_path = os.path.join(args.work_dir, 'lastest_model.pt')\nloginf(f\"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] Start training\")",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "steps",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "steps = 0\nstop_acc = 100\nbest_val_acc = 0.0\nbest_epoch = 1\ncheck_between_epochs = False\nreport_every = args.report_every\nbest_model_path = os.path.join(args.work_dir, 'best_model.pt')\nlastest_model_path = os.path.join(args.work_dir, 'lastest_model.pt')\nloginf(f\"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] Start training\")\nstart_time = time.time()",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "stop_acc",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "stop_acc = 100\nbest_val_acc = 0.0\nbest_epoch = 1\ncheck_between_epochs = False\nreport_every = args.report_every\nbest_model_path = os.path.join(args.work_dir, 'best_model.pt')\nlastest_model_path = os.path.join(args.work_dir, 'lastest_model.pt')\nloginf(f\"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] Start training\")\nstart_time = time.time()\ninterval_start_time = time.time()",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "best_val_acc",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "best_val_acc = 0.0\nbest_epoch = 1\ncheck_between_epochs = False\nreport_every = args.report_every\nbest_model_path = os.path.join(args.work_dir, 'best_model.pt')\nlastest_model_path = os.path.join(args.work_dir, 'lastest_model.pt')\nloginf(f\"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] Start training\")\nstart_time = time.time()\ninterval_start_time = time.time()\n# Re-seed so that the order of data presentation",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "best_epoch",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "best_epoch = 1\ncheck_between_epochs = False\nreport_every = args.report_every\nbest_model_path = os.path.join(args.work_dir, 'best_model.pt')\nlastest_model_path = os.path.join(args.work_dir, 'lastest_model.pt')\nloginf(f\"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] Start training\")\nstart_time = time.time()\ninterval_start_time = time.time()\n# Re-seed so that the order of data presentation\n# is determined by the seed independent of the model choice.",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "check_between_epochs",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "check_between_epochs = False\nreport_every = args.report_every\nbest_model_path = os.path.join(args.work_dir, 'best_model.pt')\nlastest_model_path = os.path.join(args.work_dir, 'lastest_model.pt')\nloginf(f\"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] Start training\")\nstart_time = time.time()\ninterval_start_time = time.time()\n# Re-seed so that the order of data presentation\n# is determined by the seed independent of the model choice.\ntorch.manual_seed(args.seed)",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "report_every",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "report_every = args.report_every\nbest_model_path = os.path.join(args.work_dir, 'best_model.pt')\nlastest_model_path = os.path.join(args.work_dir, 'lastest_model.pt')\nloginf(f\"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] Start training\")\nstart_time = time.time()\ninterval_start_time = time.time()\n# Re-seed so that the order of data presentation\n# is determined by the seed independent of the model choice.\ntorch.manual_seed(args.seed)\nrandom.seed(args.seed)",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "best_model_path",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "best_model_path = os.path.join(args.work_dir, 'best_model.pt')\nlastest_model_path = os.path.join(args.work_dir, 'lastest_model.pt')\nloginf(f\"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] Start training\")\nstart_time = time.time()\ninterval_start_time = time.time()\n# Re-seed so that the order of data presentation\n# is determined by the seed independent of the model choice.\ntorch.manual_seed(args.seed)\nrandom.seed(args.seed)\nif torch.cuda.is_available():",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "lastest_model_path",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "lastest_model_path = os.path.join(args.work_dir, 'lastest_model.pt')\nloginf(f\"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] Start training\")\nstart_time = time.time()\ninterval_start_time = time.time()\n# Re-seed so that the order of data presentation\n# is determined by the seed independent of the model choice.\ntorch.manual_seed(args.seed)\nrandom.seed(args.seed)\nif torch.cuda.is_available():\n    torch.cuda.manual_seed_all(args.seed)",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "start_time",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "start_time = time.time()\ninterval_start_time = time.time()\n# Re-seed so that the order of data presentation\n# is determined by the seed independent of the model choice.\ntorch.manual_seed(args.seed)\nrandom.seed(args.seed)\nif torch.cuda.is_available():\n    torch.cuda.manual_seed_all(args.seed)\nmodel.reset_grad()\nmodel.rtrl_reset_grad()",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "interval_start_time",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "interval_start_time = time.time()\n# Re-seed so that the order of data presentation\n# is determined by the seed independent of the model choice.\ntorch.manual_seed(args.seed)\nrandom.seed(args.seed)\nif torch.cuda.is_available():\n    torch.cuda.manual_seed_all(args.seed)\nmodel.reset_grad()\nmodel.rtrl_reset_grad()\nfor ep in range(num_epoch):",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "elapsed",
+        "kind": 5,
+        "importPath": "eLSTM_copy_task_main",
+        "description": "eLSTM_copy_task_main",
+        "peekOfCode": "elapsed = time.time() - start_time\nloginf(f\"Ran {ep} epochs in {elapsed / 60.:.2f} min.\")\nloginf(f\"Best validation acc: {best_val_acc:.2f}\")\nif best_epoch > 1:  # load the best model and evaluate on the test set\n    del train_data_loader, train_data\n    test_data = CopyTaskDataset(src_file=test_file_src, tgt_file=test_file_tgt,\n                           src_pad_idx=src_pad_idx, tgt_pad_idx=tgt_pad_idx,\n                           src_vocab=src_vocab, tgt_vocab=tgt_vocab)\n    test_data_loader = DataLoader(\n        dataset=test_data, batch_size=test_batch_size, shuffle=False)",
+        "detail": "eLSTM_copy_task_main",
+        "documentation": {}
+    },
+    {
+        "label": "compute_accuracy",
+        "kind": 2,
+        "importPath": "eval_utils",
+        "description": "eval_utils",
+        "peekOfCode": "def compute_accuracy(model, data_iterator, loss_fn, no_print_idx, pad_value=-1,\n                     show_example=False, only_nbatch=-1):\n    \"\"\"Compute accuracies and loss.\n    :param str, split_name: for printing the accuracy with the split name.\n    :param bool, show_example: if True, print some decoding output examples.\n    :param int, only_nbatch: Only use given number of batches. If -1, use all\n      data (default).\n    returns loss, accucary char-level accuracy, print accuracy\n    \"\"\"\n    model.eval()",
+        "detail": "eval_utils",
+        "documentation": {}
+    },
+    {
+        "label": "TMazeEnv",
+        "kind": 6,
+        "importPath": "tmaze_pen",
+        "description": "tmaze_pen",
+        "peekOfCode": "class TMazeEnv:\n    def __init__(self, corridor_length=5, delay=0, randomize_goal=True):\n        \"\"\"\n        T-maze environment:\n        - Agent starts at the bottom of T\n        - Signal at the start indicates which way to turn at junction (left/right)\n        - Reward is given only if agent turns the correct way\n        Args:\n            corridor_length: Length of the corridor before the T-junction\n            delay: Number of steps with no signal before showing the signal",
+        "detail": "tmaze_pen",
+        "documentation": {}
+    },
+    {
+        "label": "eLSTMDiscretePolicy",
+        "kind": 6,
+        "importPath": "tmaze_pen",
+        "description": "tmaze_pen",
+        "peekOfCode": "class eLSTMDiscretePolicy:\n    def __init__(self, input_size, embedding_size, hidden_size, output_size, no_embedding=False):\n        # Initialize eLSTM model with RTRLQuasiLSTMModel instead of QuasiLSTMModel\n        self.elstm_model = RTRLQuasiLSTMModel(\n            emb_dim=embedding_size,\n            hidden_size=hidden_size,\n            in_vocab_size=input_size,\n            out_vocab_size=output_size,\n            no_embedding=no_embedding\n        )",
+        "detail": "tmaze_pen",
+        "documentation": {}
+    },
+    {
+        "label": "eLSTMContinuousPolicy",
+        "kind": 6,
+        "importPath": "tmaze_pen",
+        "description": "tmaze_pen",
+        "peekOfCode": "class eLSTMContinuousPolicy:\n    def __init__(self, input_size, embedding_size, hidden_size, output_size, no_embedding=False):\n        # Initialize eLSTM model with RTRLQuasiLSTMModel\n        self.elstm_model = RTRLQuasiLSTMModel(\n            emb_dim=embedding_size,\n            hidden_size=hidden_size,\n            in_vocab_size=input_size,\n            out_vocab_size=output_size * 2,  # Output mean and log_std\n            no_embedding=no_embedding\n        )",
+        "detail": "tmaze_pen",
+        "documentation": {}
+    },
+    {
+        "label": "eLSTMAdapter",
+        "kind": 6,
+        "importPath": "tmaze_pen",
+        "description": "tmaze_pen",
+        "peekOfCode": "class eLSTMAdapter:\n    def __init__(self, model_path, env_type=\"tmaze\"):\n        self.model_path = model_path\n        self.env_type = env_type\n        self.model = None\n        self.env = None\n        if env_type == \"tmaze\":\n            self.env = TMazeEnv(corridor_length=10)\n            self.model = self._create_discrete_policy(\n                input_size=3,  # TMaze has 4 observation states",
+        "detail": "tmaze_pen",
+        "documentation": {}
+    },
+    {
+        "label": "evaluate_model",
+        "kind": 2,
+        "importPath": "tmaze_pen",
+        "description": "tmaze_pen",
+        "peekOfCode": "def evaluate_model(model_path, env_type=\"tmaze\", episodes=100, render=False):\n    adapter = eLSTMAdapter(model_path, env_type)\n    rewards = []\n    for i in range(episodes):\n        reward = adapter.run_episode(render=render)\n        rewards.append(reward)\n        if (i + 1) % 10 == 0:\n            print(f\"Episode {i+1}/{episodes}, Reward: {reward:.2f}\")\n    print(f\"Average reward over {episodes} episodes: {np.mean(rewards):.2f}\")\n    return rewards",
+        "detail": "tmaze_pen",
+        "documentation": {}
+    },
+    {
+        "label": "TMazeEnv",
+        "kind": 6,
+        "importPath": "tmaze_pen2",
+        "description": "tmaze_pen2",
+        "peekOfCode": "class TMazeEnv:\n    def __init__(self, corridor_length=5, delay=0, randomize_goal=True):\n        \"\"\"\n        T-maze environment:\n        - Agent starts at the bottom of T\n        - Signal at the start indicates which way to turn at junction (left/right)\n        - Reward is given only if agent turns the correct way\n        Args:\n            corridor_length: Length of the corridor before the T-junction\n            delay: Number of steps with no signal before showing the signal",
+        "detail": "tmaze_pen2",
+        "documentation": {}
+    },
+    {
+        "label": "eLSTMDiscretePolicy",
+        "kind": 6,
+        "importPath": "tmaze_pen2",
+        "description": "tmaze_pen2",
+        "peekOfCode": "class eLSTMDiscretePolicy:\n    def __init__(self, input_size, embedding_size, hidden_size, output_size, no_embedding=False):\n        # Initialize eLSTM model with RTRLQuasiLSTMModel instead of QuasiLSTMModel\n        self.elstm_model = RTRLQuasiLSTMModel(\n            emb_dim=embedding_size,\n            hidden_size=hidden_size,\n            in_vocab_size=input_size,\n            out_vocab_size=output_size,\n            no_embedding=no_embedding\n        )",
+        "detail": "tmaze_pen2",
+        "documentation": {}
+    },
+    {
+        "label": "eLSTMContinuousPolicy",
+        "kind": 6,
+        "importPath": "tmaze_pen2",
+        "description": "tmaze_pen2",
+        "peekOfCode": "class eLSTMContinuousPolicy:\n    def __init__(self, input_size, embedding_size, hidden_size, output_size, no_embedding=False):\n        # Initialize eLSTM model with RTRLQuasiLSTMModel\n        self.elstm_model = RTRLQuasiLSTMModel(\n            emb_dim=embedding_size,\n            hidden_size=hidden_size,\n            in_vocab_size=input_size,\n            out_vocab_size=output_size * 2,  # Output mean and log_std\n            no_embedding=no_embedding\n        )",
+        "detail": "tmaze_pen2",
+        "documentation": {}
+    },
+    {
+        "label": "eLSTMAdapter",
+        "kind": 6,
+        "importPath": "tmaze_pen2",
+        "description": "tmaze_pen2",
+        "peekOfCode": "class eLSTMAdapter:\n    def __init__(self, model_path, env_type=\"tmaze\"):\n        self.model_path = model_path\n        self.env_type = env_type\n        self.model = None\n        self.env = None\n        if env_type == \"tmaze\":\n            self.env = TMazeEnv(corridor_length=10)\n            self.model = self._create_discrete_policy(\n                input_size=3,  # TMaze has 4 observation states",
+        "detail": "tmaze_pen2",
+        "documentation": {}
+    },
+    {
+        "label": "evaluate_model",
+        "kind": 2,
+        "importPath": "tmaze_pen2",
+        "description": "tmaze_pen2",
+        "peekOfCode": "def evaluate_model(model_path, env_type=\"tmaze\", episodes=100, render=False):\n    adapter = eLSTMAdapter(model_path, env_type)\n    rewards = []\n    for i in range(episodes):\n        reward = adapter.run_episode(render=render)\n        rewards.append(reward)\n        if (i + 1) % 10 == 0:\n            print(f\"Episode {i+1}/{episodes}, Reward: {reward:.2f}\")\n    print(f\"Average reward over {episodes} episodes: {np.mean(rewards):.2f}\")\n    return rewards",
+        "detail": "tmaze_pen2",
+        "documentation": {}
+    }
+]

@@ -1,0 +1,644 @@
+torch version: 2.6.0+cu118
+Work dir: save_models\20250312-102403
+Input vocab size: 3
+Output vocab size: 3
+Model: Quasi-LSTM
+Number of trainable params: 4208643
+RTRLQuasiLSTMModel(
+  (rnn_func): RTRLQuasiLSTMlayer()
+  (output_gate): Linear(in_features=2051, out_features=2048, bias=True)
+  (out_layer): Linear(in_features=2048, out_features=3, bias=True)
+)
+Batch size: 128
+Gradient accumulation for 1 steps.
+Seed: 1
+Learning rate: 3e-05
+clip at: 1.0
+[2025/03/12 10:24:14] Start training
+[2025/03/12 10:29:39] End epoch 1 =============
+train loss: nan
+valid loss: 2.552212715148926
+valid acc: 0.20 %
+valid no-op acc: 0.00 %
+valid print acc: 60.04 %
+The best model so far.
+Saved.
+[2025/03/12 10:35:00] End epoch 2 =============
+train loss: nan
+valid loss: 0.5034559369087219
+valid acc: 0.40 %
+valid no-op acc: 0.00 %
+valid print acc: 86.82 %
+The best model so far.
+Saved.
+[2025/03/12 10:41:20] End epoch 3 =============
+train loss: nan
+valid loss: 0.9603853225708008
+valid acc: 0.80 %
+valid no-op acc: 0.00 %
+valid print acc: 86.50 %
+The best model so far.
+Saved.
+[2025/03/12 10:47:25] End epoch 4 =============
+train loss: nan
+valid loss: 3.372199058532715
+valid acc: 0.70 %
+valid no-op acc: 0.00 %
+valid print acc: 78.12 %
+[2025/03/12 10:53:49] End epoch 5 =============
+train loss: nan
+valid loss: 0.10846533626317978
+valid acc: 1.60 %
+valid no-op acc: 0.00 %
+valid print acc: 99.04 %
+The best model so far.
+Saved.
+[2025/03/12 10:59:45] End epoch 6 =============
+train loss: nan
+valid loss: 0.019958194345235825
+valid acc: 9.91 %
+valid no-op acc: 0.00 %
+valid print acc: 99.52 %
+The best model so far.
+Saved.
+[2025/03/12 11:05:31] End epoch 7 =============
+train loss: nan
+valid loss: 0.005216801539063454
+valid acc: 24.42 %
+valid no-op acc: 0.00 %
+valid print acc: 99.84 %
+The best model so far.
+Saved.
+[2025/03/12 11:11:16] End epoch 8 =============
+train loss: nan
+valid loss: 0.05635490640997887
+valid acc: 6.81 %
+valid no-op acc: 0.00 %
+valid print acc: 99.49 %
+[2025/03/12 11:16:49] End epoch 9 =============
+train loss: nan
+valid loss: 0.0083379615098238
+valid acc: 32.53 %
+valid no-op acc: 0.00 %
+valid print acc: 99.83 %
+The best model so far.
+Saved.
+[2025/03/12 11:22:22] End epoch 10 =============
+train loss: nan
+valid loss: 0.016090277582406998
+valid acc: 23.22 %
+valid no-op acc: 0.00 %
+valid print acc: 99.77 %
+[2025/03/12 11:28:08] End epoch 11 =============
+train loss: nan
+valid loss: 0.010834909044206142
+valid acc: 29.83 %
+valid no-op acc: 0.00 %
+valid print acc: 99.83 %
+[2025/03/12 11:33:47] End epoch 12 =============
+train loss: nan
+valid loss: 0.004259496461600065
+valid acc: 36.24 %
+valid no-op acc: 0.00 %
+valid print acc: 99.88 %
+The best model so far.
+Saved.
+[2025/03/12 11:39:31] End epoch 13 =============
+train loss: nan
+valid loss: 0.0047782291658222675
+valid acc: 42.84 %
+valid no-op acc: 0.00 %
+valid print acc: 99.88 %
+The best model so far.
+Saved.
+[2025/03/12 11:45:19] End epoch 14 =============
+train loss: nan
+valid loss: 0.0033223398495465517
+valid acc: 56.86 %
+valid no-op acc: 0.00 %
+valid print acc: 99.92 %
+The best model so far.
+Saved.
+[2025/03/12 11:51:42] End epoch 15 =============
+train loss: nan
+valid loss: 0.020803898572921753
+valid acc: 17.32 %
+valid no-op acc: 0.00 %
+valid print acc: 99.78 %
+[2025/03/12 11:57:56] End epoch 16 =============
+train loss: nan
+valid loss: 0.013674293644726276
+valid acc: 25.53 %
+valid no-op acc: 0.00 %
+valid print acc: 99.83 %
+[2025/03/12 12:03:32] End epoch 17 =============
+train loss: nan
+valid loss: 0.004581163637340069
+valid acc: 50.75 %
+valid no-op acc: 0.00 %
+valid print acc: 99.91 %
+[2025/03/12 12:08:47] End epoch 18 =============
+train loss: nan
+valid loss: 0.019600234925746918
+valid acc: 22.32 %
+valid no-op acc: 0.00 %
+valid print acc: 99.80 %
+[2025/03/12 12:13:51] End epoch 19 =============
+train loss: nan
+valid loss: 0.008654778823256493
+valid acc: 37.24 %
+valid no-op acc: 0.00 %
+valid print acc: 99.88 %
+[2025/03/12 12:19:32] End epoch 20 =============
+train loss: nan
+valid loss: 0.06299333274364471
+valid acc: 8.91 %
+valid no-op acc: 0.00 %
+valid print acc: 99.67 %
+[2025/03/12 12:24:23] End epoch 21 =============
+train loss: nan
+valid loss: 0.0013765449402853847
+valid acc: 74.17 %
+valid no-op acc: 0.00 %
+valid print acc: 99.96 %
+The best model so far.
+Saved.
+[2025/03/12 12:46:28] End epoch 22 =============
+train loss: nan
+valid loss: 0.09204772114753723
+valid acc: 5.51 %
+valid no-op acc: 0.00 %
+valid print acc: 99.60 %
+[2025/03/12 12:52:12] End epoch 23 =============
+train loss: nan
+valid loss: 0.004311601165682077
+valid acc: 53.05 %
+valid no-op acc: 0.00 %
+valid print acc: 99.91 %
+[2025/03/12 12:58:17] End epoch 24 =============
+train loss: nan
+valid loss: 0.045121099799871445
+valid acc: 16.82 %
+valid no-op acc: 0.00 %
+valid print acc: 99.75 %
+[2025/03/12 13:04:15] End epoch 25 =============
+train loss: nan
+valid loss: 0.01596818119287491
+valid acc: 37.54 %
+valid no-op acc: 0.00 %
+valid print acc: 99.86 %
+[2025/03/12 13:09:46] End epoch 26 =============
+train loss: nan
+valid loss: 0.16938000917434692
+valid acc: 3.80 %
+valid no-op acc: 0.00 %
+valid print acc: 99.51 %
+[2025/03/12 13:14:44] End epoch 27 =============
+train loss: nan
+valid loss: 0.06720199435949326
+valid acc: 9.91 %
+valid no-op acc: 0.00 %
+valid print acc: 99.70 %
+[2025/03/12 13:19:41] End epoch 28 =============
+train loss: nan
+valid loss: 0.044521741569042206
+valid acc: 17.12 %
+valid no-op acc: 0.00 %
+valid print acc: 99.77 %
+[2025/03/12 13:25:13] End epoch 29 =============
+train loss: nan
+valid loss: 0.021713964641094208
+valid acc: 28.43 %
+valid no-op acc: 0.00 %
+valid print acc: 99.85 %
+[2025/03/12 13:30:19] End epoch 30 =============
+train loss: nan
+valid loss: 0.10643215477466583
+valid acc: 10.31 %
+valid no-op acc: 0.00 %
+valid print acc: 99.65 %
+[2025/03/12 13:35:51] End epoch 31 =============
+train loss: nan
+valid loss: 0.03143272548913956
+valid acc: 32.13 %
+valid no-op acc: 0.00 %
+valid print acc: 99.82 %
+[2025/03/12 13:41:15] End epoch 32 =============
+train loss: nan
+valid loss: 0.006375056225806475
+valid acc: 45.75 %
+valid no-op acc: 0.00 %
+valid print acc: 99.90 %
+[2025/03/12 13:46:32] End epoch 33 =============
+train loss: nan
+valid loss: 0.13110077381134033
+valid acc: 13.61 %
+valid no-op acc: 0.00 %
+valid print acc: 99.64 %
+[2025/03/12 13:51:59] End epoch 34 =============
+train loss: nan
+valid loss: 0.0974355936050415
+valid acc: 15.72 %
+valid no-op acc: 0.00 %
+valid print acc: 99.69 %
+[2025/03/12 13:57:30] End epoch 35 =============
+train loss: nan
+valid loss: 0.0013416321016848087
+valid acc: 82.38 %
+valid no-op acc: 0.00 %
+valid print acc: 99.97 %
+The best model so far.
+Saved.
+[2025/03/12 14:03:08] End epoch 36 =============
+train loss: nan
+valid loss: 0.1518026739358902
+valid acc: 12.41 %
+valid no-op acc: 0.00 %
+valid print acc: 99.61 %
+[2025/03/12 14:08:13] End epoch 37 =============
+train loss: nan
+valid loss: 0.06370721757411957
+valid acc: 9.91 %
+valid no-op acc: 0.00 %
+valid print acc: 99.73 %
+[2025/03/12 14:13:22] End epoch 38 =============
+train loss: nan
+valid loss: 0.030462510883808136
+valid acc: 31.03 %
+valid no-op acc: 0.00 %
+valid print acc: 99.84 %
+[2025/03/12 14:18:47] End epoch 39 =============
+train loss: nan
+valid loss: 0.005180372856557369
+valid acc: 30.63 %
+valid no-op acc: 0.00 %
+valid print acc: 99.89 %
+[2025/03/12 14:24:08] End epoch 40 =============
+train loss: nan
+valid loss: 0.03318724408745766
+valid acc: 30.03 %
+valid no-op acc: 0.00 %
+valid print acc: 99.84 %
+[2025/03/12 14:29:20] End epoch 41 =============
+train loss: nan
+valid loss: 0.06787446141242981
+valid acc: 27.63 %
+valid no-op acc: 0.00 %
+valid print acc: 99.77 %
+[2025/03/12 14:34:42] End epoch 42 =============
+train loss: nan
+valid loss: 0.07286693155765533
+valid acc: 20.02 %
+valid no-op acc: 0.00 %
+valid print acc: 99.75 %
+[2025/03/12 14:39:54] End epoch 43 =============
+train loss: nan
+valid loss: 0.004122493788599968
+valid acc: 59.86 %
+valid no-op acc: 0.00 %
+valid print acc: 99.94 %
+[2025/03/12 14:45:13] End epoch 44 =============
+train loss: nan
+valid loss: 0.12565743923187256
+valid acc: 12.41 %
+valid no-op acc: 0.00 %
+valid print acc: 99.67 %
+[2025/03/12 14:50:21] End epoch 45 =============
+train loss: nan
+valid loss: 0.06306121498346329
+valid acc: 31.83 %
+valid no-op acc: 0.00 %
+valid print acc: 99.79 %
+[2025/03/12 14:55:33] End epoch 46 =============
+train loss: nan
+valid loss: 0.13014476001262665
+valid acc: 5.81 %
+valid no-op acc: 0.00 %
+valid print acc: 99.64 %
+[2025/03/12 15:00:50] End epoch 47 =============
+train loss: nan
+valid loss: 0.006267215590924025
+valid acc: 57.36 %
+valid no-op acc: 0.00 %
+valid print acc: 99.93 %
+[2025/03/12 15:06:25] End epoch 48 =============
+train loss: nan
+valid loss: 0.0060145617462694645
+valid acc: 37.14 %
+valid no-op acc: 0.00 %
+valid print acc: 99.89 %
+[2025/03/12 15:12:14] End epoch 49 =============
+train loss: nan
+valid loss: 0.060116298496723175
+valid acc: 21.02 %
+valid no-op acc: 0.00 %
+valid print acc: 99.78 %
+[2025/03/12 15:17:43] End epoch 50 =============
+train loss: nan
+valid loss: 0.046282630413770676
+valid acc: 17.92 %
+valid no-op acc: 0.00 %
+valid print acc: 99.79 %
+[2025/03/12 15:22:33] End epoch 51 =============
+train loss: nan
+valid loss: 0.02488028071820736
+valid acc: 38.64 %
+valid no-op acc: 0.00 %
+valid print acc: 99.87 %
+[2025/03/12 15:27:22] End epoch 52 =============
+train loss: nan
+valid loss: 0.009438790380954742
+valid acc: 56.56 %
+valid no-op acc: 0.00 %
+valid print acc: 99.92 %
+[2025/03/12 15:32:24] End epoch 53 =============
+train loss: nan
+valid loss: 0.05982784554362297
+valid acc: 21.92 %
+valid no-op acc: 0.00 %
+valid print acc: 99.75 %
+[2025/03/12 15:37:30] End epoch 54 =============
+train loss: nan
+valid loss: 0.0349075123667717
+valid acc: 1.60 %
+valid no-op acc: 0.00 %
+valid print acc: 99.76 %
+[2025/03/12 16:11:43] End epoch 55 =============
+train loss: nan
+valid loss: 0.06173371896147728
+valid acc: 22.22 %
+valid no-op acc: 0.00 %
+valid print acc: 99.79 %
+[2025/03/12 16:17:05] End epoch 56 =============
+train loss: nan
+valid loss: 0.026678605005145073
+valid acc: 1.90 %
+valid no-op acc: 0.00 %
+valid print acc: 99.77 %
+[2025/03/12 16:22:16] End epoch 57 =============
+train loss: nan
+valid loss: 0.23292294144630432
+valid acc: 0.60 %
+valid no-op acc: 0.00 %
+valid print acc: 99.37 %
+[2025/03/12 16:27:06] End epoch 58 =============
+train loss: nan
+valid loss: 0.039907317608594894
+valid acc: 37.64 %
+valid no-op acc: 0.00 %
+valid print acc: 99.84 %
+[2025/03/12 16:31:58] End epoch 59 =============
+train loss: nan
+valid loss: 0.002683901460841298
+valid acc: 66.47 %
+valid no-op acc: 0.00 %
+valid print acc: 99.95 %
+[2025/03/12 16:36:47] End epoch 60 =============
+train loss: nan
+valid loss: 0.03390685096383095
+valid acc: 16.22 %
+valid no-op acc: 0.00 %
+valid print acc: 99.79 %
+[2025/03/12 16:41:34] End epoch 61 =============
+train loss: nan
+valid loss: 0.08709212392568588
+valid acc: 14.81 %
+valid no-op acc: 0.00 %
+valid print acc: 99.60 %
+[2025/03/12 16:46:21] End epoch 62 =============
+train loss: nan
+valid loss: 0.050894759595394135
+valid acc: 13.41 %
+valid no-op acc: 0.00 %
+valid print acc: 99.68 %
+[2025/03/12 16:51:07] End epoch 63 =============
+train loss: nan
+valid loss: 0.005905025638639927
+valid acc: 35.94 %
+valid no-op acc: 0.00 %
+valid print acc: 99.90 %
+[2025/03/12 16:55:57] End epoch 64 =============
+train loss: nan
+valid loss: 0.0009127645171247423
+valid acc: 79.48 %
+valid no-op acc: 0.00 %
+valid print acc: 99.97 %
+[2025/03/12 17:00:47] End epoch 65 =============
+train loss: nan
+valid loss: 0.005160841159522533
+valid acc: 52.95 %
+valid no-op acc: 0.00 %
+valid print acc: 99.92 %
+[2025/03/12 17:05:34] End epoch 66 =============
+train loss: nan
+valid loss: 0.024321194738149643
+valid acc: 32.73 %
+valid no-op acc: 0.00 %
+valid print acc: 99.83 %
+[2025/03/12 17:10:25] End epoch 67 =============
+train loss: nan
+valid loss: 0.005920213181525469
+valid acc: 69.07 %
+valid no-op acc: 0.00 %
+valid print acc: 99.93 %
+[2025/03/12 17:15:13] End epoch 68 =============
+train loss: nan
+valid loss: 0.017398059368133545
+valid acc: 11.61 %
+valid no-op acc: 0.00 %
+valid print acc: 99.80 %
+[2025/03/12 17:20:01] End epoch 69 =============
+train loss: nan
+valid loss: 0.014404946938157082
+valid acc: 33.43 %
+valid no-op acc: 0.00 %
+valid print acc: 99.86 %
+[2025/03/12 17:24:48] End epoch 70 =============
+train loss: nan
+valid loss: 0.036660030484199524
+valid acc: 24.82 %
+valid no-op acc: 0.00 %
+valid print acc: 99.82 %
+[2025/03/12 17:29:36] End epoch 71 =============
+train loss: nan
+valid loss: 0.27160218358039856
+valid acc: 2.50 %
+valid no-op acc: 0.00 %
+valid print acc: 99.08 %
+[2025/03/12 17:34:24] End epoch 72 =============
+train loss: nan
+valid loss: 0.014235559850931168
+valid acc: 35.74 %
+valid no-op acc: 0.00 %
+valid print acc: 99.80 %
+[2025/03/12 17:39:12] End epoch 73 =============
+train loss: nan
+valid loss: 0.05825664475560188
+valid acc: 12.41 %
+valid no-op acc: 0.00 %
+valid print acc: 99.57 %
+[2025/03/12 17:43:59] End epoch 74 =============
+train loss: nan
+valid loss: 0.006100494414567947
+valid acc: 23.82 %
+valid no-op acc: 0.00 %
+valid print acc: 99.87 %
+[2025/03/12 17:48:48] End epoch 75 =============
+train loss: nan
+valid loss: 0.005033108871430159
+valid acc: 49.85 %
+valid no-op acc: 0.00 %
+valid print acc: 99.91 %
+[2025/03/12 17:53:36] End epoch 76 =============
+train loss: nan
+valid loss: 0.10264589637517929
+valid acc: 9.51 %
+valid no-op acc: 0.00 %
+valid print acc: 99.48 %
+[2025/03/12 17:58:24] End epoch 77 =============
+train loss: nan
+valid loss: 0.7369871735572815
+valid acc: 0.30 %
+valid no-op acc: 0.00 %
+valid print acc: 97.70 %
+[2025/03/12 18:03:14] End epoch 78 =============
+train loss: nan
+valid loss: 0.018595686182379723
+valid acc: 16.72 %
+valid no-op acc: 0.00 %
+valid print acc: 99.77 %
+[2025/03/12 18:08:03] End epoch 79 =============
+train loss: nan
+valid loss: 0.3110639154911041
+valid acc: 2.70 %
+valid no-op acc: 0.00 %
+valid print acc: 98.81 %
+[2025/03/12 18:12:51] End epoch 80 =============
+train loss: nan
+valid loss: 0.05810008943080902
+valid acc: 16.12 %
+valid no-op acc: 0.00 %
+valid print acc: 99.66 %
+[2025/03/12 18:17:42] End epoch 81 =============
+train loss: nan
+valid loss: 0.03532654419541359
+valid acc: 14.51 %
+valid no-op acc: 0.00 %
+valid print acc: 99.72 %
+[2025/03/12 18:22:30] End epoch 82 =============
+train loss: nan
+valid loss: 0.15950676798820496
+valid acc: 1.80 %
+valid no-op acc: 0.00 %
+valid print acc: 99.35 %
+[2025/03/12 18:27:18] End epoch 83 =============
+train loss: nan
+valid loss: 0.11362510174512863
+valid acc: 4.70 %
+valid no-op acc: 0.00 %
+valid print acc: 99.46 %
+[2025/03/12 18:32:06] End epoch 84 =============
+train loss: nan
+valid loss: 0.00875839963555336
+valid acc: 44.64 %
+valid no-op acc: 0.00 %
+valid print acc: 99.90 %
+[2025/03/12 18:36:54] End epoch 85 =============
+train loss: nan
+valid loss: 0.0015731792664155364
+valid acc: 80.18 %
+valid no-op acc: 0.00 %
+valid print acc: 99.97 %
+[2025/03/12 18:41:43] End epoch 86 =============
+train loss: nan
+valid loss: 0.00960964523255825
+valid acc: 54.95 %
+valid no-op acc: 0.00 %
+valid print acc: 99.91 %
+[2025/03/12 18:46:31] End epoch 87 =============
+train loss: nan
+valid loss: 0.11305665224790573
+valid acc: 10.01 %
+valid no-op acc: 0.00 %
+valid print acc: 99.54 %
+[2025/03/12 18:51:19] End epoch 88 =============
+train loss: nan
+valid loss: 0.018177971243858337
+valid acc: 32.93 %
+valid no-op acc: 0.00 %
+valid print acc: 99.85 %
+[2025/03/12 18:56:07] End epoch 89 =============
+train loss: nan
+valid loss: 0.24058780074119568
+valid acc: 5.71 %
+valid no-op acc: 0.00 %
+valid print acc: 99.50 %
+[2025/03/12 19:00:57] End epoch 90 =============
+train loss: nan
+valid loss: 0.5949360728263855
+valid acc: 2.90 %
+valid no-op acc: 0.00 %
+valid print acc: 99.15 %
+[2025/03/12 19:05:45] End epoch 91 =============
+train loss: nan
+valid loss: 0.060062769800424576
+valid acc: 15.72 %
+valid no-op acc: 0.00 %
+valid print acc: 99.63 %
+[2025/03/12 19:10:40] End epoch 92 =============
+train loss: nan
+valid loss: 0.02668432518839836
+valid acc: 37.24 %
+valid no-op acc: 0.00 %
+valid print acc: 99.84 %
+[2025/03/12 19:15:44] End epoch 93 =============
+train loss: nan
+valid loss: 0.09299572557210922
+valid acc: 6.51 %
+valid no-op acc: 0.00 %
+valid print acc: 99.54 %
+[2025/03/12 19:21:13] End epoch 94 =============
+train loss: nan
+valid loss: 0.007657590322196484
+valid acc: 55.36 %
+valid no-op acc: 0.00 %
+valid print acc: 99.88 %
+[2025/03/12 19:26:42] End epoch 95 =============
+train loss: nan
+valid loss: 0.011287764646112919
+valid acc: 32.23 %
+valid no-op acc: 0.00 %
+valid print acc: 99.82 %
+[2025/03/12 19:32:08] End epoch 96 =============
+train loss: nan
+valid loss: 0.13860394060611725
+valid acc: 3.10 %
+valid no-op acc: 0.00 %
+valid print acc: 99.42 %
+[2025/03/12 19:37:35] End epoch 97 =============
+train loss: nan
+valid loss: 0.12047740817070007
+valid acc: 14.61 %
+valid no-op acc: 0.00 %
+valid print acc: 99.40 %
+[2025/03/12 19:42:59] End epoch 98 =============
+train loss: nan
+valid loss: 0.008438937366008759
+valid acc: 55.16 %
+valid no-op acc: 0.00 %
+valid print acc: 99.87 %
+[2025/03/12 19:48:34] End epoch 99 =============
+train loss: nan
+valid loss: 0.25358709692955017
+valid acc: 8.61 %
+valid no-op acc: 0.00 %
+valid print acc: 99.20 %
+[2025/03/12 19:54:43] End epoch 100 =============
+train loss: nan
+valid loss: 0.007299742661416531
+valid acc: 48.25 %
+valid no-op acc: 0.00 %
+valid print acc: 99.86 %
+Ran 99 epochs in 570.57 min.
+Best validation acc: 82.38
+Final model test acc: 81.28 %
