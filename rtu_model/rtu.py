@@ -42,7 +42,7 @@ class RTUFunction(torch.autograd.Function):
 
         s_lamda_next = -torch.exp(lamda) * y * h_prev + y * s_lamda_prev + (-y / gamma) * -torch.exp(lamda) * y * B.mv(input_t)  # derivative of h
 
-        s_B_next = y.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        s_B_next = y.unsqueeze(1) * s_B_prev + torch.outer(gamma, input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
         ctx.save_for_backward(s_lamda_next, s_B_next, B)
 
 
@@ -65,7 +65,7 @@ class RTRLRTU(nn.Module):
         super().__init__()
         self.hidden_size = hidden_size
         self.input_size = in_vocab_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
+        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)  # r = math.log(0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
         self.B = nn.Parameter(torch.randn(hidden_size, in_vocab_size) / torch.sqrt(torch.tensor(in_vocab_size)).float())
         self.reset_rtrl_state()
 
@@ -93,7 +93,7 @@ class BPTTRTU(nn.Module):
         super().__init__()
         self.hidden_size = hidden_size
         self.input_size = input_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
+        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)  # # r = math.log(0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
         self.B = nn.Parameter(torch.randn(hidden_size, input_size) /
                               torch.sqrt(torch.tensor(input_size).float()))
         
