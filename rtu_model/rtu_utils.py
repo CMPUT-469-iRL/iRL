@@ -25,7 +25,7 @@ def g_phi_params(nu_log,theta_log,eps=1e-8):
     
 def initialize_exp_exp_r(key,shape,r_max = 1 ,r_min = 0):
     u1 = np.random.uniform(key, shape=shape)
-    nu_log = np.log(-0.5*jnp.log(u1*(r_max**2 - r_min**2) + r_min**2))
+    nu_log = np.log(-0.5*np.log(u1*(r_max**2 - r_min**2) + r_min**2))
     return nu_log
 
 def initialize_theta_log(key,shape, max_phase = 6.28):

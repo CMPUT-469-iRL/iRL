@@ -65,10 +65,10 @@ class RTRLRTU(nn.Module):
         super().__init__()
         self.hidden_size = hidden_size
         self.input_size = in_vocab_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)  # r = math.log(0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
+        self.lamda = nn.Parameter(torch.log(-0.5 * torch.log(torch.rand(hidden_size).float()))) #nn.Parameter(math.log(0.5 * math.log(random.uniform(1, hidden_size) * (1**2 - 0**2) + 0**2))) #nn.Parameter(torch.randn(hidden_size) * 0.2)  # r = math.log(-0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
         self.B = nn.Parameter(torch.randn(hidden_size, in_vocab_size) / torch.sqrt(torch.tensor(in_vocab_size)).float())
         self.reset_rtrl_state()
-
+        
     def reset_rtrl_state(self) -> None:
         """Resets RTRL sensitivities to zero."""
         self.s_lamda = torch.zeros(self.hidden_size)
@@ -93,7 +93,7 @@ class BPTTRTU(nn.Module):
         super().__init__()
         self.hidden_size = hidden_size
         self.input_size = input_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)  # # r = math.log(0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
+        self.lamda = nn.Parameter(torch.log(-0.5 * torch.log(torch.rand(hidden_size).float()))) #nn.Parameter(math.log(0.5 * math.log(random.uniform(1, hidden_size) * (1**2 - 0**2) + 0**2))) #nn.Parameter(torch.randn(hidden_size) * 0.2)  # # r = math.log(0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
         self.B = nn.Parameter(torch.randn(hidden_size, input_size) /
                               torch.sqrt(torch.tensor(input_size).float()))
         

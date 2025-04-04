@@ -9,7 +9,7 @@ from rtu_utils import *
 
 class RTUFunction(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, input_t, h_prev_c1, h_prev_c2, lamda, theta, B_c1, B_c2, s_r_c1_prev, s_r_c2_prev, s_theta_c1_prev, s_theta_c2_prev, s_B_c1_prev, s_B_c2_prev):
+    def forward(ctx, input_t, h, lamda, theta, B, s_r_c1_prev, s_r_c2_prev, s_theta_c1_prev, s_theta_c2_prev, s_B_c1_prev, s_B_c2_prev):
 
         # theta = math.log(6.28 * random.uniform(1, B.shape[0]))   # hidden_size = B.shape[0]
         # r_max = 1
@@ -29,25 +29,38 @@ class RTUFunction(torch.autograd.Function):
         y_gradient = -torch.exp(r) * y
         z_gradient = torch.exp(theta)
 
+        # extract the previous h-values
+        hidden_size = B.shape[0]
+        print(type(h))
+        h_prev_c1 = h()[0:hidden_size] # hidden_size = B.shape[0]
+        h_prev_c2 = h()[hidden_size:]
+        
+        print(h().shape)
+        print("h", h())
+        print(h_prev_c1.shape)
+        print(h_prev_c2.shape)
+
         # c1 and c2 h updates
-        h_next_c1 = y * torch.cos(torch.exp(theta)) * h_prev_c1 - y * torch.sin(torch.exp(theta)) * h_prev_c2 + gamma * B_c1 * input_t
-        h_next_c2 = y * torch.cos(torch.exp(theta)) * h_prev_c1 + y * torch.sin(torch.exp(theta)) * h_prev_c1 + gamma * B_c2 * input_t
+        h_next_c1 = y * torch.cos(z) * h_prev_c1 - y * torch.sin(z) * h_prev_c2 + gamma * B.mv(input_t)
+        h_next_c2 = y * torch.cos(z) * h_prev_c1 + y * torch.sin(z) * h_prev_c1 + gamma * B.mv(input_t)
 
         # get gradients of h wrt. r
-        s_r_c1_next = (y_gradient * torch.cos(z) * h_next_c1) + (y * torch.cos(z) * s_r_c1_prev) - (y_gradient * torch.sin(z) * h_prev_c2) - (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B_c1.mv(input_t))
-        s_r_c2_next = (y_gradient * torch.cos(z) * h_next_c2) + (y * torch.cos(z) * s_r_c2_prev) + (y_gradient * torch.sin(z) * h_next_c1) + (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B_c2.mv(input_t))
+        s_r_c1_next = (y_gradient * torch.cos(z) * h_next_c1) + (y * torch.cos(z) * s_r_c1_prev) - (y_gradient * torch.sin(z) * h_prev_c2) - (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B.mv(input_t))
+        s_r_c2_next = (y_gradient * torch.cos(z) * h_next_c2) + (y * torch.cos(z) * s_r_c2_prev) + (y_gradient * torch.sin(z) * h_next_c1) + (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B.mv(input_t))
 
         # get gradients of h wrt. theta
         s_theta_c1_next = (-y * torch.sin(z) * z_gradient * h_next_c1) + (y * torch.cos(z) * s_theta_c1_prev) - (y * torch.cos(z) * z_gradient * h_next_c2) - (y * torch.sin(z) * s_theta_c2_prev)
         s_theta_c2_next = (-y * torch.sin(z) * z_gradient * h_prev_c2) + (y * torch.cos(z) * s_theta_c2_prev) + (y * torch.cos(z) * z_gradient * h_prev_c1) + (y * torch.sin(z) * s_theta_c1_prev)
 
-        s_B_c1_next = y.unsqueeze(1) * s_B_c1_prev + torch.outer(torch.ones(B_c1.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
-        s_B_c2_next = y.unsqueeze(1) * s_B_c2_prev + torch.outer(torch.ones(B_c2.shape[0]), input_t)
+        s_B_c1_next = y.unsqueeze(1) * s_B_c1_prev + torch.outer(torch.ones(B.shape[0]), input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        s_B_c2_next = y.unsqueeze(1) * s_B_c2_prev + torch.outer(torch.ones(B.shape[0]), input_t)
 
-        ctx.save_for_backward(s_r_c1_next, s_r_c2_next, s_theta_c1_next, s_theta_c2_next, s_B_c1_next, s_B_c2_next, B_c1, B_c2)
+        ctx.save_for_backward(s_r_c1_next, s_r_c2_next, s_theta_c1_next, s_theta_c2_next, s_B_c1_next, s_B_c2_next, B, B)
 
-
-        return h_next_c1, h_next_c2, s_r_c1_next, s_r_c2_next, s_theta_c1_next, s_theta_c2_next, s_B_c1_next, s_B_c2_next
+        # concatnate h_c1 and h_c2 together
+        h = torch.cat((h_next_c1, h_next_c2), dim=0) # h = torch.cat((h_next_c1, h_next_c2), dim=0) # h = torch.cat((h_next_c1, h_next_c2), dim=0)
+        print("h size", h.shape)
+        return h, s_r_c1_next, s_r_c2_next, s_theta_c1_next, s_theta_c2_next, s_B_c1_next, s_B_c2_next
 
     @staticmethod
     def backward(ctx, grad_output_h_next, grad_output_s_lamda_next, grad_output_s_B_next):
@@ -67,14 +80,14 @@ class RTRLRTU(nn.Module):
         self.hidden_size = hidden_size
         self.input_size = in_vocab_size
 
-        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2) # ** r = lamda **
-        self.theta = math.log(6.28 * random.uniform(1, hidden_size)) # ADDED theta definition
+        self.lamda = nn.Parameter(torch.log(-0.5 * torch.log(torch.rand(hidden_size).float()))) #nn.Parameter(torch.randn(hidden_size) * 0.2) # ** r = lamda **
+        self.theta = nn.Parameter(torch.log(6.28 * torch.rand(hidden_size).float())) # math.log(6.28 * random.uniform(1, hidden_size)) # ADDED theta definition
 
-        # self.B = nn.Parameter(torch.randn(hidden_size, in_vocab_size) / torch.sqrt(torch.tensor(in_vocab_size)).float())
-        self.B_c1 = nn.Parameter(torch.randn(hidden_size, self.input_size) /
-                              torch.sqrt(torch.tensor(self.input_size).float()))
-        self.B_c2 = nn.Parameter(torch.randn(hidden_size, self.input_size) /
-                              torch.sqrt(torch.tensor(self.input_size).float()))
+        self.B = nn.Parameter(torch.randn(hidden_size, in_vocab_size) / torch.sqrt(torch.tensor(in_vocab_size)).float())
+        # self.B_c1 = nn.Parameter(torch.randn(hidden_size, self.input_size) /
+        #                       torch.sqrt(torch.tensor(self.input_size).float()))
+        # self.B_c2 = nn.Parameter(torch.randn(hidden_size, self.input_size) /
+        #                       torch.sqrt(torch.tensor(self.input_size).float()))
         self.reset_rtrl_state()
 
     def reset_rtrl_state(self) -> None:
@@ -85,9 +98,9 @@ class RTRLRTU(nn.Module):
         # self.s_B = torch.zeros((self.hidden_size, self.input_size))
         self.s_B_c1 = torch.zeros((self.hidden_size, self.input_size))
         self.s_B_c2 = torch.zeros((self.hidden_size, self.input_size))
-        # self.h = torch.zeros(self.hidden_size, dtype=torch.float32) #, requires_grad = True)
-        self.h_c1 = torch.zeros(self.hidden_size, dtype=torch.float32) #, requires_grad = True)
-        self.h_c2 = torch.zeros(self.hidden_size, dtype=torch.float32)
+        self.h = torch.zeros(2* self.hidden_size, dtype=torch.float32) # h is a concanated vector of 2 h values #, requires_grad = True)
+        # self.h_c1 = torch.zeros(self.hidden_size, dtype=torch.float32) #, requires_grad = True)
+        # self.h_c2 = torch.zeros(self.hidden_size, dtype=torch.float32)
         #self.h = self.h.to(device) # set the self.h to the device to work with cuda
 
         # ** added new theta gradients **
@@ -97,7 +110,7 @@ class RTRLRTU(nn.Module):
     def forward_step(self, input_t) -> torch.Tensor:
         # Process input from one-hot to hidden dimension
         # self.h, self.s_lamda, self.s_B = RTUFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach())
-        self.h_c1, self.h_c2, self.s_lamda_c1, self.s_lamda_c2, self.s_theta_c1, self.s_theta_c2, self.s_B_c1, self.s_B_c2 = RTUFunction.apply(input_t, self.h_c1.detach(), self.h_c2.detach(), self.lamda, self.theta, self.B, self.s_lamda_c1.detach(), self.s_lamda_c2.detach(), self.s_theta_c1.detach(), self.s_theta_c2.detach(), self.s_B_c1.detach(), self.s_B_c2.detach())
+        self.h, self.s_lamda_c1, self.s_lamda_c2, self.s_theta_c1, self.s_theta_c2, self.s_B_c1, self.s_B_c2 = RTUFunction.apply(input_t, self.h.detach, self.lamda, self.theta, self.B, self.s_lamda_c1.detach(), self.s_lamda_c2.detach(), self.s_theta_c1.detach(), self.s_theta_c2.detach(), self.s_B_c1.detach(), self.s_B_c2.detach())
         return self.h
 
     def forward(self, x_sequence):
@@ -112,16 +125,17 @@ class BPTTRTU(nn.Module):
         super().__init__()
         self.hidden_size = hidden_size
         self.input_size = input_size
-        self.lamda = nn.Parameter(torch.randn(hidden_size) * 0.2)
-        self.B_c1 = nn.Parameter(torch.randn(hidden_size, input_size) /
-                              torch.sqrt(torch.tensor(input_size).float()))
-        self.B_c2 = nn.Parameter(torch.randn(hidden_size, input_size) /
-                              torch.sqrt(torch.tensor(input_size).float()))
+        self.lamda = nn.Parameter(torch.log(-0.5 * torch.log(torch.rand(hidden_size).float()))) #nn.Parameter(torch.randn(hidden_size) * 0.2)
+        self.B = nn.Parameter(torch.randn(hidden_size, input_size) / torch.sqrt(torch.tensor(input_size)).float())
+        # self.B_c1 = nn.Parameter(torch.randn(hidden_size, input_size) /
+        #                       torch.sqrt(torch.tensor(input_size).float()))
+        # self.B_c2 = nn.Parameter(torch.randn(hidden_size, input_size) /
+        #                       torch.sqrt(torch.tensor(input_size).float()))
         # RTU-only parameters
 
 
     def forward(self, x_sequence):
-        h = torch.zeros(self.hidden_size) #, self.hidden_size) # h = torch.zeros(self.hidden_size)
+        h = torch.zeros(2 * self.hidden_size) # make h concanated C1 and C2 h vectors (2 * hidden_size) #, self.hidden_size) # h = torch.zeros(self.hidden_size)
         outputs = []
         for x_t in x_sequence:
 
@@ -143,8 +157,9 @@ class BPTTRTU(nn.Module):
             h_c1 = y * torch.cos(torch.exp(theta)) * h_c1 - y * torch.sin(torch.exp(theta)) * h_c2 + gamma * self.B_c1 * x_t
             h_c2 = y * torch.cos(torch.exp(theta)) * h_c1 + y * torch.sin(torch.exp(theta)) * h_c1 + gamma * self.B_c2 * x_t
 
+            h = h_c1 + h_c2
 
-            outputs.append(h_c1, h_c2)
+            outputs.append(h)
         return torch.stack(outputs)
 
 ############################################################################################
@@ -152,7 +167,7 @@ class BPTTRTU(nn.Module):
 def test_gradient_correctness():
     # Setup
     input_size = 3
-    hidden_size = 2048
+    hidden_size = 2048 # 2048
     seq_length = 5
     torch.manual_seed(42)
 
@@ -205,3 +220,6 @@ def test_gradient_correctness():
 if __name__ == "__main__":
     test_gradient_correctness()
     print("All gradient tests passed!")
+
+
+
