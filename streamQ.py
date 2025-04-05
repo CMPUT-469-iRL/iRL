@@ -1,21 +1,16 @@
 import os
-import time
 import argparse
-import logging
 import random
 import numpy as np
 from collections import deque
 import matplotlib.pyplot as plt
-from datetime import datetime
-import gym
-import json
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from tmaze_pen import TMazeEnv
 from eLSTM_model.model import RTRLQuasiLSTMModel
+from eLSTM_model.rtrl_layers import RTRLQuasiLSTMlayer
 
 
 class StreamQAgent:
@@ -113,9 +108,9 @@ class StreamQAgent:
     def update_target_network(self):
         """Update target network with current Q-network parameters."""
         self.target_network.load_state_dict(self.q_network.state_dict())
-        
+    
     def train_step(self):
-        """Perform a single training step using RTRL."""
+        """Perform a single training step using standard backpropagation."""
         if len(self.memory) < self.batch_size:
             return 0
             
@@ -131,15 +126,14 @@ class StreamQAgent:
         dones = torch.tensor(batch[4], dtype=torch.float32).view(-1, 1).to(self.device)
         
         # Reset gradients
-        self.q_network.reset_grad()
-        self.q_network.rtrl_reset_grad()
+        self.optimizer.zero_grad()
         
         # Initialize hidden states for batch processing
         hidden_state = self.q_network.get_init_states(self.batch_size, self.device)
         target_hidden_state = self.target_network.get_init_states(self.batch_size, self.device)
         
         # Compute Q-values for current states
-        q_values, cell_output, rtrl_state = self.q_network(states, hidden_state)
+        q_values, _, _ = self.q_network(states, hidden_state)
         q_values = q_values.gather(1, actions)
         
         # Compute target Q-values
@@ -152,11 +146,7 @@ class StreamQAgent:
         loss = self.loss_fn(q_values, target_q_values)
         loss.backward()
         
-        # Apply RTRL gradient updates
-        if cell_output.grad is not None:
-            self.q_network.compute_gradient_rtrl(cell_output.grad, rtrl_state)
-        
-        # Update parameters
+        # Just use standard backpropagation - no RTRL
         self.optimizer.step()
         
         return loss.item()
@@ -186,7 +176,6 @@ def train_stream_q(env_name="tmaze",
         env = gym.make("Pendulum-v1")
         input_size = 1000  # Discretized observations (10^3)
         output_size = 11   # Discretized actions for pendulum
-        # We'll use a discretized action space for pendulum
     else:
         raise ValueError(f"Unsupported environment type: {env_name}")
         
@@ -226,7 +215,7 @@ def train_stream_q(env_name="tmaze",
         while not done:
             # Select and perform action
             action = agent.select_action(state)
-            next_state, reward, done, _ = env.step(action)
+            next_state, reward, done, info = env.step(action)
             
             # Store transition
             agent.store_transition(state, action, reward, next_state, done)
@@ -307,8 +296,9 @@ def evaluate_agent(agent, env, episodes=10):
         
         while not done:
             action = agent.select_action(state, training=False)
-            state, reward, done, _ = env.step(action)
+            next_state, reward, done, info = env.step(action)
             episode_reward += reward
+            state = next_state
             
         total_rewards.append(episode_reward)
         

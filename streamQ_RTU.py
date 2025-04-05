@@ -15,7 +15,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from tmaze_pen import TMazeEnv
-from eLSTM_model.model import RTRLQuasiLSTMModel, BPTT
+from eLSTM_model.model import RTRLQuasiLSTMModel
 from rtu_complex import RTRLRTU
 
 
