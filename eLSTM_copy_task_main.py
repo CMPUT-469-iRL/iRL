@@ -292,8 +292,8 @@ for ep in range(num_epoch):
             logits = logits.contiguous()  # (B, num_classes)
             labels = tgt_token.view(-1)
 
-            print(tgt_token.shape)
-            print(src_token.shape)
+            # print(tgt_token.shape)
+            # print(src_token.shape)
             # print("logits.shape", logits.shape)
             # print("labels.shape", labels.shape)
             loss = loss_fn(logits, labels)
