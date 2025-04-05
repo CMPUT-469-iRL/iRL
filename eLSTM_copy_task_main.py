@@ -202,8 +202,8 @@ num_layers = args.num_layer
 dropout = args.dropout
 
 # Common params:
-in_vocab_size = 4 #src_vocab.size()  # TODO: CHANGE TO 4
-out_vocab_size = 4 #tgt_vocab.size()
+in_vocab_size = src_vocab.size()  # TODO: CHANGE TO 4
+out_vocab_size = tgt_vocab.size()
 
 loginf(f"Input vocab size: {in_vocab_size}")
 loginf(f"Output vocab size: {out_vocab_size}")

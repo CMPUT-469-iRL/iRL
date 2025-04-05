@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader
 from copy_task_data import CopyTaskDataset
 #from diag_unit.test_diag_unit import DiagonalRNNFunction, RTRLDiagonalRNN, BPTTDiagonalRNN
 from diag_unit.updated_test_diag_sigmoid import *
-# from rtu_model.rtu_complex import *
+#from rtu_model.rtu_complex import *
 from rtu_model.rtu import *
 
 
@@ -280,7 +280,7 @@ if torch.cuda.is_available():
 model.reset_rtrl_state()
 
 # define a layer to pass the hidden layer through
-layer = nn.Linear(hidden_size, in_vocab_size) #.to(DEVICE)
+layer = nn.Linear(hidden_size, in_vocab_size) #layer = nn.Linear(2 * hidden_size, in_vocab_size) # layer = nn.Linear(hidden_size, in_vocab_size) #.to(DEVICE)
 
 for ep in range(num_epoch):
     for idx, batch in enumerate(train_data_loader):
@@ -334,7 +334,7 @@ for ep in range(num_epoch):
 
                 optimizer.step()
                 
-                print("loss", loss)
+                # print("loss", loss)
                 with torch.no_grad():
                     acc_loss += loss
                     steps += 1
