@@ -202,8 +202,8 @@ num_layers = args.num_layer
 dropout = args.dropout
 
 # Common params:
-in_vocab_size = src_vocab.size()
-out_vocab_size = tgt_vocab.size()
+in_vocab_size = 4 #src_vocab.size()  # TODO: CHANGE TO 4
+out_vocab_size = 4 #tgt_vocab.size()
 
 loginf(f"Input vocab size: {in_vocab_size}")
 loginf(f"Output vocab size: {out_vocab_size}")
@@ -283,8 +283,8 @@ for ep in range(num_epoch):
         src = src.permute(1, 0)
         tgt = tgt.permute(1, 0)
 
-        print("src.shape", src.shape)
-        print("tgt.shape", tgt.shape)
+        # print("src.shape", src.shape)
+        # print("tgt.shape", tgt.shape)
         
         # We assume fully online setting
         for src_token, tgt_token in zip(src, tgt):
@@ -294,8 +294,8 @@ for ep in range(num_epoch):
 
             print(tgt_token.shape)
             print(src_token.shape)
-            print("logits.shape", logits.shape)
-            print("labels.shape", labels.shape)
+            # print("logits.shape", logits.shape)
+            # print("labels.shape", labels.shape)
             loss = loss_fn(logits, labels)
 
             loss.backward()
