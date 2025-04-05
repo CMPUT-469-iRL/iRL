@@ -28,21 +28,21 @@ class RTUFunction(torch.autograd.Function):
         # s_B_prev = s_B_prev.to(device, dtype=torch.float)
 
 
-        theta = math.log(6.28 * random.uniform(1, B.shape[0]))   # hidden_size = B.shape[0]
-        r_max = 1
-        r_min = 0
-        r = math.log(0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
+        # theta = math.log(6.28 * random.uniform(1, B.shape[0]))   # hidden_size = B.shape[0]
+        # r_max = 1
+        # r_min = 0
+        # r = math.log(0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
 
         # y = torch.tensor([math.exp(-math.exp(i)) for i in (self.lamda)])
 
         y = torch.exp(-torch.exp(lamda))
         gamma = torch.sqrt(1-(y**2))
 
-        h_next = y * h_prev + gamma * B.mv(input_t)        #sigmoid_lamda * h_prev + B.mv(input_t) # h_next = sigmoid_lamda * h_prev + B.mv(input_t)
+        h_next = y * h_prev + gamma * B.mv(input_t.to('cpu', dtype=torch.float))        #sigmoid_lamda * h_prev + B.mv(input_t) # h_next = sigmoid_lamda * h_prev + B.mv(input_t)
 
-        s_lamda_next = -torch.exp(lamda) * y * h_prev + y * s_lamda_prev + (-y / gamma) * -torch.exp(lamda) * y * B.mv(input_t)  # derivative of h
+        s_lamda_next = -torch.exp(lamda) * y * h_prev + y * s_lamda_prev + (-y / gamma) * -torch.exp(lamda) * y * B.mv(input_t.to('cpu', dtype=torch.float))  # derivative of h
 
-        s_B_next = y.unsqueeze(1) * s_B_prev + torch.outer(gamma, input_t) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
+        s_B_next = y.unsqueeze(1) * s_B_prev + torch.outer(gamma, input_t.to('cpu', dtype=torch.float)) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
         ctx.save_for_backward(s_lamda_next, s_B_next, B)
 
 
