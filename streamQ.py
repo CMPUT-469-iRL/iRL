@@ -15,7 +15,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from tmaze_pen import TMazeEnv
-from eLSTM_model.model import RTRLQuasiLSTMModel, BPTT, QuasiLSTMModel
+from eLSTM_model.model import RTRLQuasiLSTMModel
 
 
 class StreamQAgent:
@@ -38,7 +38,7 @@ class StreamQAgent:
                 target_update_freq=10):
         
         # Main Q-network
-        self.q_network = QuasiLSTMModel(
+        self.q_network = RTRLQuasiLSTMModel(
             emb_dim=embedding_size,
             hidden_size=hidden_size,
             in_vocab_size=input_size,
@@ -47,7 +47,7 @@ class StreamQAgent:
         )
         
         # Target network for stable learning
-        self.target_network = QuasiLSTMModel(
+        self.target_network = RTRLQuasiLSTMModel(
             emb_dim=embedding_size,
             hidden_size=hidden_size,
             in_vocab_size=input_size,
