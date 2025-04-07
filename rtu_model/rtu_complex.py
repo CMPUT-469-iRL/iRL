@@ -46,7 +46,7 @@ class RTUFunction(torch.autograd.Function):
 
         # get gradients of h wrt. r
         s_r_c1_next = (y_gradient * torch.cos(z) * h_next_c1) + (y * torch.cos(z) * s_r_c1_prev) - (y_gradient * torch.sin(z) * h_prev_c2) - (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B_c1.mv(input_t.to('cpu', dtype=torch.float)))
-        s_r_c2_next = (y_gradient * torch.cos(z) * h_next_c2) + (y * torch.cos(z) * s_r_c2_prev) + (y_gradient * torch.sin(z) * h_next_c1) + (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B_c2.mv(input_t.to('cpu', dtype=torch.float)))
+        s_r_c2_next = (y_gradient * torch.cos(z) * h_next_c2) + (y * torch.cos(z) * s_r_c2_prev) + (y_gradient * torch.sin(z) * h_next_c1) + (y * torch.sin(z) * s_r_c1_prev) + (gamma_gradient * B_c2.mv(input_t.to('cpu', dtype=torch.float)))
 
         # get gradients of h wrt. theta
         s_theta_c1_next = (-y * torch.sin(z) * z_gradient * h_next_c1) + (y * torch.cos(z) * s_theta_c1_prev) - (y * torch.cos(z) * z_gradient * h_next_c2) - (y * torch.sin(z) * s_theta_c2_prev)
@@ -82,7 +82,8 @@ class RTUFunction(torch.autograd.Function):
         grad_theta_c2 = grad_output_h_next_c2 * s_theta_c2_next
         grad_theta = grad_theta_c1 + grad_theta_c2
 
-        grad_B_c1 = torch.diag(grad_output_h_next_c1).matmul(s_B_c1_next) + torch.diag(grad_output_h_next_c2).matmul(s_B_c1_next)
+        # dL/dh_c1 = grad_output_h_next_c1;  dh_c1/dB_c1 = gamma * x_t 
+        grad_B_c1 = torch.diag(grad_output_h_next_c1).matmul(s_B_c1_next) + torch.diag(grad_output_h_next_c2).matmul(s_B_c1_next) 
         grad_B_c2 = torch.diag(grad_output_h_next_c2).matmul(s_B_c2_next) + torch.diag(grad_output_h_next_c1).matmul(s_B_c2_next)
 
         grad_input_t = torch.diag(grad_output_h_next_c1).matmul(B_c1) + torch.diag(grad_output_h_next_c2).matmul(B_c2)
