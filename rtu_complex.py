@@ -5,6 +5,10 @@ import math
 import random
 
 # device = 'cuda'
+<<<<<<< HEAD
+=======
+# from rtu_utils import *
+>>>>>>> 82505f4fb1de16edaaeaf69e80d5d12d6af327fd
 
 class RTUFunction(torch.autograd.Function):
     @staticmethod

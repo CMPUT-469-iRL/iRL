@@ -7,7 +7,7 @@ import numpy as np
 from collections import deque
 import matplotlib.pyplot as plt
 from datetime import datetime
-import gym
+# import gym
 import json
 
 import torch
@@ -15,7 +15,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from tmaze_pen import TMazeEnv
+<<<<<<< HEAD
 from eLSTM_model.model import RTRLQuasiLSTMModel
+=======
+# from eLSTM_model.model import RTRLQuasiLSTMModel
+>>>>>>> 82505f4fb1de16edaaeaf69e80d5d12d6af327fd
 from rtu_complex import RTRLRTU
 
 
@@ -183,10 +187,10 @@ def train_stream_q(env_name="tmaze",
         env = TMazeEnv(corridor_length=10)
         input_size = 4  # TMaze has 4 observation states
         output_size = 3  # TMaze has 3 actions
-    elif env_name == "pendulum":
-        env = gym.make("Pendulum-v1")
-        input_size = 1000  # Discretized observations (10^3)
-        output_size = 11   # Discretized actions for pendulum
+    # elif env_name == "pendulum":
+    #     env = gym.make("Pendulum-v1")
+    #     input_size = 1000  # Discretized observations (10^3)
+    #     output_size = 11   # Discretized actions for pendulum
         # We'll use a discretized action space for pendulum
     else:
         raise ValueError(f"Unsupported environment type: {env_name}")
