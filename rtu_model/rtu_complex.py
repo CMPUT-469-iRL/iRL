@@ -136,7 +136,7 @@ class RTRLRTU(nn.Module):
     def forward_step(self, input_t) -> torch.Tensor:
         # Process input from one-hot to hidden dimension
         # self.h, self.s_lamda, self.s_B = RTUFunction.apply(input_t, self.h.detach(), self.lamda, self.B, self.s_lamda.detach(), self.s_B.detach())
-        self.h, self.s_lamda_c1, self.s_lamda_c2, self.s_theta_c1, self.s_theta_c2, self.s_B_c1, self.s_B_c2 = RTUFunction.apply(input_t, self.h.detach, self.lamda, self.theta, self.B_c1, self.B_c2, self.s_lamda_c1.detach(), self.s_lamda_c2.detach(), self.s_theta_c1.detach(), self.s_theta_c2.detach(), self.s_B_c1.detach(), self.s_B_c2.detach())
+        self.h, self.s_lamda_c1, self.s_lamda_c2, self.s_theta_c1, self.s_theta_c2, self.s_B_c1, self.s_B_c2 = RTUFunction.apply(input_t, self.h.detach(), self.lamda, self.theta, self.B_c1, self.B_c2, self.s_lamda_c1.detach(), self.s_lamda_c2.detach(), self.s_theta_c1.detach(), self.s_theta_c2.detach(), self.s_B_c1.detach(), self.s_B_c2.detach())
         return self.h  # h, s_r_c1_next, s_r_c2_next, s_theta_c1_next, s_theta_c2_next, s_B_c1_next, s_B_c2_next                                                                                                    # ctx, input_t, h, lamda, theta, B_c1, B_c2, s_r_c1_prev, s_r_c2_prev, s_theta_c1_prev, s_theta_c2_prev, s_B_c1_prev, s_B_c2_prev
 
     def forward(self, x_sequence):
