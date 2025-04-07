@@ -32,8 +32,8 @@ class RTUFunction(torch.autograd.Function):
         # extract the previous h-values
         hidden_size = B_c1.shape[0]
         # print(type(h))
-        h_prev_c1 = h()[0:hidden_size] # hidden_size = B.shape[0]
-        h_prev_c2 = h()[hidden_size:]
+        h_prev_c1 = h[0:hidden_size] # hidden_size = B.shape[0]
+        h_prev_c2 = h[hidden_size:]
         
         # print(h().shape)
         # print("h", h())
