@@ -35,7 +35,6 @@ class TMazeEnv:
             randomize_goal: Whether to randomize the goal location each episode
         """
         self.corridor_length = corridor_length
-        self.delay = delay
         self.randomize_goal = randomize_goal
         self.goal_location = None
         self.pos = None
@@ -48,44 +47,42 @@ class TMazeEnv:
         self.observation_space = gym.spaces.Discrete(4)  # No signal, Left signal, Right signal, Junction
         
     def reset(self):
-        self.goal_location = random.choice(["left", "right"]) if self.randomize_goal else "right"
-        self.pos = [0, 0]  # Start at bottom of T
-        self.signal = self.goal_location if self.delay == 0 else "none"
-        self.t = 0
+    
+        if self.randomize_goal:
+            self.goal_location = random.choice(["left", "right"])
+        else:
+            self.goal_location = "right" 
+
+        # Agent starts at bottom of T
+        self.pos = [0, 0]   
+       
+        self.signal = self.goal_location
         self.done = False
-        obs = self._get_observation()
-        return obs
+
+        return self._get_observation()
     
     def step(self, action):
-        self.t += 1
-        
-        # Update signal after delay
-        if self.t == self.delay + 1:
-            self.signal = self.goal_location
-        
-        reward = 0
-        
-        # Handle movement based on action
-        if action == 0:  # Left
-            if self.pos[1] == self.corridor_length:  # At junction
-                self.pos[0] -= 1
+    
+        reward = -1
+        if self.pos[1] == self.corridor_length:
+            if action in [0, 1]:
                 self.done = True
-                reward = 1.0 if self.goal_location == "left" else -1.0
+                if ((action == 0 and self.goal_location == "left") or
+                    (action == 1 and self.goal_location == "right")):
+                    reward = 0
+                else:
+                    reward = -1
             else:
-                reward = -0.1  # Penalty for invalid move
-        elif action == 1:  # Right
-            if self.pos[1] == self.corridor_length:  # At junction
-                self.pos[0] += 1
-                self.done = True
-                reward = 1.0 if self.goal_location == "right" else -1.0
+                #typically penalize
+                pass
+
+        else:
+            # If not at the junction
+            if action == 2:  # Forward
+                self.pos[1] += 1  # move further up the corridor
             else:
-                reward = -0.1  # Penalty for invalid move
-        elif action == 2:  # Forward
-            if self.pos[1] < self.corridor_length:
-                self.pos[1] += 1
-            else:
-                reward = -0.1  # Penalty for invalid move
-        
+                pass
+
         obs = self._get_observation()
         return obs, reward, self.done, {}
     
@@ -98,6 +95,7 @@ class TMazeEnv:
             return 2
         else:
             return 0  # No signal
+            
 
 
 # eLSTM-based policy for discrete action spaces (used for T-maze)
