@@ -211,7 +211,7 @@ loginf(f"Output vocab size: {out_vocab_size}")
 # model
 
 loginf("Model: Quasi-LSTM")
-model = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
+model = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,  # RTRLQuasiLSTMModel
                     num_layers=num_layers, in_vocab_size=in_vocab_size,
                     out_vocab_size=out_vocab_size, dropout=dropout,
                     no_embedding=args.no_embedding)
@@ -221,7 +221,7 @@ loginf(f"{model}")
 
 model = model.to(DEVICE)
 
-eval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
+eval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,  # QuasiLSTMModel
                     num_layers=num_layers, in_vocab_size=in_vocab_size,
                     out_vocab_size=out_vocab_size, dropout=dropout,
                     no_embedding=args.no_embedding)
@@ -270,6 +270,8 @@ if torch.cuda.is_available():
 
 model.reset_grad()
 model.rtrl_reset_grad()
+
+avg_train_loss = 0
 
 for ep in range(num_epoch):
     for idx, batch in enumerate(train_data_loader):
@@ -326,6 +328,9 @@ for ep in range(num_epoch):
         loginf(f"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] "
                f"End epoch {ep+1} =============")
         loginf(f"train loss: {acc_loss / steps}")
+
+        avg_train_loss += (acc_loss / steps) # update the average training loss over all epochs
+
         eval_model.load_state_dict(model.state_dict())
         v_loss, v_acc, v_acc_noop, v_acc_print = compute_accuracy(
             eval_model, valid_data_loader, loss_fn, no_print_idx=no_print_idx,
@@ -367,6 +372,9 @@ for ep in range(num_epoch):
 elapsed = time.time() - start_time
 loginf(f"Ran {ep} epochs in {elapsed / 60.:.2f} min.")
 loginf(f"Best validation acc: {best_val_acc:.2f}")
+
+avg_train_loss = avg_train_loss / num_epoch # divide the average train loss to get the average loss over all epochs
+print("avg_train_loss", avg_train_loss)
 
 if best_epoch > 1:  # load the best model and evaluate on the test set
     del train_data_loader, train_data

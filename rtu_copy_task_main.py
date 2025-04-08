@@ -15,10 +15,11 @@ from copy_task_data import CopyTaskDataset
 from diag_unit.updated_test_diag_sigmoid import *
 from rtu_model.rtu_complex import *
 # from rtu_model.rtu import *
+from eval_utils import compute_accuracy
 
 
 
-# DEVICE = 'cpu' #'cuda'
+DEVICE = 'cpu' #'cuda'
 
 
 parser = argparse.ArgumentParser(description='Learning to execute')
@@ -225,7 +226,7 @@ loginf(f"{model}")
 
 #model = model.to(DEVICE)
 
-# eval_model = BPTTDiagonalRNN(hidden_size)
+eval_model = BPTTRTU(hidden_size, in_vocab_size) # define the evaluation model as the BPTT implementation of RTU
 
 # QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
 #                     num_layers=num_layers, in_vocab_size=in_vocab_size,
@@ -293,8 +294,8 @@ for ep in range(num_epoch):
         # reset states at the beginning of the sequence
         model.reset_rtrl_state()
 
-        src = src.permute(1, 0)
-        tgt = tgt.permute(1, 0)
+        # src = src.permute(1, 0)  # TODO: MAYBE ADD LATER **
+        # tgt = tgt.permute(1, 0)  # TODO: MAYBE ADD LATER **
 
         # print("src.shape", src.shape)
         # print("tgt.shape", tgt.shape)
@@ -334,7 +335,7 @@ for ep in range(num_epoch):
 
                 optimizer.step()
                 
-                print("loss", loss)
+                # print("loss", loss)
                 with torch.no_grad():
                     acc_loss += loss
                     steps += 1
@@ -352,47 +353,49 @@ for ep in range(num_epoch):
         loginf(f"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] "
                f"End epoch {ep+1} =============")
         loginf(f"train loss: {acc_loss / steps}")
-        # eval_model.load_state_dict(model.state_dict())
-        # v_loss, v_acc, v_acc_noop, v_acc_print = compute_accuracy(
-        #     eval_model, valid_data_loader, loss_fn, no_print_idx=no_print_idx,
-        #     pad_value=tgt_pad_idx, show_example=False)
-        # loginf(f"valid loss: {v_loss}")
-        # loginf(f"valid acc: {v_acc:.2f} %")
-        # loginf(f"valid no-op acc: {v_acc_noop:.2f} %")
-        # loginf(f"valid print acc: {v_acc_print:.2f} %")
+        # *************************************************************************************************************
+        eval_model.load_state_dict(model.state_dict())
+        v_loss, v_acc, v_acc_noop, v_acc_print = compute_accuracy(
+            eval_model, valid_data_loader, loss_fn, no_print_idx=no_print_idx,
+            pad_value=tgt_pad_idx, show_example=False)
+        loginf(f"valid loss: {v_loss}")
+        loginf(f"valid acc: {v_acc:.2f} %")
+        loginf(f"valid no-op acc: {v_acc_noop:.2f} %")
+        loginf(f"valid print acc: {v_acc_print:.2f} %")
 
-        # if use_wandb:
-        #     wandb.log({"train_loss": acc_loss / steps})
-        #     wandb.log({"valid_loss": v_loss})
-        #     wandb.log({"valid_acc": v_acc})
-        #     wandb.log({"valid_acc_noop": v_acc_noop})
-        #     wandb.log({"valid_acc_print": v_acc_print})
+        if use_wandb:
+            wandb.log({"train_loss": acc_loss / steps})
+            wandb.log({"valid_loss": v_loss})
+            wandb.log({"valid_acc": v_acc})
+            wandb.log({"valid_acc_noop": v_acc_noop})
+            wandb.log({"valid_acc_print": v_acc_print})
 
-        # if v_acc > best_val_acc:
-        #     best_val_acc = v_acc 
-        #     best_epoch = ep + 1
-        #     # Save the best model
-        #     loginf("The best model so far.")
-        #     torch.save({'epoch': best_epoch,
-        #                 'model_state_dict': model.state_dict(),
-        #                 'optimizer_state_dict': optimizer.state_dict(),
-        #                 'valid_acc': best_val_acc}, best_model_path)
-        #     loginf("Saved.")
-        # # Save the latest model
-        # torch.save({'epoch': ep + 1,
-        #             'model_state_dict': model.state_dict(),
-        #             'optimizer_state_dict': optimizer.state_dict(),
-        #             'valid_acc': v_acc}, lastest_model_path)
+        if v_acc > best_val_acc:
+            best_val_acc = v_acc 
+            best_epoch = ep + 1
+            # Save the best model
+            loginf("The best model so far.")
+            torch.save({'epoch': best_epoch,
+                        'model_state_dict': model.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'valid_acc': best_val_acc}, best_model_path)
+            loginf("Saved.")
+        # Save the latest model
+        torch.save({'epoch': ep + 1,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'valid_acc': v_acc}, lastest_model_path)
 
-        # acc_loss = 0.0
-        # steps = 0
+        acc_loss = 0.0
+        steps = 0
 
-    # if v_acc >= stop_acc:
-    #     break
+    if v_acc >= stop_acc:
+        break
 
 elapsed = time.time() - start_time
 loginf(f"Ran {ep} epochs in {elapsed / 60.:.2f} min.")
 loginf(f"Best validation acc: {best_val_acc:.2f}")
+# *************************************************************************************************************
 
 # if best_epoch > 1:  # load the best model and evaluate on the test set
 #     del train_data_loader, train_data
