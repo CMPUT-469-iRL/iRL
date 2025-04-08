@@ -221,7 +221,7 @@ loginf(f"{model}")
 
 model = model.to(DEVICE)
 
-eval_model = QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,  # QuasiLSTMModel
+eval_model = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,  # QuasiLSTMModel
                     num_layers=num_layers, in_vocab_size=in_vocab_size,
                     out_vocab_size=out_vocab_size, dropout=dropout,
                     no_embedding=args.no_embedding)
