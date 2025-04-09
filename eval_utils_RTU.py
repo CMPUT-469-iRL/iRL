@@ -51,8 +51,8 @@ def compute_accuracy(hidden_size, model, data_iterator, loss_fn, no_print_idx, p
                 output = torch.argmax(output, dim=-1).squeeze()
 
                 # compute loss
-                output = output.contiguous().view(-1, output.shape[-1])
-                output = tgt_token.flatten() # TODO: .flatten() ?????????????? #tgt.view(-1)
+                #output = output.contiguous().view(-1, output.shape[-1])
+                #output = tgt_token.flatten() # TODO: .flatten() ?????????????? #tgt.view(-1)
                 loss = loss_fn(output, labels)
                 total_loss += loss
 

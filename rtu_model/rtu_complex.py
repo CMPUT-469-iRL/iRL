@@ -9,7 +9,7 @@ import random
 
 class RTUFunction(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, input_t, h, lamda, theta, B_c1, B_c2, s_r_c1_prev, s_r_c2_prev, s_theta_c1_prev, s_theta_c2_prev, s_B_c1_h_c1_prev, s_B_c2_h_c1_prev,  s_B_c2_h_c2_prev, s_B_c1_h_c2_prev):
+    def forward(ctx, input_t, h, lamda, theta, B_c1, B_c2, s_r_c1_prev, s_r_c2_prev, s_theta_c1_prev, s_theta_c2_prev, s_B_c1_h_c1_prev, s_B_c2_h_c1_prev,  s_B_c1_h_c2_prev, s_B_c2_h_c2_prev):
 
         # theta = math.log(6.28 * random.uniform(1, B.shape[0]))   # hidden_size = B.shape[0]
         # r_max = 1
@@ -52,47 +52,12 @@ class RTUFunction(torch.autograd.Function):
         s_theta_c1_next = (-y * torch.sin(z) * z_gradient * h_prev_c1) + (y * torch.cos(z) * s_theta_c1_prev) - (y * torch.cos(z) * z_gradient * h_prev_c2) - (y * torch.sin(z) * s_theta_c2_prev)
         s_theta_c2_next = (-y * torch.sin(z) * z_gradient * h_prev_c2) + (y * torch.cos(z) * s_theta_c2_prev) + (y * torch.cos(z) * z_gradient * h_prev_c1) + (y * torch.sin(z) * s_theta_c1_prev)
 
-        # s_B_c1_next = y.unsqueeze(1) * s_B_c1_prev + torch.outer(gamma, input_t.to('cpu', dtype=torch.float)) # s_B_next = sigmoid_lamda.unsqueeze(1) * s_B_prev + torch.outer(torch.ones(B.shape[0]).to(device), input_t)#s_B_next = torch.diag(sigmoid_lamda).matmul(s_B_prev) + torch.outer(torch.ones_like(input_t), input_t)
-        # s_B_c2_next = y.unsqueeze(1) * s_B_c2_prev + torch.outer(gamma, input_t.to('cpu', dtype=torch.float))
-        # *****************************************************************************************************************************************************
-        # print(torch.cos(z) * s_B_c1_h_c1_prev.T)
-        print("RUN THROUGH ***********************")
-        print("y.unsqueeze(1)", y.unsqueeze(1).shape)
-        print("y", y.shape)
-        print("torch.cos(z)", torch.cos(z).shape)
-        print("s_B_c1_h_c1_prev",  s_B_c1_h_c1_prev.shape)
-        print("s_B_c1_h_c2_prev", s_B_c1_h_c2_prev.shape)
 
-        print("(y.unsqueeze(1) * torch.cos(z)).shape", (y.unsqueeze(1) * torch.cos(z)).shape)
-        print("(y.unsqueeze(1) * torch.cos(z).T).shape", (y.unsqueeze(1) * torch.cos(z).T).shape)
-        print("(y.unsqueeze(1).T * torch.cos(z)).shape", (y.unsqueeze(1).T * torch.cos(z)).shape)
-        print("(y.unsqueeze(1) * torch.cos(z).unsqueeze(1)).shape", (y.unsqueeze(1) * torch.cos(z).unsqueeze(1)).shape)
-        print("(y * torch.cos(z)).shape", (y * torch.cos(z)).shape)
-        print("(y * torch.sin(z)).shape", (y * torch.sin(z)).shape)
-        print("(torch.outer(gamma,input_t))", (torch.outer(gamma,input_t)).shape)
-
-        # print("((y.unsqueeze(1) * torch.cos(z)) * s_B_c1_h_c1_prev).shape",((y.unsqueeze(1) * torch.cos(z)) * s_B_c1_h_c1_prev).shape)
-        print("((y * torch.cos(z)) * s_B_c1_h_c1_prev).shape",(y * torch.cos(z) * s_B_c1_h_c1_prev.T).T.shape)
-        print("((y * torch.sin(z)) * s_B_c1_h_c2_prev).shape",(y * torch.sin(z) * s_B_c1_h_c2_prev.T).T.shape)
-
-        print("shape", ((y.unsqueeze(1).T * torch.cos(z) * s_B_c1_h_c1_prev.T) - (y.unsqueeze(1).T * torch.sin(z) * s_B_c1_h_c2_prev.T)).shape)
-
-        print("shape2", ((y * torch.cos(z) * s_B_c1_h_c1_prev.T)).shape)
-
-        print("shape 3", (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c1_h_c1_prev).shape)
-        # *****************************************************************************************************************************************************
-        # s_B_c1_h_c1_next = (y * torch.cos(z) * s_B_c1_h_c1_prev.T).T - (y * torch.sin(z) * s_B_c1_h_c2_prev.T).T + (torch.outer(gamma,input_t))
-        # s_B_c1_h_c1_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c1_h_c1_prev.T).T - (y.unsqueeze(1).T * torch.sin(z) * s_B_c1_h_c2_prev.T).T + (torch.outer(gamma,input_t))
-        # s_B_c2_h_c1_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c2_h_c1_prev.T).T - (y.unsqueeze(1).T * torch.sin(z) * s_B_c2_h_c2_prev.T).T
-        # s_B_c1_h_c2_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c1_h_c2_prev.T).T + (y.unsqueeze(1).T * torch.sin(z) * s_B_c1_h_c1_prev.T).T
-        # s_B_c2_h_c2_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c2_h_c2_prev.T).T + (y.unsqueeze(1).T * torch.sin(z) * s_B_c2_h_c1_prev.T).T + (torch.outer(gamma,input_t))
-
-        s_B_c1_h_c1_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c1_h_c1_prev) - (y.unsqueeze(1) * torch.sin(z).unsqueeze(1) * s_B_c1_h_c2_prev) + (torch.outer(gamma,input_t.T))
-        s_B_c2_h_c1_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c2_h_c1_prev) - (y.unsqueeze(1)* torch.sin(z).unsqueeze(1) * s_B_c2_h_c2_prev)
+        # gradients of sentivity matrices of B
+        s_B_c1_h_c1_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c1_h_c1_prev) - (y.unsqueeze(1) * torch.sin(z).unsqueeze(1) * s_B_c1_h_c2_prev) + (torch.outer(gamma, input_t.T))
         s_B_c1_h_c2_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c1_h_c2_prev) + (y.unsqueeze(1) * torch.sin(z).unsqueeze(1) * s_B_c1_h_c1_prev)
-        s_B_c2_h_c2_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c2_h_c2_prev) + (y.unsqueeze(1) * torch.sin(z).unsqueeze(1) * s_B_c2_h_c1_prev) + (torch.outer(gamma,input_t.T))
-
-        print("s_B_c2_h_c2_next.shape", s_B_c2_h_c2_next.shape)
+        s_B_c2_h_c1_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c2_h_c1_prev) - (y.unsqueeze(1) * torch.sin(z).unsqueeze(1) * s_B_c2_h_c2_prev)
+        s_B_c2_h_c2_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c2_h_c2_prev) + (y.unsqueeze(1) * torch.sin(z).unsqueeze(1) * s_B_c2_h_c1_prev) + (torch.outer(gamma, input_t.T))
 
         ctx.save_for_backward(s_r_c1_next, s_r_c2_next, s_theta_c1_next, s_theta_c2_next, s_B_c1_h_c1_next, s_B_c2_h_c1_next, s_B_c1_h_c2_next, s_B_c2_h_c2_next,  B_c1, B_c2)
 
@@ -296,8 +261,9 @@ def test_gradient_correctness():
     torch.testing.assert_close(post_linear1.weight.grad, post_linear2.weight.grad, rtol=1e-4, atol=1e-4)
     torch.testing.assert_close(rtrl_rnn.theta.grad, bptt_rnn.theta.grad, rtol=1e-4, atol=1e-4)
     torch.testing.assert_close(rtrl_rnn.lamda.grad, bptt_rnn.lamda.grad, rtol=1e-4, atol=1e-4)
-    torch.testing.assert_close(rtrl_rnn.B_c1.grad, bptt_rnn.B_c1.grad, rtol=1e-4, atol=1e-4)
     torch.testing.assert_close(rtrl_rnn.B_c2.grad, bptt_rnn.B_c2.grad, rtol=1e-4, atol=1e-4)
+    torch.testing.assert_close(rtrl_rnn.B_c1.grad, bptt_rnn.B_c1.grad, rtol=1e-4, atol=1e-4)
+    
 
 
     # Note that it's expected that any parameter below the recurrent
