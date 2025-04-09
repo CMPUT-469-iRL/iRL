@@ -50,7 +50,7 @@ def compute_accuracy(model, data_iterator, loss_fn, no_print_idx, pad_value=-1,
           # sequence level accuracy
           # seq_match = (torch.eq(target, output) | (target == pad_value)  #           seq_match = (torch.eq(target, output) | (target == pad_value)).all(1).sum().item()
           #             ).all(1).sum().item()
-          seq_match = torch.eq(target, output).sum().item()
+          seq_match = (torch.eq(target, output) | (target == pad_value)).sum().item() # CHANGES
           corr += seq_match
           total_num_seqs += src_token.size()[0]  # src.size()[0] 
 

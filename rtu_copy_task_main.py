@@ -13,9 +13,9 @@ from torch.utils.data import DataLoader
 from copy_task_data import CopyTaskDataset
 #from diag_unit.test_diag_unit import DiagonalRNNFunction, RTRLDiagonalRNN, BPTTDiagonalRNN
 from diag_unit.updated_test_diag_sigmoid import *
-from rtu_model.rtu_complex import *
-# from rtu_model.rtu import *
-from eval_utils import compute_accuracy
+# from rtu_model.rtu_complex import *
+from rtu_model.rtu import *
+from eval_utils_RTU import compute_accuracy
 
 
 
@@ -226,7 +226,7 @@ loginf(f"{model}")
 
 #model = model.to(DEVICE)
 
-eval_model = BPTTRTU(hidden_size, in_vocab_size) # define the evaluation model as the BPTT implementation of RTU
+eval_model = RTRLRTU(hidden_size, in_vocab_size) # define the evaluation model as the BPTT implementation of RTU
 
 # QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
 #                     num_layers=num_layers, in_vocab_size=in_vocab_size,
@@ -281,7 +281,7 @@ if torch.cuda.is_available():
 model.reset_rtrl_state()
 
 # define a layer to pass the hidden layer through
-layer = nn.Linear(2*hidden_size, in_vocab_size) #layer = nn.Linear(2 * hidden_size, in_vocab_size) # layer = nn.Linear(hidden_size, in_vocab_size) #.to(DEVICE)
+layer = nn.Linear(hidden_size, in_vocab_size) #layer = nn.Linear(2 * hidden_size, in_vocab_size) # layer = nn.Linear(hidden_size, in_vocab_size) #.to(DEVICE)
 
 for ep in range(num_epoch):
     for idx, batch in enumerate(train_data_loader):
@@ -355,8 +355,8 @@ for ep in range(num_epoch):
         loginf(f"train loss: {acc_loss / steps}")
         # *************************************************************************************************************
         eval_model.load_state_dict(model.state_dict())
-        v_loss, v_acc, v_acc_noop, v_acc_print = compute_accuracy(
-            eval_model, valid_data_loader, loss_fn, no_print_idx=no_print_idx,
+        v_loss, v_acc, v_acc_noop, v_acc_print = compute_accuracy( 
+            hidden_size, eval_model, valid_data_loader, loss_fn, no_print_idx=no_print_idx,  # ADDED HIDDEN SIZE
             pad_value=tgt_pad_idx, show_example=False)
         loginf(f"valid loss: {v_loss}")
         loginf(f"valid acc: {v_acc:.2f} %")
