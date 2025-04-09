@@ -66,6 +66,7 @@ class RTUFunction(torch.autograd.Function):
         print("(y.unsqueeze(1) * torch.cos(z)).shape", (y.unsqueeze(1) * torch.cos(z)).shape)
         print("(y.unsqueeze(1) * torch.cos(z).T).shape", (y.unsqueeze(1) * torch.cos(z).T).shape)
         print("(y.unsqueeze(1).T * torch.cos(z)).shape", (y.unsqueeze(1).T * torch.cos(z)).shape)
+        print("(y.unsqueeze(1) * torch.cos(z).unsqueeze(1)).shape", (y.unsqueeze(1) * torch.cos(z).unsqueeze(1)).shape)
         print("(y * torch.cos(z)).shape", (y * torch.cos(z)).shape)
         print("(y * torch.sin(z)).shape", (y * torch.sin(z)).shape)
         print("(torch.outer(gamma,input_t))", (torch.outer(gamma,input_t)).shape)
@@ -76,12 +77,22 @@ class RTUFunction(torch.autograd.Function):
 
         print("shape", ((y.unsqueeze(1).T * torch.cos(z) * s_B_c1_h_c1_prev.T) - (y.unsqueeze(1).T * torch.sin(z) * s_B_c1_h_c2_prev.T)).shape)
 
+        print("shape2", ((y * torch.cos(z) * s_B_c1_h_c1_prev.T)).shape)
+
+        print("shape 3", (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c1_h_c1_prev).shape)
         # *****************************************************************************************************************************************************
         # s_B_c1_h_c1_next = (y * torch.cos(z) * s_B_c1_h_c1_prev.T).T - (y * torch.sin(z) * s_B_c1_h_c2_prev.T).T + (torch.outer(gamma,input_t))
-        s_B_c1_h_c1_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c1_h_c1_prev.T).T - (y.unsqueeze(1).T * torch.sin(z) * s_B_c1_h_c2_prev.T).T + (torch.outer(gamma,input_t))
-        s_B_c2_h_c1_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c2_h_c1_prev.T).T - (y.unsqueeze(1).T * torch.sin(z) * s_B_c2_h_c2_prev.T).T
-        s_B_c1_h_c2_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c1_h_c2_prev.T).T + (y.unsqueeze(1).T * torch.sin(z) * s_B_c1_h_c1_prev.T).T
-        s_B_c2_h_c2_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c2_h_c2_prev.T).T + (y.unsqueeze(1).T * torch.sin(z) * s_B_c2_h_c1_prev.T).T + (torch.outer(gamma,input_t))
+        # s_B_c1_h_c1_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c1_h_c1_prev.T).T - (y.unsqueeze(1).T * torch.sin(z) * s_B_c1_h_c2_prev.T).T + (torch.outer(gamma,input_t))
+        # s_B_c2_h_c1_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c2_h_c1_prev.T).T - (y.unsqueeze(1).T * torch.sin(z) * s_B_c2_h_c2_prev.T).T
+        # s_B_c1_h_c2_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c1_h_c2_prev.T).T + (y.unsqueeze(1).T * torch.sin(z) * s_B_c1_h_c1_prev.T).T
+        # s_B_c2_h_c2_next = (y.unsqueeze(1).T * torch.cos(z) * s_B_c2_h_c2_prev.T).T + (y.unsqueeze(1).T * torch.sin(z) * s_B_c2_h_c1_prev.T).T + (torch.outer(gamma,input_t))
+
+        s_B_c1_h_c1_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c1_h_c1_prev) - (y.unsqueeze(1) * torch.sin(z).unsqueeze(1) * s_B_c1_h_c2_prev) + (torch.outer(gamma,input_t.T))
+        s_B_c2_h_c1_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c2_h_c1_prev) - (y.unsqueeze(1)* torch.sin(z).unsqueeze(1) * s_B_c2_h_c2_prev)
+        s_B_c1_h_c2_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c1_h_c2_prev) + (y.unsqueeze(1) * torch.sin(z).unsqueeze(1) * s_B_c1_h_c1_prev)
+        s_B_c2_h_c2_next = (y.unsqueeze(1) * torch.cos(z).unsqueeze(1) * s_B_c2_h_c2_prev) + (y.unsqueeze(1) * torch.sin(z).unsqueeze(1) * s_B_c2_h_c1_prev) + (torch.outer(gamma,input_t.T))
+
+        print("s_B_c2_h_c2_next.shape", s_B_c2_h_c2_next.shape)
 
         ctx.save_for_backward(s_r_c1_next, s_r_c2_next, s_theta_c1_next, s_theta_c2_next, s_B_c1_h_c1_next, s_B_c2_h_c1_next, s_B_c1_h_c2_next, s_B_c2_h_c2_next,  B_c1, B_c2)
 
