@@ -104,6 +104,11 @@ class QuasiLSTMModel(BaseModel):
         if dropout > 0.:
             self.dropout = nn.Dropout(dropout)
         self.out_layer = nn.Linear(hidden_size, out_vocab_size)
+        
+    def get_init_states(self, batch_size, device):
+        # Return None as QuasiLSTM doesn't need explicit hidden state
+        # The state is maintained internally in the forward pass
+        return None
 
     def forward(self, x):
         if self.no_embedding:

@@ -9,12 +9,12 @@ import torch
 import torch.nn as nn
 
 from tmaze_pen import TMazeEnv
-from eLSTM_model.model import QuasiLSTMModel
+from eLSTM_model.model import RTRLQuasiLSTMModel
 
 
-class StreamQAgent:
+class RTRLStreamQAgent:
     """
-    Stream Q agent using RTRL QuasiLSTM for efficient learning with recurrent connections.
+    Stream Q agent using RTRL QuasiLSTM for efficient learning with real-time recurrent learning.
     """
     def __init__(self, 
                 input_size, 
@@ -31,8 +31,8 @@ class StreamQAgent:
                 no_embedding=False,
                 target_update_freq=10):
         
-        # Main Q-network
-        self.q_network = QuasiLSTMModel(
+        # Main Q-network using RTRL variant
+        self.q_network = RTRLQuasiLSTMModel(
             emb_dim=embedding_size,
             hidden_size=hidden_size,
             in_vocab_size=input_size,
@@ -41,7 +41,7 @@ class StreamQAgent:
         )
         
         # Target network for stable learning
-        self.target_network = QuasiLSTMModel(
+        self.target_network = RTRLQuasiLSTMModel(
             emb_dim=embedding_size,
             hidden_size=hidden_size,
             in_vocab_size=input_size,
@@ -76,9 +76,7 @@ class StreamQAgent:
         
     def reset_hidden_state(self, batch_size=1):
         """Reset the hidden state at the beginning of episodes."""
-        # For QuasiLSTM, we don't need to maintain explicit hidden state
-        # The state is maintained internally in the forward pass
-        self.hidden_state = None
+        self.hidden_state = self.q_network.get_init_states(batch_size, self.device)
         
     def select_action(self, state, training=True):
         """Select action using epsilon-greedy policy."""
@@ -86,16 +84,17 @@ class StreamQAgent:
             return random.randrange(self.output_size)
         
         try:
-            # Convert state to tensor and add sequence dimension
+            # Convert state to tensor
             if isinstance(state, int):
-                state_tensor = torch.tensor([[state]], dtype=torch.long).to(self.device)
+                state_tensor = torch.tensor([state], dtype=torch.long).to(self.device)
             else:
-                state_tensor = torch.tensor([state], dtype=torch.long).unsqueeze(0).to(self.device)
+                state_tensor = torch.tensor(state, dtype=torch.long).to(self.device)
                 
             # Get Q-values from network
             with torch.no_grad():
-                q_values = self.q_network(state_tensor)
-                q_values = q_values.squeeze(0)  # Remove sequence dimension
+                q_values, _, new_hidden_state = self.q_network(state_tensor, self.hidden_state)
+                # Update hidden state
+                self.hidden_state = new_hidden_state
                 
             # Return action with highest Q-value
             return q_values.argmax().item()
@@ -117,7 +116,7 @@ class StreamQAgent:
         self.target_network.load_state_dict(self.q_network.state_dict())
     
     def train_step(self):
-        """Perform a single training step using standard backpropagation."""
+        """Perform a single training step using RTRL."""
         if len(self.memory) < self.batch_size:
             return 0
             
@@ -125,37 +124,72 @@ class StreamQAgent:
         transitions = random.sample(self.memory, self.batch_size)
         batch = list(zip(*transitions))
         
-        # Convert to tensors and add sequence dimension
-        states = torch.tensor(batch[0], dtype=torch.long).unsqueeze(0).to(self.device)  # [1, B, 1]
-        actions = torch.tensor(batch[1], dtype=torch.long).view(1, -1, 1).to(self.device)  # [1, B, 1]
-        rewards = torch.tensor(batch[2], dtype=torch.float32).view(1, -1, 1).to(self.device)  # [1, B, 1]
-        next_states = torch.tensor(batch[3], dtype=torch.long).unsqueeze(0).to(self.device)  # [1, B, 1]
-        dones = torch.tensor(batch[4], dtype=torch.float32).view(1, -1, 1).to(self.device)  # [1, B, 1]
+        # Convert to tensors
+        states = torch.tensor(batch[0], dtype=torch.long).to(self.device)
+        actions = torch.tensor(batch[1], dtype=torch.long).to(self.device)
+        rewards = torch.tensor(batch[2], dtype=torch.float32).to(self.device)
+        next_states = torch.tensor(batch[3], dtype=torch.long).to(self.device)
+        dones = torch.tensor(batch[4], dtype=torch.float32).to(self.device)
         
         # Reset gradients
         self.optimizer.zero_grad()
+        # Reset RTRL gradients
+        self.q_network.rtrl_reset_grad()
         
-        # Compute Q-values for current states
-        q_values = self.q_network(states)  # [1, B, num_actions]
-        q_values = q_values.gather(-1, actions)  # [1, B, 1]
+        total_loss = 0
         
-        # Compute target Q-values
-        with torch.no_grad():
-            next_q_values = self.target_network(next_states)  # [1, B, num_actions]
-            next_q_values = next_q_values.max(-1)[0].unsqueeze(-1)  # [1, B, 1]
-            target_q_values = rewards + (1 - dones) * self.gamma * next_q_values
+        # Process each sample individually for RTRL
+        for i in range(self.batch_size):
+            # Get current state, action, etc.
+            state = states[i].unsqueeze(0)
+            action = actions[i]
+            reward = rewards[i]
+            next_state = next_states[i].unsqueeze(0)
+            done = dones[i]
+            
+            try:
+                # Initialize hidden state for this sample
+                hidden_state = self.q_network.get_init_states(1, self.device)
+                target_hidden_state = self.target_network.get_init_states(1, self.device)
+                
+                # Forward pass on current state
+                q_values, cell_out, hidden_state = self.q_network(state, hidden_state)
+                q_value = q_values[0, action]
+                
+                # Get RTRL states - safely extract regardless of the structure
+                if isinstance(hidden_state, tuple) and len(hidden_state) == 2:
+                    # This is the expected format: (rnn_state, rtrl_states)
+                    rnn_state, rtrl_states = hidden_state
+                else:
+                    # Something unexpected, but let's not crash
+                    print(f"Warning: unexpected hidden_state format: {type(hidden_state)}")
+                    continue
+                
+                # Compute target value
+                with torch.no_grad():
+                    next_q_values, _, _ = self.target_network(next_state, target_hidden_state)
+                    next_q_value = next_q_values.max()
+                    target_value = reward + (1 - done) * self.gamma * next_q_value
+                
+                # Compute loss for this sample
+                loss = self.loss_fn(q_value, target_value)
+                total_loss += loss.item()
+                
+                # Backward using RTRL
+                loss.backward()
+                # Compute RTRL gradients for recurrent weights
+                self.q_network.compute_gradient_rtrl(cell_out.grad, rtrl_states)
+            except Exception as e:
+                print(f"Error during batch training: {e}")
+                continue
         
-        # Compute loss and backpropagate
-        loss = self.loss_fn(q_values, target_q_values)
-        loss.backward()
-        
-        # Just use standard backpropagation - no RTRL
+        # Update parameters
         self.optimizer.step()
         
-        return loss.item()
+        return total_loss / self.batch_size
 
 
-def train_stream_q(env_name="tmaze", 
+def train_rtrl_stream_q(env_name="tmaze", 
                   episodes=500, 
                   epsilon_start=1.0,
                   epsilon_end=0.01,
@@ -166,7 +200,7 @@ def train_stream_q(env_name="tmaze",
                   hidden_size=64,
                   batch_size=32,
                   target_update_freq=10,
-                  save_path=None,  # Changed to None, will construct based on corridor_length
+                  save_path=None,  # Will construct based on corridor_length
                   eval_interval=20,
                   corridor_length=5,
                   max_steps_per_episode=100):
@@ -186,10 +220,10 @@ def train_stream_q(env_name="tmaze",
     
     # Construct save path if not provided
     if save_path is None:
-        save_path = f"save_models/stream_q_model_{corridor_length}.pt"
+        save_path = f"save_models/rtrl_quasi_lstm_model_{corridor_length}.pt"
         
     # Initialize agent
-    agent = StreamQAgent(
+    agent = RTRLStreamQAgent(
         input_size=input_size,
         embedding_size=embedding_size,
         hidden_size=hidden_size,
@@ -225,7 +259,21 @@ def train_stream_q(env_name="tmaze",
             try:
                 # Select and perform action
                 action = agent.select_action(state)
-                next_state, reward, done, info = env.step(action)
+                step_result = env.step(action)
+                
+                # Handle different return values format
+                if isinstance(step_result, tuple) and len(step_result) >= 3:
+                    if len(step_result) == 4:  # Standard step return
+                        next_state, reward, done, info = step_result
+                    elif len(step_result) == 3:  # Missing info dict
+                        next_state, reward, done = step_result
+                        info = {}
+                    elif len(step_result) >= 5:  # Extra values
+                        next_state, reward, done = step_result[:3]
+                        info = step_result[3] if len(step_result) > 3 else {}
+                else:
+                    print(f"Unexpected step result format: {step_result}")
+                    break
                 
                 # Store transition
                 agent.store_transition(state, action, reward, next_state, done)
@@ -289,7 +337,8 @@ def train_stream_q(env_name="tmaze",
             'gamma': gamma,
             'embedding_size': embedding_size,
             'hidden_size': hidden_size,
-            'batch_size': batch_size
+            'batch_size': batch_size,
+            'is_rtrl': True
         }
     }, save_path)
     
@@ -315,7 +364,20 @@ def evaluate_agent(agent, env, episodes=10, max_steps_per_episode=100):
         while not done and steps < max_steps_per_episode:
             try:
                 action = agent.select_action(state, training=False)
-                next_state, reward, done, info = env.step(action)
+                step_result = env.step(action)
+                
+                # Handle different return values format
+                if isinstance(step_result, tuple) and len(step_result) >= 3:
+                    if len(step_result) == 4:  # Standard step return
+                        next_state, reward, done, info = step_result
+                    elif len(step_result) == 3:  # Missing info dict
+                        next_state, reward, done = step_result
+                    elif len(step_result) >= 5:  # Extra values
+                        next_state, reward, done = step_result[:3]
+                else:
+                    print(f"Unexpected step result format: {step_result}")
+                    break
+                    
                 episode_reward += reward
                 state = next_state
                 steps += 1
@@ -335,14 +397,14 @@ def plot_training_results(rewards, losses, eval_rewards, eval_interval):
     # Plot episode rewards
     plt.subplot(131)
     plt.plot(rewards)
-    plt.title('Episode Rewards')
+    plt.title('Episode Rewards (RTRL QuasiLSTM)')
     plt.xlabel('Episode')
     plt.ylabel('Reward')
     
     # Plot losses
     plt.subplot(132)
     plt.plot(losses)
-    plt.title('Training Loss')
+    plt.title('Training Loss (RTRL QuasiLSTM)')
     plt.xlabel('Episode')
     plt.ylabel('Loss')
     
@@ -350,17 +412,17 @@ def plot_training_results(rewards, losses, eval_rewards, eval_interval):
     plt.subplot(133)
     eval_episodes = np.arange(eval_interval, len(rewards) + 1, eval_interval)
     plt.plot(eval_episodes, eval_rewards)
-    plt.title('Evaluation Rewards')
+    plt.title('Evaluation Rewards (RTRL QuasiLSTM)')
     plt.xlabel('Episode')
     plt.ylabel('Average Reward')
     
     plt.tight_layout()
-    plt.savefig('stream_q_training_results.png')
+    plt.savefig('rtrl_quasi_lstm_training_results.png')
     plt.show()
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train a Stream Q agent with RTRL QuasiLSTM")
+    parser = argparse.ArgumentParser(description="Train a RTRL Stream Q agent with RTRLQuasiLSTM")
     parser.add_argument("--env_type", type=str, default="tmaze", choices=["tmaze", "pendulum"], 
                         help="Environment type to train on")
     parser.add_argument("--episodes", type=int, default=500, help="Number of episodes to train")
@@ -378,7 +440,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # Train agent
-    agent, rewards = train_stream_q(
+    agent, rewards = train_rtrl_stream_q(
         env_name=args.env_type,
         episodes=args.episodes,
         lr=args.lr,
@@ -389,4 +451,4 @@ if __name__ == "__main__":
         save_path=args.save_path,
         corridor_length=args.corridor_length,
         max_steps_per_episode=args.max_steps
-    )
+    ) 
