@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 import torch
 from scipy.ndimage import gaussian_filter1d
-from rtrl_streamQ import train_rtrl_stream_q
+from streamQ import train_stream_q  # Changed to standard streamQ
 
 def compare_corridor_lengths(lengths, max_timesteps=1000000, epsilon=0.005):
     """
@@ -22,7 +22,7 @@ def compare_corridor_lengths(lengths, max_timesteps=1000000, epsilon=0.005):
     timesteps_per_length = {}
     
     # Create results directory if needed
-    os.makedirs("results2", exist_ok=True)
+    os.makedirs("results", exist_ok=True)  # Changed to "results" for standard models
     
     # Estimate episodes needed for each corridor length to reach max_timesteps
     # Longer corridors need fewer episodes to reach the same number of timesteps
@@ -37,19 +37,19 @@ def compare_corridor_lengths(lengths, max_timesteps=1000000, epsilon=0.005):
         print(f"{'='*50}\n")
         
         # Train with minimal exploration
-        _, rewards = train_rtrl_stream_q(
+        _, rewards = train_stream_q(  # Changed to train_stream_q
             episodes=estimated_episodes,
             corridor_length=length,
             epsilon_start=epsilon,
             epsilon_end=epsilon/10,     # Even lower final exploration
             epsilon_decay=0.999,        # Very slow decay
             max_steps_per_episode=max(100, length*3),  # Adjust based on corridor length
-            save_path=f"results2/model_length_{length}.pt",
+            save_path=f"results/model_length_{length}.pt",  # Changed directory
             eval_interval=estimated_episodes//5  # Fewer evaluations for long runs
         )
         
         # Get the loss values and total timesteps from the saved model
-        checkpoint = torch.load(f"results2/model_length_{length}.pt")
+        checkpoint = torch.load(f"results/model_length_{length}.pt")  # Changed directory
         loss_history = checkpoint.get('losses_history', [0] * len(rewards))
         
         # Calculate total timesteps based on corridor length and episodes
@@ -149,12 +149,12 @@ def plot_comparison(results, losses, timesteps_per_length, lengths, max_timestep
     timestep_text = f"{max_timesteps/1000:.0f}k" if max_timesteps < 1000000 else f"{max_timesteps/1000000:.1f}M"
     
     # Save and show plot with tight layout
-    plt.suptitle(f"Effect of Corridor Length on Agent Learning with RTRL (≈{timestep_text} timesteps)", 
+    plt.suptitle(f"Effect of Corridor Length on Agent Learning with QuasiLSTM (≈{timestep_text} timesteps)", 
                 fontsize=18, fontweight='bold', y=0.98)
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     
     # Save with appropriate filename
-    filename = f"corridor_length_comparison_rtrl_{timestep_text.replace('.', '_')}.png"
+    filename = f"corridor_length_comparison_bptt_{timestep_text.replace('.', '_')}.png"
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.show()
     
@@ -171,7 +171,11 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    print(f"\nRunning comparison with {args.max_timesteps/1000:.1f}k timesteps...")
+    print(f"\nRunning comparison with {args.max_timesteps/1000:.1f}k timesteps using standard QuasiLSTM...")
+    
+    # Override plot_training_results in streamQ to do nothing
+    import streamQ
+    streamQ.plot_training_results = lambda *args, **kwargs: None
     
     # Run comparison
     results = compare_corridor_lengths(
