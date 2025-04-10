@@ -17,8 +17,7 @@ from rtu_model.rtu_complex import *
 from eval_utils_RTU import compute_accuracy
 
 
-
-DEVICE = 'cpu' #'cuda'
+DEVICE = 'cuda' #'cuda'
 
 
 parser = argparse.ArgumentParser(description='Learning to execute')
@@ -223,7 +222,7 @@ model = RTRLRTU(hidden_size, in_vocab_size) # RTRLDiagonalRNN(hidden_size, in_vo
 #loginf(f"Number of trainable params: {model.num_params()}")
 loginf(f"{model}")
 
-#model = model.to(DEVICE)
+model = model.to(DEVICE)
 
 eval_model = RTRLRTU(hidden_size, in_vocab_size) # define the evaluation model as the BPTT implementation of RTU
 
@@ -232,7 +231,7 @@ eval_model = RTRLRTU(hidden_size, in_vocab_size) # define the evaluation model a
 #                     out_vocab_size=out_vocab_size, dropout=dropout,
 #                     no_embedding=args.no_embedding)
 
-# eval_model = eval_model.to(DEVICE)
+eval_model = eval_model.to(DEVICE)
 
 # Optimization settings:
 num_epoch = args.num_epoch
@@ -282,9 +281,11 @@ model.reset_rtrl_state()
 # define a layer to pass the hidden layer through
 layer = nn.Linear(2*hidden_size, in_vocab_size) #layer = nn.Linear(2 * hidden_size, in_vocab_size) # layer = nn.Linear(hidden_size, in_vocab_size) #.to(DEVICE)
 
+layer = layer.to(DEVICE)
 for ep in range(num_epoch):
+    torch.set_default_tensor_type(torch.FloatTensor)
     for idx, batch in enumerate(train_data_loader):
-
+        torch.set_default_tensor_type(torch.cuda.FloatTensor)
         model.train()
 
         src, tgt = batch
@@ -319,7 +320,7 @@ for ep in range(num_epoch):
                 #print("src_token.shape", src_token.shape)
                 # print(src_token.item())
 
-                h_next = model.forward_step(src_token) # h_next = model.forward_step(src_token.view(-1)) # h_next = model.forward_step(src_token)
+                h_next = model.forward_step(src_token.to('cuda')) # h_next = model.forward_step(src_token.view(-1)) # h_next = model.forward_step(src_token)
 
                 #print("h_next.shape", h_next.shape)
                 output = layer(h_next) #.to(DEVICE)
@@ -329,7 +330,7 @@ for ep in range(num_epoch):
 
                 optimizer.zero_grad()
 
-                loss = loss_fn(output.unsqueeze(0), labels.to('cpu')) 
+                loss = loss_fn(output.unsqueeze(0), labels.to('cuda')) 
                 loss.backward() # loss.backward(retain_graph=True)
 
                 optimizer.step()
