@@ -11,11 +11,8 @@ class RTUFunction(torch.autograd.Function):
     @staticmethod
     def forward(ctx, input_t, h, lamda, theta, B_c1, B_c2, s_r_c1_prev, s_r_c2_prev, s_theta_c1_prev, s_theta_c2_prev, s_B_c1_h_c1_prev, s_B_c2_h_c1_prev,  s_B_c1_h_c2_prev, s_B_c2_h_c2_prev):
 
-        # theta = math.log(6.28 * random.uniform(1, B.shape[0]))   # hidden_size = B.shape[0]
-        # r_max = 1
-        # r_min = 0
-        # r = math.log(0.5 * math.log(random.uniform(1, B.shape[0]) * (r_max**2 - r_min**2) + r_min**2))
-
+        # print("input_t.shape", input_t.shape)
+        
         # let r = lamda
         r = lamda
 
@@ -41,12 +38,12 @@ class RTUFunction(torch.autograd.Function):
         # print(h_prev_c2.shape)
 
         # c1 and c2 h updates
-        h_next_c1 = y * torch.cos(z) * h_prev_c1 - y * torch.sin(z) * h_prev_c2 + gamma * B_c1.mv(input_t.to('cpu', dtype=torch.float))
-        h_next_c2 = y * torch.cos(z) * h_prev_c2 + y * torch.sin(z) * h_prev_c1 + gamma * B_c2.mv(input_t.to('cpu', dtype=torch.float))
+        h_next_c1 = y * torch.cos(z) * h_prev_c1 - y * torch.sin(z) * h_prev_c2 + gamma * B_c1.mv(input_t)
+        h_next_c2 = y * torch.cos(z) * h_prev_c2 + y * torch.sin(z) * h_prev_c1 + gamma * B_c2.mv(input_t)
 
         # get gradients of h wrt. r                 #ht                             # delta ht-1 / detta r
-        s_r_c1_next = (y_gradient * torch.cos(z) * h_prev_c1) + (y * torch.cos(z) * s_r_c1_prev) - (y_gradient * torch.sin(z) * h_prev_c2) - (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B_c1.mv(input_t.to('cpu', dtype=torch.float)))
-        s_r_c2_next = (y_gradient * torch.cos(z) * h_prev_c2) + (y * torch.cos(z) * s_r_c2_prev) + (y_gradient * torch.sin(z) * h_prev_c1) + (y * torch.sin(z) * s_r_c1_prev) + (gamma_gradient * B_c2.mv(input_t.to('cpu', dtype=torch.float)))
+        s_r_c1_next = (y_gradient * torch.cos(z) * h_prev_c1) + (y * torch.cos(z) * s_r_c1_prev) - (y_gradient * torch.sin(z) * h_prev_c2) - (y * torch.sin(z) * s_r_c2_prev) + (gamma_gradient * B_c1.mv(input_t))
+        s_r_c2_next = (y_gradient * torch.cos(z) * h_prev_c2) + (y * torch.cos(z) * s_r_c2_prev) + (y_gradient * torch.sin(z) * h_prev_c1) + (y * torch.sin(z) * s_r_c1_prev) + (gamma_gradient * B_c2.mv(input_t))
 
         # get gradients of h wrt. theta
         s_theta_c1_next = (-y * torch.sin(z) * z_gradient * h_prev_c1) + (y * torch.cos(z) * s_theta_c1_prev) - (y * torch.cos(z) * z_gradient * h_prev_c2) - (y * torch.sin(z) * s_theta_c2_prev)
@@ -201,8 +198,8 @@ class BPTTRTU(nn.Module):
             h_c1_prev = h_c1.clone()
             h_c2_prev = h_c2.clone()
 
-            h_c1 = y * torch.cos(z) * h_c1_prev - y * torch.sin(z) * h_c2_prev + gamma * self.B_c1.mv(x_t.to('cpu', dtype=torch.float))
-            h_c2 = y * torch.cos(z) * h_c2_prev + y * torch.sin(z) * h_c1_prev + gamma * self.B_c2.mv(x_t.to('cpu', dtype=torch.float))
+            h_c1 = y * torch.cos(z) * h_c1_prev - y * torch.sin(z) * h_c2_prev + gamma * self.B_c1.mv(x_t)
+            h_c2 = y * torch.cos(z) * h_c2_prev + y * torch.sin(z) * h_c1_prev + gamma * self.B_c2.mv(x_t)
 
             h = torch.cat((h_c1, h_c2), dim=0)
 
@@ -215,7 +212,7 @@ def test_gradient_correctness():
     # Setup
     input_size = 3
     hidden_size = 2048 # 2048
-    seq_length = 5
+    seq_length = 100 #5
     torch.manual_seed(42)
 
     pre_linear1 = nn.Linear(input_size, input_size, bias=False)
@@ -237,7 +234,7 @@ def test_gradient_correctness():
 
     # Generate random input sequence
     x_sequence = torch.randn(seq_length, input_size)
-        
+    
     processed1 = pre_linear1(x_sequence)
     processed2 = pre_linear2(x_sequence)
 

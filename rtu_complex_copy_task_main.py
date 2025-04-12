@@ -280,7 +280,9 @@ if torch.cuda.is_available():
 model.reset_rtrl_state()
 
 # define a layer to pass the hidden layer through
-layer = nn.Linear(2*hidden_size, in_vocab_size) #layer = nn.Linear(2 * hidden_size, in_vocab_size) # layer = nn.Linear(hidden_size, in_vocab_size) #.to(DEVICE)
+process_input_layer = nn.Linear(in_vocab_size, in_vocab_size, bias=False)
+output_layer = nn.Linear(2*hidden_size, in_vocab_size) 
+# output_layer = nn.Linear(2*hidden_size, hidden_size)  # output_layer = nn.Linear(2*hidden_size, in_vocab_size) 
 
 for ep in range(num_epoch):
     for idx, batch in enumerate(train_data_loader):
@@ -293,51 +295,59 @@ for ep in range(num_epoch):
         # reset states at the beginning of the sequence
         model.reset_rtrl_state()
 
-        # src = src.permute(1, 0)  # TODO: MAYBE ADD LATER **
-        # tgt = tgt.permute(1, 0)  # TODO: MAYBE ADD LATER **
+        src = src.permute(1, 0)  # TODO: MAYBE ADD LATER **
+        tgt = tgt.permute(1, 0)  # TODO: MAYBE ADD LATER **
 
         # print("src.shape", src.shape)
         # print("tgt.shape", tgt.shape)
         # print("bsz", bsz) # batch size
         
         # We assume fully online setting
-        for sample in range(bsz): # loop through the batch to get each sample
-            for src_token, tgt_token in zip(src[sample], tgt[sample]): # for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
+        for src_token, tgt_token in zip(src, tgt): # for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
+            # print("tgt_token.shape", tgt_token.shape)
+            # print("tgt_token.view(-1).shape", tgt_token.view(-1).shape)
+            # print("src_token.shape before 1-hot", src_token.shape)
 
-                labels = tgt_token.view(-1)
+            # labels = tgt_token.view(-1)
+            # labels = torch.nn.functional.one_hot(tgt_token.view(-1), in_vocab_size).to('cpu', dtype=torch.float)
+            labels = tgt_token.view(-1).to('cpu') #, dtype=torch.float) #torch.nn.functional.one_hot(tgt_token.view(-1), in_vocab_size).to('cpu', dtype=torch.float)
+            labels = labels.squeeze(0) #.view(-1) ++
+            # print("labels.shape:", labels.shape)
+            # print("labels", labels)
+    
+            src_token = torch.nn.functional.one_hot(src_token.view(-1), in_vocab_size).to('cpu', dtype=torch.float)
+            src_token = src_token.squeeze(0)
+            # print("src_token.shape", src_token.shape)
 
-                #labels = labels.to(DEVICE) #, dtype=torch.float32)
-                #print("labels.shape:", labels.shape)
+            # process the source input
+            # processed_src = process_input_layer(src_token.to('cpu', dtype=torch.float))
+            # processed_labels = process_input_layer(labels.to('cpu', dtype=torch.float))
+            # print("processed_src.shape", processed_src.shape)
+            # print("processed_labels.shape",  processed_labels.shape)
 
+            # h_next = model.forward_step(processed_src.to('cpu')) # h_next = model.forward_step(src_token) # h_next = model.forward_step(src_token.view(-1)) # h_next = model.forward_step(src_token)
+            h_next = model.forward(src_token) # h_next = model(processed_src.to('cpu'))
+            # print("h_next.shape", h_next.shape)
+
+            # output = h_next #.to(DEVICE)
+            output = output_layer(h_next) #.to(DEVICE) 
+
+            # print("output.shape", output.shape) # is of size [3]
+            # print("labels.shape", labels.shape) #should be size [1]
+
+            optimizer.zero_grad()
+
+            # loss = loss_fn(output, processed_labels) 
+            loss = loss_fn(output, labels)  # loss = loss_fn(output.unsqueeze(0), processed_labels) 
+            loss.backward() # loss.backward(retain_graph=True)
+
+            optimizer.step()
                 
-                torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
+            # print("loss", loss)
 
-                # make a prediction by doing a forward pass using the src_token input
-                
-                src_token = torch.nn.functional.one_hot(src_token.view(-1), in_vocab_size)
-                src_token = src_token.squeeze(0)
-                #print("src_token.shape", src_token.shape)
-                # print(src_token.item())
-
-                h_next = model.forward_step(src_token) # h_next = model.forward_step(src_token.view(-1)) # h_next = model.forward_step(src_token)
-
-                #print("h_next.shape", h_next.shape)
-                output = layer(h_next) #.to(DEVICE)
-
-                # print(output.shape) # is of size [3]
-                # print(labels.shape) #should be size [1]
-
-                optimizer.zero_grad()
-
-                loss = loss_fn(output.unsqueeze(0), labels.to('cpu')) 
-                loss.backward() # loss.backward(retain_graph=True)
-
-                optimizer.step()
-                
-                # print("loss", loss)
-                with torch.no_grad():
-                    acc_loss += loss
-                    steps += 1
+            with torch.no_grad():
+                acc_loss += loss
+                steps += 1
                     
         # if args.full_sequence:
         #     if clip > 0.0:
@@ -352,6 +362,76 @@ for ep in range(num_epoch):
         loginf(f"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] "
                f"End epoch {ep+1} =============")
         loginf(f"train loss: {acc_loss / steps}")
+        
+# for ep in range(num_epoch):
+#     for idx, batch in enumerate(train_data_loader):
+
+#         model.train()
+
+#         src, tgt = batch
+
+#         bsz, _ = src.shape
+#         # reset states at the beginning of the sequence
+#         model.reset_rtrl_state()
+
+#         # src = src.permute(1, 0)  # TODO: MAYBE ADD LATER **
+#         # tgt = tgt.permute(1, 0)  # TODO: MAYBE ADD LATER **
+
+#         print("src.shape", src.shape)
+#         print("tgt.shape", tgt.shape)
+#         # print("bsz", bsz) # batch size
+        
+#         # We assume fully online setting
+#         for sample in range(bsz): # loop through the batch to get each sample
+#             for src_token, tgt_token in zip(src[sample], tgt[sample]): # for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
+
+#                 labels = tgt_token.view(-1)
+#                 #labels = labels.to(DEVICE) #, dtype=torch.float32)
+#                 print("labels.shape:", labels.shape)
+
+                
+#                 #torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
+
+#                 # make a prediction by doing a forward pass using the src_token input
+                
+#                 src_token = torch.nn.functional.one_hot(src_token.view(-1), in_vocab_size)
+#                 src_token = src_token.squeeze(0)
+#                 print("src_token.shape", src_token.shape)
+#                 # print(src_token.item())
+
+#                 h_next = model.forward_step(src_token.to('cpu')) # h_next = model.forward_step(src_token) # h_next = model.forward_step(src_token.view(-1)) # h_next = model.forward_step(src_token)
+
+#                 #print("h_next.shape", h_next.shape)
+#                 output = layer(h_next) #.to(DEVICE)
+
+#                 # print(output.shape) # is of size [3]
+#                 # print(labels.shape) #should be size [1]
+
+#                 optimizer.zero_grad()
+
+#                 loss = loss_fn(output.unsqueeze(0), labels.to('cpu')) 
+#                 loss.backward() # loss.backward(retain_graph=True)
+
+#                 optimizer.step()
+                
+#                 # print("loss", loss)
+#                 with torch.no_grad():
+#                     acc_loss += loss
+#                     steps += 1
+                    
+#         # if args.full_sequence:
+#         #     if clip > 0.0:
+#         #         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+
+#         #     optimizer.step()
+#         #     # model.reset_grad()
+#         #     # model.rtrl_reset_grad()
+#         #     model.reset_rtrl_state()
+
+#     with torch.no_grad():
+#         loginf(f"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] "
+#                f"End epoch {ep+1} =============")
+#         loginf(f"train loss: {acc_loss / steps}")
         # *************************************************************************************************************
 #         eval_model.load_state_dict(model.state_dict())
 #         v_loss, v_acc, v_acc_noop, v_acc_print = compute_accuracy(
