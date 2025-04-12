@@ -24,65 +24,65 @@ def compute_accuracy(hidden_size, model, data_iterator, loss_fn, no_print_idx, p
     total_char = 0
     total_print = 0
 
-    layer = nn.Linear(hidden_size, 3)  # in_vocab_size = 3
+    layer = nn.Linear(2*hidden_size, 3) #nn.Linear(hidden_size, 3)  # in_vocab_size = 3
 
     for idx, batch in enumerate(data_iterator):
         src, tgt = batch
         bsz, _ = src.shape
         model.reset_rtrl_state() #state = model.get_init_states(batch_size=bsz, device=src.device) # ADDED
-        # src = src.permute(1, 0)
-        # tgt = tgt.permute(1, 0)
-        for sample in range(bsz): # loop through the batch to get each sample
-            for src_token, tgt_token in zip(src[sample], tgt[sample]): # ADDED
-                step += 1
+        src = src.permute(1, 0)
+        tgt = tgt.permute(1, 0)
+        for src_token, tgt_token in zip(src, tgt): # ADDED
+            step += 1
 
-                # logits, cell_out, state = model(src_token, state)
-                #logits = model(src, state) # logits = model(src) # src, state
-                labels = tgt_token.view(-1)  #.view(-1) # tgt  # (B, len)
-                target = labels
+            # logits, cell_out, state = model(src_token, state)
+            #logits = model(src, state) # logits = model(src) # src, state
+            labels = tgt_token.view(-1).to('cpu') #tgt_token.view(-1)  #.view(-1) # tgt  # (B, len)
+            labels = labels.squeeze(0)
+            target = labels
 
-                src_token = torch.nn.functional.one_hot(src_token.view(-1), 3) # in_vocab_size = 3
-                src_token = src_token.squeeze(0)
+            src_token = torch.nn.functional.one_hot(src_token.view(-1), 3) # in_vocab_size = 3
+            src_token = src_token.squeeze(0)
 
-                h_next = model.forward_step(src_token)
-                output = layer(h_next) #.to(DEVICE)
+            h_next = model.forward(src_token) #model.forward_step(src_token)
+            output = layer(h_next) #.to(DEVICE)
 
-                # to compute accuracy
-                output = torch.argmax(output, dim=-1).squeeze()
+            # to compute accuracy
+            output = torch.argmax(output, dim=-1).squeeze()
 
-                # compute loss
-                #output = output.contiguous().view(-1, output.shape[-1])
-                #output = tgt_token.flatten() # TODO: .flatten() ?????????????? #tgt.view(-1)
-                loss = loss_fn(output, labels)
-                total_loss += loss
+            # compute loss
+            #output = output.contiguous().view(-1, output.shape[-1])
+            #output = tgt_token.flatten() # TODO: .flatten() ?????????????? #tgt.view(-1)
+            loss = loss_fn(output, labels)
+            total_loss += loss
 
-                # sequence level accuracy
-                # seq_match = (torch.eq(target, output) | (target == pad_value)  #           seq_match = (torch.eq(target, output) | (target == pad_value)).all(1).sum().item()
-                #             ).all(1).sum().item()
-                seq_match = (torch.eq(target, output)| (target == pad_value)).sum().item()
-                corr += seq_match
-                total_num_seqs += src_token.size()[0]  # src.size()[0] 
+            # sequence level accuracy
+            # seq_match = (torch.eq(target, output) | (target == pad_value)  #           seq_match = (torch.eq(target, output) | (target == pad_value)).all(1).sum().item()
+            #             ).all(1).sum().item()
+            seq_match = (torch.eq(target, output)| (target == pad_value)).sum().item()
+            corr += seq_match
+            total_num_seqs += src_token.size()[0]  # src.size()[0] 
 
-                # padded part should not be counted as correct
-                char_match = torch.logical_and(
+            # padded part should not be counted as correct
+            char_match = torch.logical_and(
                     torch.logical_and(torch.eq(target, output), target != pad_value),
                     target == no_print_idx).sum().item()
-                corr_char += char_match
-                total_char += torch.logical_and(
+            corr_char += char_match
+            total_char += torch.logical_and(
                     target != pad_value, target == no_print_idx).sum().item()
 
-                # Ignore non-print outputs
-                print_match = torch.logical_and(
+            # Ignore non-print outputs
+            print_match = torch.logical_and(
                     torch.logical_and(torch.eq(target, output), target != pad_value),
                     target != no_print_idx).sum().item()
-                corr_print += print_match
+            corr_print += print_match
 
-                total_print += torch.logical_and(
+            total_print += torch.logical_and(
                     target != pad_value, target != no_print_idx).sum().item()
 
-                if only_nbatch > 0:
-                    if idx > only_nbatch:
-                        break
+            if only_nbatch > 0:
+                if idx > only_nbatch:
+                    break
 
     res_loss = total_loss.item() / float(step)
     acc = corr / float(total_num_seqs) * 100
