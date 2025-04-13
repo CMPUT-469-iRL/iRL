@@ -365,7 +365,7 @@ for ep in range(num_epoch):
 
         eval_model.load_state_dict(model.state_dict())
         v_loss, v_acc, v_acc_noop, v_acc_print = compute_accuracy(
-            eval_model, valid_data_loader, loss_fn, no_print_idx=no_print_idx,
+            hidden_size, eval_model, valid_data_loader, loss_fn, no_print_idx=no_print_idx,
             pad_value=tgt_pad_idx, show_example=False)
         loginf(f"valid loss: {v_loss}")
         loginf(f"valid acc: {v_acc:.2f} %")
@@ -420,7 +420,7 @@ if best_epoch > 1:  # load the best model and evaluate on the test set
     eval_model.load_state_dict(checkpoint['model_state_dict'])
     with torch.no_grad():
         test_loss, test_acc, test_acc_char, test_acc_print = compute_accuracy(
-            eval_model, test_data_loader, loss_fn, no_print_idx=no_print_idx,
+            hidden_size, eval_model, test_data_loader, loss_fn, no_print_idx=no_print_idx,
             pad_value=tgt_pad_idx, show_example=False)
 
     loginf(f"Final model test acc: {test_acc:.2f} %")
