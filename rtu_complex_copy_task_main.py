@@ -305,7 +305,7 @@ for ep in range(num_epoch):
         # print("bsz", bsz) # batch size
         
         # We assume fully online setting
-        sequence_loss = 0
+        # sequence_loss = 0
         for src_token, tgt_token in zip(src, tgt): # for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
             # print("tgt_token.shape", tgt_token.shape)
             # print("tgt_token.view(-1).shape", tgt_token.view(-1).shape)
@@ -347,11 +347,11 @@ for ep in range(num_epoch):
             optimizer.step()
                 
             # print("loss", loss)
-            sequence_loss += loss
+            # sequence_loss += loss
             with torch.no_grad():
                 acc_loss += loss
                 steps += 1
-        print("sequence_loss", sequence_loss)            
+        # print("sequence_loss", sequence_loss)            
         # if args.full_sequence:
         #     if clip > 0.0:
         #         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)

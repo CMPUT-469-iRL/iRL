@@ -235,8 +235,8 @@ loginf(f"Gradient accumulation for {grad_cummulate} steps.")
 loginf(f"Seed: {args.seed}")
 learning_rate = args.learning_rate
 
-loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)
-
+loss_fn = nn.CrossEntropyLoss()  #ignore_index=tgt_pad_idx  # CHANGED TO REMOVE THE IGNORE INDEX THAT CAUSED NANs
+ 
 optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,
                              betas=(0.9, 0.995), eps=1e-9)
 clip = args.clip
@@ -274,7 +274,6 @@ model.rtrl_reset_grad()
 avg_train_loss = 0
 
 for ep in range(num_epoch):
-    steps = 0
     for idx, batch in enumerate(train_data_loader):
         model.train()
 
@@ -300,7 +299,7 @@ for ep in range(num_epoch):
             # print("logits.shape", logits.shape)
             # print("labels.shape", labels.shape)
             loss = loss_fn(logits, labels)
-            print("loss", loss)
+            # print("loss", loss)
             loss.backward()
             _, rtrl_states = state
             model.compute_gradient_rtrl(cell_out.grad, rtrl_states)

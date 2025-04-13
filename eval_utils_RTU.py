@@ -30,8 +30,8 @@ def compute_accuracy(hidden_size, model, data_iterator, loss_fn, no_print_idx, p
         src, tgt = batch
         bsz, _ = src.shape
         model.reset_rtrl_state() #state = model.get_init_states(batch_size=bsz, device=src.device) # ADDED
-        src = src.permute(1, 0)
-        tgt = tgt.permute(1, 0)
+        # src = src.permute(1, 0)
+        # tgt = tgt.permute(1, 0)
         for src_token, tgt_token in zip(src, tgt): # ADDED
             step += 1
 
