@@ -11,11 +11,14 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from copy_task_data import CopyTaskDataset
-from eLSTM_model.model import QuasiLSTMModel, RTRLQuasiLSTMModel
-from eval_utils_eLSTM import compute_accuracy
+#from diag_unit.test_diag_unit import DiagonalRNNFunction, RTRLDiagonalRNN, BPTTDiagonalRNN
+from diag_unit.updated_test_diag_sigmoid import *
+from rtu_model.rtu_complex import *
+from eval_utils_RTU_2 import compute_accuracy
 
 
-DEVICE = 'cuda'
+
+DEVICE = 'cpu' #'cuda'
 
 
 parser = argparse.ArgumentParser(description='Learning to execute')
@@ -202,7 +205,7 @@ num_layers = args.num_layer
 dropout = args.dropout
 
 # Common params:
-in_vocab_size = src_vocab.size()  # TODO: CHANGE TO 4
+in_vocab_size = src_vocab.size()
 out_vocab_size = tgt_vocab.size()
 
 loginf(f"Input vocab size: {in_vocab_size}")
@@ -211,21 +214,25 @@ loginf(f"Output vocab size: {out_vocab_size}")
 # model
 
 loginf("Model: Quasi-LSTM")
-model = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,  # RTRLQuasiLSTMModel
-                    num_layers=num_layers, in_vocab_size=in_vocab_size,
-                    out_vocab_size=out_vocab_size, dropout=dropout,
-                    no_embedding=args.no_embedding)
+model = RTRLRTU(hidden_size, in_vocab_size) # RTRLDiagonalRNN(hidden_size, in_vocab_size = in_vocab_size, out_vocab_size = out_vocab_size)
+# RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
+#                     num_layers=num_layers, in_vocab_size=in_vocab_size,
+#                     out_vocab_size=out_vocab_size, dropout=dropout,
+#                     no_embedding=args.no_embedding)
 
-loginf(f"Number of trainable params: {model.num_params()}")
+#loginf(f"Number of trainable params: {model.num_params()}")
 loginf(f"{model}")
 
-model = model.to(DEVICE)
+#model = model.to(DEVICE)
 
-eval_model = RTRLQuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,  # QuasiLSTMModel
-                    num_layers=num_layers, in_vocab_size=in_vocab_size,
-                    out_vocab_size=out_vocab_size, dropout=dropout,
-                    no_embedding=args.no_embedding)
-eval_model = eval_model.to(DEVICE)
+eval_model = RTRLRTU(hidden_size, in_vocab_size) # define the evaluation model as the BPTT implementation of RTU
+
+# QuasiLSTMModel(emb_dim=emb_dim, hidden_size=hidden_size,
+#                     num_layers=num_layers, in_vocab_size=in_vocab_size,
+#                     out_vocab_size=out_vocab_size, dropout=dropout,
+#                     no_embedding=args.no_embedding)
+
+# eval_model = eval_model.to(DEVICE)
 
 # Optimization settings:
 num_epoch = args.num_epoch
@@ -234,8 +241,8 @@ loginf(f"Batch size: {train_batch_size}")
 loginf(f"Gradient accumulation for {grad_cummulate} steps.")
 loginf(f"Seed: {args.seed}")
 learning_rate = args.learning_rate
-
-loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pad_idx)
+#print("tgt_pat_idx", tgt_pad_idx)
+loss_fn = nn.CrossEntropyLoss()  # loss_fn = nn.CrossEntropyLoss(ignore_index=tgt_pat_idx = 2)
 
 optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate,
                              betas=(0.9, 0.995), eps=1e-9)
@@ -268,70 +275,91 @@ random.seed(args.seed)
 if torch.cuda.is_available():
     torch.cuda.manual_seed_all(args.seed)
 
-model.reset_grad()
-model.rtrl_reset_grad()
+#model.reset_grad()
+#model.rtrl_reset_grad()
+model.reset_rtrl_state()
 
-avg_train_loss = 0
+# define a layer to pass the hidden layer through
+process_input_layer = nn.Linear(in_vocab_size, in_vocab_size, bias=False)
+output_layer = nn.Linear(2*hidden_size, in_vocab_size) 
+# output_layer = nn.Linear(2*hidden_size, hidden_size)  # output_layer = nn.Linear(2*hidden_size, in_vocab_size) 
+
+
+# OLD LOOP
+## *************************************************************************************************************
 
 for ep in range(num_epoch):
-    steps = 0
     for idx, batch in enumerate(train_data_loader):
+
         model.train()
 
         src, tgt = batch
+
         bsz, _ = src.shape
         # reset states at the beginning of the sequence
-        state = model.get_init_states(batch_size=bsz, device=src.device)
+        model.reset_rtrl_state()
 
-        src = src.permute(1, 0)
-        tgt = tgt.permute(1, 0)
+        src = src.permute(1, 0)  # TODO: MAYBE ADD LATER **
+        tgt = tgt.permute(1, 0)  # TODO: MAYBE ADD LATER **
 
         # print("src.shape", src.shape)
         # print("tgt.shape", tgt.shape)
+        # print("bsz", bsz) # batch size
         
         # We assume fully online setting
-        for src_token, tgt_token in zip(src, tgt):
-            logits, cell_out, state = model(src_token, state)
-            logits = logits.contiguous()  # (B, num_classes)
-            labels = tgt_token.view(-1)
+        for sample in range(src.shape[0]): # for sample in range(bsz): # loop through the batch to get each sample
+            for src_token, tgt_token in zip(src[sample], tgt[sample]): # for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
 
-            # print("tgt_token.shape", tgt_token.shape)
-            # print("src_token.shape", src_token.shape)
-            # print("logits.shape", logits.shape)
-            # print("labels.shape", labels.shape)
-            loss = loss_fn(logits, labels)
-            print("loss", loss)
-            loss.backward()
-            _, rtrl_states = state
-            model.compute_gradient_rtrl(cell_out.grad, rtrl_states)
+                labels = tgt_token.view(-1).to('cpu')
+                #labels = labels.to(DEVICE) #, dtype=torch.float32)
+                # print("labels.shape:", labels.shape)
 
-            if not args.full_sequence:
-                if clip > 0.0:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+                
+                #torch.autograd.set_detect_anomaly(True) # ADDED TO HELP WITH DEBUGGING .backward() gradient calculation issues
+
+                # make a prediction by doing a forward pass using the src_token input
+                
+                src_token = torch.nn.functional.one_hot(src_token.view(-1), in_vocab_size)
+                src_token = src_token.squeeze(0).to('cpu', dtype = torch.float) #.squeeze(0)
+                # print("src_token.shape", src_token.shape) # size = 3
+                # print(src_token.item())
+
+                h_next = model.forward_step(src_token) # h_next = model.forward_step(src_token) # h_next = model.forward_step(src_token.view(-1)) # h_next = model.forward_step(src_token)
+
+                #print("h_next.shape", h_next.shape)
+                output = output_layer(h_next) #.to(DEVICE)
+
+                # print(output.shape) # is of size [3]
+                # print(labels.shape) #should be size [1]
+
+                optimizer.zero_grad()
+
+                loss = loss_fn(output.unsqueeze(0), labels) 
+                loss.backward() # loss.backward(retain_graph=True)
 
                 optimizer.step()
-                model.reset_grad()
-                model.rtrl_reset_grad()
+                
+                sequence_loss += loss # added, calculates the sequence loss
+                # print("loss", loss)
+                with torch.no_grad():
+                    acc_loss += loss
+                    steps += 1
+            print("sequence loss", sequence_loss)    
 
-            with torch.no_grad():
-                acc_loss += loss
-                steps += 1
+        # if args.full_sequence:
+        #     if clip > 0.0:
+        #         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
 
-        if args.full_sequence:
-            if clip > 0.0:
-                torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
-
-            optimizer.step()
-            model.reset_grad()
-            model.rtrl_reset_grad()
+        #     optimizer.step()
+        #     # model.reset_grad()
+        #     # model.rtrl_reset_grad()
+        #     model.reset_rtrl_state()
 
     with torch.no_grad():
         loginf(f"[{datetime.now().strftime('%Y/%m/%d %H:%M:%S')}] "
                f"End epoch {ep+1} =============")
         loginf(f"train loss: {acc_loss / steps}")
-
-        avg_train_loss += (acc_loss / steps) # update the average training loss over all epochs
-
+        #*************************************************************************************************************
         eval_model.load_state_dict(model.state_dict())
         v_loss, v_acc, v_acc_noop, v_acc_print = compute_accuracy(
             eval_model, valid_data_loader, loss_fn, no_print_idx=no_print_idx,
@@ -349,7 +377,7 @@ for ep in range(num_epoch):
             wandb.log({"valid_acc_print": v_acc_print})
 
         if v_acc > best_val_acc:
-            best_val_acc = v_acc
+            best_val_acc = v_acc 
             best_epoch = ep + 1
             # Save the best model
             loginf("The best model so far.")
@@ -373,9 +401,7 @@ for ep in range(num_epoch):
 elapsed = time.time() - start_time
 loginf(f"Ran {ep} epochs in {elapsed / 60.:.2f} min.")
 loginf(f"Best validation acc: {best_val_acc:.2f}")
-
-avg_train_loss = avg_train_loss / num_epoch # divide the average train loss to get the average loss over all epochs
-print("avg_train_loss", avg_train_loss)
+#*************************************************************************************************************
 
 if best_epoch > 1:  # load the best model and evaluate on the test set
     del train_data_loader, train_data

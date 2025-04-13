@@ -41,19 +41,19 @@ def compute_accuracy(hidden_size, model, data_iterator, loss_fn, no_print_idx, p
             labels = labels.squeeze(0)
             target = labels
 
-            src_token = torch.nn.functional.one_hot(src_token.view(-1), 3) # in_vocab_size = 3
+            src_token = torch.nn.functional.one_hot(src_token.view(-1), 3).to('cpu', dtype=torch.float)  # in_vocab_size = 3
             src_token = src_token.squeeze(0)
 
             h_next = model.forward(src_token) #model.forward_step(src_token)
-            output = layer(h_next) #.to(DEVICE)
+            output_forward = layer(h_next) #.to(DEVICE)
 
             # to compute accuracy
-            output = torch.argmax(output, dim=-1).squeeze()
+            output = torch.argmax(output_forward, dim=-1).squeeze()
 
             # compute loss
             #output = output.contiguous().view(-1, output.shape[-1])
             #output = tgt_token.flatten() # TODO: .flatten() ?????????????? #tgt.view(-1)
-            loss = loss_fn(output, labels)
+            loss = loss_fn(output_forward, labels)
             total_loss += loss
 
             # sequence level accuracy

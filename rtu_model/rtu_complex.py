@@ -236,7 +236,7 @@ def test_gradient_correctness():
     post_linear1.weight.data = post_linear2.weight.data.clone()
 
     # Generate random input sequence
-    x_sequence = torch.randn(seq_length, input_size)
+    x_sequence = torch.randn(256, seq_length, input_size)
         
     processed1 = pre_linear1(x_sequence)
     processed2 = pre_linear2(x_sequence)

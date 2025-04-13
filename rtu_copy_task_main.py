@@ -335,7 +335,7 @@ for ep in range(num_epoch):
 
                 optimizer.step()
                 
-                # print("loss", loss)
+                print("loss", loss)
                 with torch.no_grad():
                     acc_loss += loss
                     steps += 1

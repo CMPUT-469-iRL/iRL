@@ -281,9 +281,11 @@ model.reset_rtrl_state()
 
 # define a layer to pass the hidden layer through
 process_input_layer = nn.Linear(in_vocab_size, in_vocab_size, bias=False)
+
 output_layer = nn.Linear(2*hidden_size, in_vocab_size) 
 # output_layer = nn.Linear(2*hidden_size, hidden_size)  # output_layer = nn.Linear(2*hidden_size, in_vocab_size) 
 
+sequence_loss = 0
 for ep in range(num_epoch):
     for idx, batch in enumerate(train_data_loader):
 
@@ -295,14 +297,15 @@ for ep in range(num_epoch):
         # reset states at the beginning of the sequence
         model.reset_rtrl_state()
 
-        src = src.permute(1, 0)  # TODO: MAYBE ADD LATER **
-        tgt = tgt.permute(1, 0)  # TODO: MAYBE ADD LATER **
+        # src = src.permute(1, 0)  # TODO: MAYBE ADD LATER **
+        # tgt = tgt.permute(1, 0)  # TODO: MAYBE ADD LATER **
 
         # print("src.shape", src.shape)
         # print("tgt.shape", tgt.shape)
         # print("bsz", bsz) # batch size
         
         # We assume fully online setting
+        sequence_loss = 0
         for src_token, tgt_token in zip(src, tgt): # for src_token, tgt_token in zip(src, tgt): #c=src y=tgt
             # print("tgt_token.shape", tgt_token.shape)
             # print("tgt_token.view(-1).shape", tgt_token.view(-1).shape)
@@ -332,8 +335,8 @@ for ep in range(num_epoch):
             # output = h_next #.to(DEVICE)
             output = output_layer(h_next) #.to(DEVICE) 
 
-            # print("output.shape", output.shape) # is of size [3]
-            # print("labels.shape", labels.shape) #should be size [1]
+            # print("output.shape", output.shape) # is of size [256, 3]
+            # print("labels.shape", labels.shape) #should be size [256, 1]
 
             optimizer.zero_grad()
 
@@ -344,11 +347,11 @@ for ep in range(num_epoch):
             optimizer.step()
                 
             # print("loss", loss)
-
+            sequence_loss += loss
             with torch.no_grad():
                 acc_loss += loss
                 steps += 1
-                    
+        print("sequence_loss", sequence_loss)            
         # if args.full_sequence:
         #     if clip > 0.0:
         #         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
