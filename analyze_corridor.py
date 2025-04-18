@@ -6,7 +6,7 @@ from matplotlib.ticker import MaxNLocator, FuncFormatter
 from scipy.ndimage import gaussian_filter1d
 from scipy.integrate import simps
 
-def load_saved_models(base_dir="resultsTEMP", algo_types=["BPTT", "RTRL"]):
+def load_saved_models(base_dir="result", algo_types=["BPTT", "RTRL"]):
     """
     Load saved models for different corridor lengths and algorithms.
     
@@ -242,7 +242,7 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
     
     # Load saved models
-    results = load_saved_models(base_dir="resultsTEMP")
+    results = load_saved_models(base_dir="result")
     
     # Create time-step based plots (both rewards and losses)
     create_timestep_plots(results, output_dir)

@@ -166,10 +166,11 @@ def train_stream_q(env_name="tmaze",
                   hidden_size=64,
                   batch_size=32,
                   target_update_freq=10,
-                  save_path=None,  # Changed to None, will construct based on corridor_length
+                  save_path=None,
                   eval_interval=20,
                   corridor_length=5,
-                  max_steps_per_episode=100):
+                  max_steps_per_episode=100,
+                  max_time_steps=None):  # Add max_time_steps parameter
     """Train a Stream Q agent using RTRL QuasiLSTM."""
     
     # Set up environment
@@ -209,6 +210,9 @@ def train_stream_q(env_name="tmaze",
     losses_history = []
     evaluation_rewards = []
     
+    # Add a counter for total time steps across all episodes
+    total_time_steps = 0
+    
     # Training loop
     for episode in range(episodes):
         # Reset environment and agent state
@@ -226,6 +230,38 @@ def train_stream_q(env_name="tmaze",
                 # Select and perform action
                 action = agent.select_action(state)
                 next_state, reward, done, info = env.step(action)
+                
+                # Increment total time steps counter
+                total_time_steps += 1
+                
+                # Check if we've reached the maximum time steps
+                if max_time_steps is not None and total_time_steps >= max_time_steps:
+                    print(f"Reached maximum time steps ({max_time_steps}). Stopping training.")
+                    
+                    # Save model before exiting
+                    if save_path:
+                        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                        torch.save({
+                            'model_state_dict': agent.q_network.state_dict(),
+                            'optimizer_state_dict': agent.optimizer.state_dict(),
+                            'rewards_history': rewards_history,
+                            'losses_history': losses_history,
+                            'eval_rewards': evaluation_rewards,
+                            'total_time_steps': total_time_steps,
+                            'hyperparams': {
+                                'epsilon_start': epsilon_start,
+                                'epsilon_end': epsilon_end,
+                                'epsilon_decay': epsilon_decay,
+                                'lr': lr,
+                                'gamma': gamma,
+                                'embedding_size': embedding_size,
+                                'hidden_size': hidden_size,
+                                'batch_size': batch_size,
+                                'corridor_length': corridor_length
+                            }
+                        }, save_path)
+                        print(f"Model saved to {save_path} after {total_time_steps} time steps")
+                    return agent, rewards_history
                 
                 # Store transition
                 agent.store_transition(state, action, reward, next_state, done)
@@ -261,7 +297,8 @@ def train_stream_q(env_name="tmaze",
         if (episode + 1) % 10 == 0:
             avg_reward = np.mean(rewards_history[-10:])
             print(f"Episode {episode+1}/{episodes}, Reward: {episode_reward:.2f}, "
-                  f"Average Reward: {avg_reward:.2f}, Epsilon: {agent.epsilon:.3f}")
+                  f"Average Reward: {avg_reward:.2f}, Epsilon: {agent.epsilon:.3f}, "
+                  f"Total Steps: {total_time_steps}")
                   
         # Evaluate agent periodically
         if (episode + 1) % eval_interval == 0:
@@ -281,6 +318,7 @@ def train_stream_q(env_name="tmaze",
         'rewards_history': rewards_history,
         'losses_history': losses_history,
         'eval_rewards': evaluation_rewards,
+        'total_time_steps': total_time_steps,
         'hyperparams': {
             'epsilon_start': epsilon_start,
             'epsilon_end': epsilon_end,
@@ -289,11 +327,12 @@ def train_stream_q(env_name="tmaze",
             'gamma': gamma,
             'embedding_size': embedding_size,
             'hidden_size': hidden_size,
-            'batch_size': batch_size
+            'batch_size': batch_size,
+            'corridor_length': corridor_length
         }
     }, save_path)
     
-    print(f"Model saved to {save_path}")
+    print(f"Model saved to {save_path} after {total_time_steps} time steps")
     
     # Plot training metrics
     plot_training_results(rewards_history, losses_history, evaluation_rewards, eval_interval)
@@ -375,6 +414,8 @@ if __name__ == "__main__":
                         help="Length of the corridor in TMaze environment")
     parser.add_argument("--max_steps", type=int, default=100, 
                         help="Maximum steps per episode")
+    parser.add_argument("--max_time_steps", type=int, default=None,
+                        help="Maximum total time steps across all episodes")
     args = parser.parse_args()
     
     # Train agent
@@ -388,5 +429,6 @@ if __name__ == "__main__":
         batch_size=args.batch_size,
         save_path=args.save_path,
         corridor_length=args.corridor_length,
-        max_steps_per_episode=args.max_steps
+        max_steps_per_episode=args.max_steps,
+        max_time_steps=args.max_time_steps
     )
