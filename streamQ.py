@@ -206,6 +206,22 @@ def train_stream_q(
             global_steps += 1
             if max_time_steps and global_steps >= max_time_steps:
                 print(f"Reached {max_time_steps} steps -> early stop")
+                
+                # Save model before early stopping
+                if save_path:
+                    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                    torch.save({
+                        "model": agent.q_net.state_dict(),
+                        "opt": agent.opt.state_dict(),
+                        "R_hist": R_hist,
+                        "L_hist": L_hist,
+                        "E_hist": E_hist,
+                        "steps": global_steps,
+                        "corridor": corridor_length,
+                        "hidden_size": hidden_size,
+                    }, save_path)
+                    print(f"Checkpoint written to {save_path} during early stop")
+                    
                 return agent, R_hist
         # post‑episode
         agent.decay_eps();
@@ -232,7 +248,6 @@ def train_stream_q(
         print(f"Checkpoint written to {save_path}")
 
     return agent, R_hist
-
 
 # The module exposes *only* the public training function ----------------
 __all__ = ["train_stream_q"]
