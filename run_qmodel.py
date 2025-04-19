@@ -21,7 +21,7 @@ def run_corridor_length_experiments(corridor_lengths=[10, 100, 1000],
                                    num_seeds=10, 
                                    base_seed=42,
                                    max_time_steps=1000000,
-                                   output_dir="finalResults/BPTT"):
+                                   output_dir="finalResults/RTRL"):
     """
     Train models for multiple corridor lengths using different seeds.
     
@@ -78,7 +78,7 @@ def run_hidden_size_experiments(corridor_length=100,
                                num_seeds=10,
                                base_seed=42,
                                max_time_steps=1000000,
-                               output_dir="finalResults/BPTT_hidden_sizes"):
+                               output_dir="finalResults/RTRL_hidden_sizes"):
     """
     Train models with different hidden sizes using multiple seeds.
     
